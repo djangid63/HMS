@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }))
 
 const mongoURL = process.env.MONGO_URL
 
-
+console.log(mongoURL);
 // ROUTERS
 const userRouter = require('../Backend/Routers/userRouter')
 
