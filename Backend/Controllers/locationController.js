@@ -1,0 +1,127 @@
+const locationModel = require('../Models/locationModel')
+
+
+exports.addLocation = async (req, res) => {
+  const { state, city } = req.body;
+  try {
+    const locationData = new locationModel({ state, city })
+    const saveData = await locationData.save()
+    return res.status(200).json({ status: true, message: "Location added successfully", updatedLocation: saveData })
+  } catch (error) {
+    console.log("-------Location--------", error);
+    return res.status(401).json({ success: false, message: `Failed to add location, ${error}` });
+  }
+}
+
+exports.getAllLocations = async (req, res) => {
+  try {
+    const locationData = await locationModel.find({ isDisable: false });
+    return res.status(200).json({ status: true, message: "Location fetched Successfully", location: locationData })
+  } catch (error) {
+    console.log("Get location--------", error);
+    return res.status(401).json({ success: false, message: `Failed to get location, ${error}` });
+  }
+}
+
+exports.updateLocation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { state, city } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: "Location ID is required" });
+    }
+
+    const updatedLocation = await locationModel.findByIdAndUpdate(
+      id,
+      { state, city },
+      { new: true, }
+    );
+
+    if (!updatedLocation) {
+      return res.status(404).json({ success: false, message: "Location not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Location updated successfully",
+      location: updatedLocation
+    });
+  } catch (error) {
+    console.log("Update location error:", error);
+    return res.status(500).json({
+      success: false,
+      message: `Failed to update location: ${error.message}`
+    });
+  }
+}
+
+
+exports.softDelete = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Location ID is required"
+      });
+    }
+
+    const disabledLocation = await locationModel.findByIdAndUpdate(
+      id,
+      { isDisable: true },
+      { new: true }
+    );
+
+    if (!disabledLocation) {
+      return res.status(404).json({
+        success: false,
+        message: "Location not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Location disabled successfully"
+    });
+  } catch (error) {
+    console.log("Soft delete location error:", error);
+    return res.status(500).json({
+      success: false,
+      message: `Failed to disable location: ${error.message}`
+    });
+  }
+}
+exports.hardDelete = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Location ID is required"
+      });
+    }
+
+    const deleteLocation = await locationModel.findByIdAndDelete(id);
+
+    if (!deleteLocation) {
+      return res.status(404).json({
+        success: false,
+        message: "Location not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Location deleted successfully"
+    });
+  } catch (error) {
+    console.log("Hard delete location error:", error);
+    return res.status(500).json({
+      success: false,
+      message: `Failed to delete location: ${error.message}`
+    });
+  }
+}

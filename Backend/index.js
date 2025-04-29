@@ -11,9 +11,10 @@ app.use(express.urlencoded({ extended: true }))
 
 const mongoURL = process.env.MONGO_URL
 
-console.log(mongoURL);
 // ROUTERS
-const userRouter = require('../Backend/Routers/userRouter')
+const userRouter = require('./Routers/userRouter')
+const locationRouter = require('./Routers/locationRouter')
+
 
 
 mongoose.connect(mongoURL)
@@ -22,6 +23,7 @@ mongoose.connect(mongoURL)
 
 // Add your routes here
 app.use('/user', userRouter)
+app.use('/location', locationRouter)
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
