@@ -11,7 +11,6 @@ const createTransporter = (email, mailkey) => {
 };
 
 const sendOtpEmail = async (email, otp, firstname, senderEmail, mailkey) => {
-  console.log("emial-------------------------", email);
   try {
     const transporter = createTransporter(senderEmail, mailkey);
     const mailOptions = {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import BASE_URL from '../api';
 
 
 const SignUp = () => {
@@ -40,10 +40,11 @@ const SignUp = () => {
     try {
       setLoading(true);
       // API call would go here
-      const response = await axios.post('http://localhost:5000/user/signup', formData)
+      const response = await axios.post(`${BASE_URL}/user/signup`, formData)
       if (response.data.success) {
         alert('Account created')
-        navigate('/login')
+        navigate('/otp', { state: { email: formData.email } });
+     
       }
     } catch (err) {
       setError(err.message || 'Something went wrong');

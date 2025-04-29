@@ -1,6 +1,7 @@
 import axios from 'axios/unsafe/axios.js';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import BASE_URL from './../api';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -23,15 +24,14 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:5000/user/login', formData)
+      const response = await axios.post(`${BASE_URL}/user/login`, formData)
       if (response.data.success) {
         alert("Please enter the otp to continue")
-        navigate('/otp', { state: { email: formData.email } });
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(response.data.role || {}));
+        navigate('/dashboard');
       }
     } catch (err) {
       setError(err.message || 'Invalid email or password');
@@ -39,6 +39,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-gray-50">
@@ -101,7 +102,7 @@ const Login = () => {
             <div>
               <div className="flex justify-between mb-1">
                 <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
-                <a href="#" className="text-xs text-blue-600 hover:text-blue-800">Forgot Password?</a>
+                <a onClick={() => navigate('/forgetPassword')} href="#" className="text-xs text-blue-600 hover:text-blue-800">Forgot Password?</a>
               </div>
               <div className="relative">
                 <input

@@ -12,7 +12,6 @@ const mailkey = "hneo ulux pgln lgts"
 exports.SignUpUser = async (req, res) => {
   try {
     const { firstname, lastname, email, password, gender, age } = req.body
-    console.log("email-------------->>>>>>", email);
     const isMailExists = await userModel.findOne({ email })
 
     if (isMailExists) {
@@ -60,7 +59,7 @@ exports.login = async (req, res) => {
   const { email, password } = req.body
   try {
 
-    const user = await userModel.findOne({ email, role: 'user' })
+    const user = await userModel.findOne({ email, role: 'user' || 'admin' })
 
     if (!user) {
       return res.status(404).json({ success: false, message: "Please sign up first to continue" })
@@ -105,10 +104,8 @@ exports.verifyOtp = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: "No user found please log in to continue" })
     }
-    console.log(user);
+
     const dbOtp = user.otp;
-    console.log("dbOPT------------->", dbOtp);
-    console.log("----userOTP------------>", user.otp);
     if (dbOtp != otp) {
       return res.status(200).json({ success: false, message: "OTP does not match" })
     }
@@ -130,5 +127,84 @@ exports.verifyOtp = async (req, res) => {
         message: "Login failed",
         error: error.message || "An unexpected error occurred"
       });
+  }
+}
+
+
+exports.forgetPassword = async (req, res) => {
+
+  const { email } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "No user found please log in to continue" })
+    }
+
+    const otp = Math.floor((Math.random() * 9000) + (1000 - 1))
+    const currTime = moment();
+    const otpTimer = currTime.clone().add(10, 'minute')
+
+    user.otp = otp
+    user.otpTimer = otpTimer
+    await user.save()
+
+    const emailSent = await sendOtpEmail(email, otp, user.firstname, SENDER_EMAIL, mailkey);
+    if (!emailSent) {
+      return res.status(500).json({ message: "Failed to send OTP email" });
+    }
+    return res.status(200).json({ success: true, message: "OTP sent to your email" });
+  } catch (error) {
+    console.log("Forget password error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to process request",
+      error: error.message || "An unexpected error occurred"
+    });
+  }
+}
+
+exports.resetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  console.log(email, otp, newPassword);
+
+  try {
+    const user = await userModel.findOne({ email })
+    if (!user) {
+      return res.status(404).json({ success: false, message: "No user found" });
+    }
+
+    const dbOtp = user.otp;
+    if (dbOtp != otp) {
+      return res.status(400).json({ success: false, message: "OTP does not match" });
+    }
+
+
+    const currentTime = moment();
+    const otpExpiry = moment(user.otpTimer);
+    if (currentTime.isAfter(otpExpiry)) {
+      return res.status(401).json({ success: false, message: "OTP has expired" });
+    }
+
+    // Hash the new password
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(newPassword, salt);
+
+    // Update password
+    user.password = hashedPassword;
+    user.otp = null;
+    user.otpTimer = null;
+    await user.save();
+
+    return res.status(200).json({ status: true, message: "Password Reset successfully" })
+
+  } catch (error) {
+    console.log("Reset password error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Password reset failed",
+      error: error.message || "An unexpected error occurred"
+    });
   }
 }

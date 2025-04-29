@@ -1,6 +1,7 @@
 import axios from 'axios/unsafe/axios.js';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import BASE_URL from '../api';
 
 const OtpValidation = () => {
   const [otp, setOtp] = useState(new Array(4).fill(''));
@@ -56,14 +57,15 @@ const OtpValidation = () => {
 
 
     try {
-      const response = await axios.post('http://localhost:5000/user/otp', {
+      const response = await axios.post(`${BASE_URL}/user/otp`, {
         email: email,
         otp: parseInt(enteredOtp)
       });
 
       if (response.data.success) {
         setLoading(false);
-        navigate('/dashboard');
+        navigate('/login')
+    
       } else {
         setError(response.data.message || 'Verification failed');
         setLoading(false);
