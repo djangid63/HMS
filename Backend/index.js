@@ -14,6 +14,7 @@ const mongoURL = process.env.MONGO_URL
 // ROUTERS
 const userRouter = require('./Routers/userRouter')
 const locationRouter = require('./Routers/locationRouter')
+const stateRouter = require('./Routers/stateRouter')
 
 
 
@@ -24,6 +25,7 @@ mongoose.connect(mongoURL)
 // Add your routes here
 app.use('/user', userRouter)
 app.use('/location', locationRouter)
+app.use('/state', stateRouter)
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)

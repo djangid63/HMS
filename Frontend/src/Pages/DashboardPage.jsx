@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
-import Location from '../Components/DashComponents/location';
+import Location from '../Components/DashComponents/Location';
+import State from '../Components/DashComponents/State'
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('location');
@@ -14,13 +15,13 @@ const Dashboard = () => {
     </div>
   );
 
-  // Get content based on active tab
   const getContent = () => {
-    // Return Location component when location tab is active
     if (activeTab === 'location') {
       return <Location />;
     }
-
+    else if (activeTab === 'state') {
+      return <State />
+    }
     // For other tabs, return the placeholder component
     return <ComponentPlaceholder title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} />;
   };
@@ -44,6 +45,16 @@ const Dashboard = () => {
               >
                 <FaHotel className="mr-3" />
                 <span>Dashboard</span>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveTab('state')}
+                className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'state' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                  }`}
+              >
+                <FaMapMarkerAlt className="mr-3" />
+                <span>State</span>
               </button>
             </li>
             <li>
