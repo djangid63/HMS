@@ -15,7 +15,7 @@ exports.addLocation = async (req, res) => {
 exports.getAllLocations = async (req, res) => {
   try {
     const locationData = await locationModel.find().populate('stateId');
-    console.log(locationData);
+    // console.log(locationData);
     return res.status(200).json({ status: true, message: "Location fetched Successfully", location: locationData })
   } catch (error) {
     console.log("Get location--------", error);
