@@ -4,19 +4,28 @@ import BASE_URL from '../../Utils/api';
 
 const Location = () => {
   const [formData, setFormData] = useState({
-    state: '',
-    city: ''
+    name: '',
+    code: ''
   });
 
   const [locations, setLocations] = useState([]);
-  const [sortField, setSortField] = useState('state');
+  const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
 
   const [editMode, setEditMode] = useState(false);
   const [currentId, setCurrentId] = useState(null);
 
+  const [active, setInactive] = useState(false)
   const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+
+  const token = localStorage.getItem('token')
+
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,8 +41,10 @@ const Location = () => {
 
   const getSortedLocations = () => {
     if (!locations.length) return [];
+
+
     const filteredLocations = locations.filter(location =>
-      location.state.toLowerCase().includes(searchTerm.toLowerCase())
+      location.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return [...filteredLocations].sort((a, b) => {
@@ -46,6 +57,8 @@ const Location = () => {
     });
   };
 
+
+
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -57,7 +70,7 @@ const Location = () => {
 
   const fetchLocations = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/location/getAllLocation`)
+      const response = await axios.get(`${BASE_URL}/location/getAllLocation`, config)
       setLocations(response.data.location)
     } catch (error) {
       console.error('Error fetching locations:', error);
@@ -80,24 +93,25 @@ const Location = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.state || !formData.city) {
+    if (!formData.name || !formData.code) {
       showAlert('error', 'Please fill all fields');
       return;
     }
 
     try {
       if (editMode) {
-        const response = await axios.patch(`${BASE_URL}/location/updateLocation/${currentId}`, formData);
+        const response = await axios.patch(`${BASE_URL}/location/updateLocation/${currentId}`, formData, config);
         if (response.data.success) {
           showAlert('success', 'Location updated successfully');
           fetchLocations();
         }
       } else {
-        const response = await axios.post(`${BASE_URL}/location/addLocation`, formData);
-        fetchLocations();
-        showAlert('success', 'Location created successfully');
+        const response = await axios.post(`${BASE_URL}/location/addLocation`, formData, config);
+        if (response.data.success) {
+          showAlert('success', 'Location Created successfully');
+          fetchLocations();
+        }
       }
-
       resetForm();
     } catch (error) {
       console.error('Error saving location:', error);
@@ -108,8 +122,8 @@ const Location = () => {
   // Edit location
   const handleEdit = (location) => {
     setFormData({
-      state: location.state,
-      city: location.city
+      name: location.name,
+      code: location.code
     });
     setEditMode(true);
     setCurrentId(location._id);
@@ -119,7 +133,7 @@ const Location = () => {
   const handleSoftDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this location?')) {
       try {
-        const response = await axios.delete(`${BASE_URL}/location/softDelete/${id}`);
+        const response = await axios.delete(`${BASE_URL}/location/softDelete/${id}`, config);
         showAlert('success', 'Successfully disabled the location');
         fetchLocations();
       } catch (error) {
@@ -131,9 +145,11 @@ const Location = () => {
   const handleHardDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this location?')) {
       try {
-        const response = await axios.delete(`${BASE_URL}/location/hardDelete/${id}`);
-        showAlert('success', 'Successfully Deleted the location');
-        fetchLocations();
+        const response = await axios.delete(`${BASE_URL}/location/hardDelete/${id}`, config);
+        if (response.data.success) {
+          showAlert('success', 'Successfully Deleted the location');
+          fetchLocations();
+        }
       } catch (error) {
         console.error('Error deleting location:', error);
         showAlert('error', 'Failed to delete location');
@@ -143,7 +159,7 @@ const Location = () => {
 
   // Reset form
   const resetForm = () => {
-    setFormData({ state: '', city: '' });
+    setFormData({ name: '', code: '' });
     setEditMode(false);
     setCurrentId(null);
   };
@@ -165,32 +181,32 @@ const Location = () => {
 
         <form onSubmit={handleSubmit} className="flex flex-wrap gap-4">
           <div className="w-full md:w-[calc(50%-0.5rem)]">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="state">
-              State
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+              name
             </label>
             <input
-              id="state"
-              name="state"
+              id="name"
+              name="name"
               type="text"
-              value={formData.state}
+              value={formData.name}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Enter state"
+              placeholder="Enter name"
             />
           </div>
 
           <div className="w-full md:w-[calc(50%-0.5rem)]">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="city">
-              City
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="code">
+              Code
             </label>
             <input
-              id="city"
-              name="city"
+              id="code"
+              name="code"
               type="text"
-              value={formData.city}
+              value={formData.code}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Enter city"
+              placeholder="Enter code"
             />
           </div>
 
@@ -223,7 +239,7 @@ const Location = () => {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search by state..."
+              placeholder="Search by name..."
               value={searchTerm}
               onChange={handleSearchChange}
               className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -242,18 +258,18 @@ const Location = () => {
             <thead>
               <tr>
                 <th
-                  onClick={() => handleSort('state')}
+                  onClick={() => handleSort('name')}
                   className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
                 >
-                  State {sortField === 'state' && (
+                  State {sortField === 'name' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
                 <th
-                  onClick={() => handleSort('city')}
+                  onClick={() => handleSort('code')}
                   className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
                 >
-                  City {sortField === 'city' && (
+                  City {sortField === 'code' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
@@ -266,8 +282,8 @@ const Location = () => {
               {getSortedLocations().length > 0 ? (
                 getSortedLocations().map((location) => (
                   <tr key={location._id} className="hover:bg-gray-50">
-                    <td className="py-4 px-4 whitespace-nowrap">{location.state}</td>
-                    <td className="py-4 px-4 whitespace-nowrap">{location.city}</td>
+                    <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
+                    <td className="py-4 px-4 whitespace-nowrap">{location.code}</td>
                     <td className="py-4 px-4 whitespace-nowrap text-right">
                       <button
                         onClick={() => handleEdit(location)}
@@ -279,13 +295,13 @@ const Location = () => {
                         onClick={() => handleSoftDelete(location._id)}
                         className="text-red-600 hover:text-red-900 px-4"
                       >
-                        Soft Delete
+
                       </button>
                       <button
                         onClick={() => handleHardDelete(location._id)}
                         className="text-red-600 hover:text-red-900"
                       >
-                        Hard Delete
+                        Delete
                       </button>
                     </td>
                   </tr>

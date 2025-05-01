@@ -1,10 +1,9 @@
 const locationModel = require('../Models/locationModel')
 
-
 exports.addLocation = async (req, res) => {
-  const { state, city } = req.body;
+  const { name, code } = req.body;
   try {
-    const locationData = new locationModel({ state, city })
+    const locationData = new locationModel({ name, code })
     const saveData = await locationData.save()
     return res.status(200).json({ status: true, message: "Location added successfully", updatedLocation: saveData })
   } catch (error) {
@@ -26,7 +25,7 @@ exports.getAllLocations = async (req, res) => {
 exports.updateLocation = async (req, res) => {
   try {
     const { id } = req.params;
-    const { state, city } = req.body;
+    const { name, code } = req.body;
 
     if (!id) {
       return res.status(400).json({ success: false, message: "Location ID is required" });
@@ -34,7 +33,7 @@ exports.updateLocation = async (req, res) => {
 
     const updatedLocation = await locationModel.findByIdAndUpdate(
       id,
-      { state, city },
+      { name, code },
       { new: true, }
     );
 
@@ -93,6 +92,7 @@ exports.softDelete = async (req, res) => {
     });
   }
 }
+
 exports.hardDelete = async (req, res) => {
   try {
     const { id } = req.params;

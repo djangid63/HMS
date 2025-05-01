@@ -1,6 +1,8 @@
+require('dotenv').config()
 const userModel = require('../Models/userModel')
 const jwt = require('jsonwebtoken')
-const secretKey = "abcsdalfhdslf"
+const secretKey = process.env.JWT_SECRET
+
 
 
 module.exports = async (req, res, next) => {
@@ -19,17 +21,14 @@ module.exports = async (req, res, next) => {
       const decodeToken = jwt.verify(token, secretKey);
 
       const user = await userModel.findOne({ email: decodeToken.email });
-
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
       req.user = user;
       next();
-
     } catch (jwtError) {
-      // Handle JWT-specific errors more gracefully
-      console.log("Invalid JWT token:", token.substring(0, 10) + "...");
+      console.log('Invalid JWT token');
       return res.status(401).json({ message: "Invalid token" });
     }
   } catch (error) {
