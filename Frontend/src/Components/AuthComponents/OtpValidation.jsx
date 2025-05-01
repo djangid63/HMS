@@ -1,7 +1,7 @@
 import axios from 'axios/unsafe/axios.js';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import BASE_URL from '../api';
+import BASE_URL from '../../Utils/api';
 
 const OtpValidation = () => {
   const [otp, setOtp] = useState(new Array(4).fill(''));
@@ -65,7 +65,7 @@ const OtpValidation = () => {
       if (response.data.success) {
         setLoading(false);
         navigate('/login')
-    
+
       } else {
         setError(response.data.message || 'Verification failed');
         setLoading(false);

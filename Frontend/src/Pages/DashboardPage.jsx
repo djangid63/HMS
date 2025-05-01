@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
-import Location from '../Components/DashboardComponents/location';
+import Location from '../Components/DashComponents/location';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('location');

@@ -6,6 +6,7 @@ const locationController = require('../Controllers/locationController')
 
 router.post('/addLocation', locationController.addLocation)
 router.get('/getAllLocation', locationController.getAllLocations)
+router.patch('/updateLocation/:id', locationController.updateLocation)
 router.delete('/softDelete/:id', locationController.softDelete)
 router.delete('/hardDelete/:id', locationController.hardDelete)
 

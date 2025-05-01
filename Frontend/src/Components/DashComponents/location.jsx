@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import BASE_URL from '../../api';
+import BASE_URL from '../../Utils/api';
 
 const Location = () => {
   const [formData, setFormData] = useState({
@@ -32,7 +32,6 @@ const Location = () => {
 
   const getSortedLocations = () => {
     if (!locations.length) return [];
-
     const filteredLocations = locations.filter(location =>
       location.state.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -70,7 +69,6 @@ const Location = () => {
     fetchLocations();
   }, [formData, setFormData]);
 
-  // fetchLocations()
   const showAlert = (type, message) => {
     setAlert({ show: true, type, message });
     // Hide alert after 3 seconds
@@ -89,18 +87,14 @@ const Location = () => {
 
     try {
       if (editMode) {
-        const response = await axios.patch(`${BASE_URL}/location/updateLocation/${currentId}`, formData)
-        setAlert("Location updated")
-        if (response.success) {
-          console.log('Updated')
+        const response = await axios.patch(`${BASE_URL}/location/updateLocation/${currentId}`, formData);
+        if (response.data.success) {
+          showAlert('success', 'Location updated successfully');
+          fetchLocations();
         }
       } else {
         const response = await axios.post(`${BASE_URL}/location/addLocation`, formData);
-        setAlert("Location created")
         fetchLocations();
-        if (response.success) {
-          console.log('created')
-        }
         showAlert('success', 'Location created successfully');
       }
 

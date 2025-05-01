@@ -1,7 +1,7 @@
 import axios from 'axios/unsafe/axios.js';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import BASE_URL from './../api';
+import BASE_URL from '../../Utils/api';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -28,13 +28,18 @@ const Login = () => {
       setLoading(true);
       const response = await axios.post(`${BASE_URL}/user/login`, formData)
       if (response.data.success) {
-        alert("Please enter the otp to continue")
         localStorage.setItem('token', response.data.token)
-        localStorage.setItem('user', JSON.stringify(response.data.role || {}));
-        navigate('/dashboard');
+        localStorage.setItem('user', JSON.stringify(response.data.role));
+        if (response.data.role === 'user') {
+          navigate('/user')
+        }
+        else {
+          navigate('/dashboard')
+        }
+
       }
     } catch (err) {
-      setError(err.message || 'Invalid email or password');
+      setError('Invalid email or password');
     } finally {
       setLoading(false);
     }

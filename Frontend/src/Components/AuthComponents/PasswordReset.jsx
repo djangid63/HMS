@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, { useState } from 'react'
-import BASE_URL from '../api'
+import BASE_URL from '../../Utils/api'
 
 const PasswordReset = () => {
   // State management for form

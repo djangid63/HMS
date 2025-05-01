@@ -11,7 +11,7 @@ const mailkey = "hneo ulux pgln lgts"
 
 exports.SignUpUser = async (req, res) => {
   try {
-    const { firstname, lastname, email, password, gender, age } = req.body
+    const { firstname, lastname, email, password, gender, age, role } = req.body
     const isMailExists = await userModel.findOne({ email })
 
     if (isMailExists) {
@@ -38,7 +38,7 @@ exports.SignUpUser = async (req, res) => {
       gender,
       age,
       password: hashedPassword,
-      role: 'user',
+      role: role || 'user',
       otp,
       otpTimer
     })
@@ -56,10 +56,10 @@ exports.SignUpUser = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body
   try {
-
-    const user = await userModel.findOne({ email, role: 'user' || 'admin' })
+    const { email, password } = req.body
+  
+    const user = await userModel.findOne({ email })
 
     if (!user) {
       return res.status(404).json({ success: false, message: "Please sign up first to continue" })
@@ -76,7 +76,6 @@ exports.login = async (req, res) => {
       return res.status(401).json({ success: false, message: "Password is incorrect" });
     }
 
-
     const token = jwt.sign({ email: user.email, role: user.role }, secretKey, { expiresIn: '1h' });
     return res.status(200).json({
       success: true,
@@ -84,7 +83,6 @@ exports.login = async (req, res) => {
       token,
       role: user.role
     });
-
   } catch (error) {
     console.log("Login error:", error);
     return res.status(500).json({
@@ -93,7 +91,6 @@ exports.login = async (req, res) => {
       error: error.message || "An unexpected error occurred"
     });
   }
-
 }
 
 exports.verifyOtp = async (req, res) => {
