@@ -14,7 +14,7 @@ exports.addLocation = async (req, res) => {
 
 exports.getAllLocations = async (req, res) => {
   try {
-    const locationData = await locationModel.find({ isDisable: false });
+    const locationData = await locationModel.find();
     return res.status(200).json({ status: true, message: "Location fetched Successfully", location: locationData })
   } catch (error) {
     console.log("Get location--------", error);
@@ -67,9 +67,18 @@ exports.softDelete = async (req, res) => {
       });
     }
 
+    const location = await locationModel.findById(id);
+
+    if (!location) {
+      return res.status(404).json({
+        success: false,
+        message: "Location not found"
+      });
+    }
+
     const disabledLocation = await locationModel.findByIdAndUpdate(
       id,
-      { isDisable: true },
+      { isDisable: !location.isDisable },
       { new: true }
     );
 

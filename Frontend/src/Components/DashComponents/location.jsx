@@ -16,7 +16,7 @@ const Location = () => {
   const [editMode, setEditMode] = useState(false);
   const [currentId, setCurrentId] = useState(null);
 
-  const [active, setInactive] = useState(false)
+  const [isDisable, setIsDisable] = useState(false)
   const [alert, setAlert] = useState({ show: false, type: '', message: '' });
 
   const token = localStorage.getItem('token')
@@ -39,11 +39,12 @@ const Location = () => {
     setSearchTerm(e.target.value);
   };
 
-  const getSortedLocations = () => {
+  const getActiveLocations = () => {
     if (!locations.length) return [];
 
+    const activeLocations = locations.filter(location => !location.isDisable);
 
-    const filteredLocations = locations.filter(location =>
+    const filteredLocations = activeLocations.filter(location =>
       location.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -57,7 +58,24 @@ const Location = () => {
     });
   };
 
+  const getInactiveLocations = () => {
+    if (!locations.length) return [];
 
+    const inactiveLocations = locations.filter(location => location.isDisable);
+
+    const filteredLocations = inactiveLocations.filter(location =>
+      location.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return [...filteredLocations].sort((a, b) => {
+      const aValue = String(a[sortField] || '').toLowerCase();
+      const bValue = String(b[sortField] || '').toLowerCase();
+
+      return sortDirection === 'asc'
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    });
+  };
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -72,6 +90,7 @@ const Location = () => {
     try {
       const response = await axios.get(`${BASE_URL}/location/getAllLocation`, config)
       setLocations(response.data.location)
+      console.log(response.data.location);
     } catch (error) {
       console.error('Error fetching locations:', error);
       showAlert('error', 'Failed to load locations');
@@ -131,14 +150,15 @@ const Location = () => {
 
   // Delete location
   const handleSoftDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this location?')) {
+    if (window.confirm('Are you sure you want to change the status of this location?')) {
       try {
         const response = await axios.delete(`${BASE_URL}/location/softDelete/${id}`, config);
-        showAlert('success', 'Successfully disabled the location');
+        showAlert('success', 'Successfully changed the location status');
         fetchLocations();
+        setIsDisable(!isDisable)
       } catch (error) {
-        console.error('Error deleting location:', error);
-        showAlert('error', 'Failed to delete location');
+        console.error('Error updating location status:', error);
+        showAlert('error', 'Failed to update location status');
       }
     }
   };
@@ -174,7 +194,7 @@ const Location = () => {
       )}
 
       {/* Form section (25% height) */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6" style={{ flex: '0 0 25%' }}>
+      <div className="bg-white rounded-lg shadow p-6 mb-6" style={{ flex: '0 0 auto' }}>
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
           {editMode ? 'Edit Location' : 'Add New Location'}
         </h2>
@@ -230,10 +250,12 @@ const Location = () => {
         </form>
       </div>
 
-      {/* Data table section (75% height) */}
-      <div className="bg-white rounded-lg shadow p-6 overflow-auto" style={{ flex: '1' }}>
+      {/* Data table section */}
+      <div className="bg-white rounded-lg shadow p-6 overflow-auto mb-6" style={{ flex: '1' }}>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-800">Locations</h2>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">Active Locations</h2>
+          </div>
 
           {/* Search input */}
           <div className="relative">
@@ -279,8 +301,8 @@ const Location = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {getSortedLocations().length > 0 ? (
-                getSortedLocations().map((location) => (
+              {getActiveLocations().length > 0 ? (
+                getActiveLocations().map((location) => (
                   <tr key={location._id} className="hover:bg-gray-50">
                     <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
                     <td className="py-4 px-4 whitespace-nowrap">{location.code}</td>
@@ -293,9 +315,9 @@ const Location = () => {
                       </button>
                       <button
                         onClick={() => handleSoftDelete(location._id)}
-                        className="text-red-600 hover:text-red-900 px-4"
+                        className="text-yellow-600 hover:text-yellow-900 px-4"
                       >
-
+                        Deactivate
                       </button>
                       <button
                         onClick={() => handleHardDelete(location._id)}
@@ -309,7 +331,80 @@ const Location = () => {
               ) : (
                 <tr>
                   <td colSpan="3" className="py-4 px-4 text-center text-gray-500">
-                    No locations found
+                    No active locations found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Inactive Locations table section */}
+      <div className="bg-white rounded-lg shadow p-6 overflow-auto" style={{ flex: '1' }}>
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">Inactive Locations</h2>
+          </div>
+        </div>
+
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-full bg-white">
+            <thead>
+              <tr>
+                <th
+                  onClick={() => handleSort('name')}
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
+                >
+                  State {sortField === 'name' && (
+                    <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </th>
+                <th
+                  onClick={() => handleSort('code')}
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
+                >
+                  City {sortField === 'code' && (
+                    <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </th>
+                <th className="py-3 px-4 bg-gray-100 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {getInactiveLocations().length > 0 ? (
+                getInactiveLocations().map((location) => (
+                  <tr key={location._id} className="hover:bg-gray-50">
+                    <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
+                    <td className="py-4 px-4 whitespace-nowrap">{location.code}</td>
+                    <td className="py-4 px-4 whitespace-nowrap text-right">
+                      <button
+                        onClick={() => handleEdit(location)}
+                        className="text-blue-600 hover:text-blue-900 mr-3"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleSoftDelete(location._id)}
+                        className="text-green-600 hover:text-green-900 px-4"
+                      >
+                        Activate
+                      </button>
+                      <button
+                        onClick={() => handleHardDelete(location._id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="py-4 px-4 text-center text-gray-500">
+                    No inactive locations found
                   </td>
                 </tr>
               )}
