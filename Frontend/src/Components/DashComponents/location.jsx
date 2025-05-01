@@ -5,9 +5,10 @@ import BASE_URL from '../../Utils/api';
 const Location = () => {
   const [formData, setFormData] = useState({
     name: '',
-    code: ''
+    stateId: ''
   });
 
+  const [states, setStates] = useState([]);
   const [locations, setLocations] = useState([]);
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
@@ -90,16 +91,28 @@ const Location = () => {
     try {
       const response = await axios.get(`${BASE_URL}/location/getAllLocation`, config)
       setLocations(response.data.location)
-      console.log(response.data.location);
+      console.log("locations", response.data.location.map((val) => val));
     } catch (error) {
       console.error('Error fetching locations:', error);
       showAlert('error', 'Failed to load locations');
     }
   };
 
+  const fetchStates = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/state/getAllState`, config);
+      setStates(response.data.state);
+      console.log("States:", response.data.state);
+    } catch (error) {
+      console.error('Error fetching states:', error);
+      showAlert('error', 'Failed to load states');
+    }
+  };
+
   useEffect(() => {
     fetchLocations();
-  }, [formData, setFormData]);
+    fetchStates();
+  }, []);
 
   const showAlert = (type, message) => {
     setAlert({ show: true, type, message });
@@ -112,7 +125,7 @@ const Location = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.code) {
+    if (!formData.name || !formData.stateId) {
       showAlert('error', 'Please fill all fields');
       return;
     }
@@ -142,7 +155,7 @@ const Location = () => {
   const handleEdit = (location) => {
     setFormData({
       name: location.name,
-      code: location.code
+      stateId: location.stateId || ''
     });
     setEditMode(true);
     setCurrentId(location._id);
@@ -179,7 +192,7 @@ const Location = () => {
 
   // Reset form
   const resetForm = () => {
-    setFormData({ name: '', code: '' });
+    setFormData({ name: '', stateId: '' });
     setEditMode(false);
     setCurrentId(null);
   };
@@ -202,7 +215,7 @@ const Location = () => {
         <form onSubmit={handleSubmit} className="flex flex-wrap gap-4">
           <div className="w-full md:w-[calc(50%-0.5rem)]">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-              name
+              Name
             </label>
             <input
               id="name"
@@ -216,18 +229,23 @@ const Location = () => {
           </div>
 
           <div className="w-full md:w-[calc(50%-0.5rem)]">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="code">
-              Code
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="stateId">
+              Select State
             </label>
-            <input
-              id="code"
-              name="code"
-              type="text"
-              value={formData.code}
+            <select
+              id="stateId"
+              name="stateId"
+              value={formData.stateId}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Enter code"
-            />
+            >
+              <option value="">Select State</option>
+              {states.map((state) => (
+                <option key={state._id} value={state._id}>
+                  {state.state}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="w-full flex justify-end space-x-2 mt-4">
@@ -283,15 +301,15 @@ const Location = () => {
                   onClick={() => handleSort('name')}
                   className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
                 >
-                  State {sortField === 'name' && (
+                  Location Name {sortField === 'name' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
                 <th
-                  onClick={() => handleSort('code')}
+                  onClick={() => handleSort('stateId')}
                   className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
                 >
-                  City {sortField === 'code' && (
+                  State {sortField === 'stateId' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
@@ -305,7 +323,9 @@ const Location = () => {
                 getActiveLocations().map((location) => (
                   <tr key={location._id} className="hover:bg-gray-50">
                     <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
-                    <td className="py-4 px-4 whitespace-nowrap">{location.code}</td>
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      {location.stateId.state || 'Unknown State'}
+                    </td>
                     <td className="py-4 px-4 whitespace-nowrap text-right">
                       <button
                         onClick={() => handleEdit(location)}
@@ -356,15 +376,15 @@ const Location = () => {
                   onClick={() => handleSort('name')}
                   className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
                 >
-                  State {sortField === 'name' && (
+                  Location Name {sortField === 'name' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
                 <th
-                  onClick={() => handleSort('code')}
+                  onClick={() => handleSort('stateId')}
                   className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
                 >
-                  City {sortField === 'code' && (
+                  State {sortField === 'stateId' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
@@ -378,7 +398,9 @@ const Location = () => {
                 getInactiveLocations().map((location) => (
                   <tr key={location._id} className="hover:bg-gray-50">
                     <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
-                    <td className="py-4 px-4 whitespace-nowrap">{location.code}</td>
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      {states.find(state => state._id === location.stateId)?.state || 'Unknown State'}
+                    </td>
                     <td className="py-4 px-4 whitespace-nowrap text-right">
                       <button
                         onClick={() => handleEdit(location)}

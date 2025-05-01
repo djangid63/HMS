@@ -88,7 +88,7 @@ const State = () => {
 
   const fetchLocations = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/state/getAllLocation`, config)
+      const response = await axios.get(`${BASE_URL}/state/getAllState`, config)
       setState(response.data.state)
       console.log(response.data.state);
     } catch (error) {
@@ -119,13 +119,13 @@ const State = () => {
 
     try {
       if (editMode) {
-        const response = await axios.patch(`${BASE_URL}/state/updateLocation/${currentId}`, formData, config);
+        const response = await axios.patch(`${BASE_URL}/state/updateState/${currentId}`, formData, config);
         if (response.data.success) {
           showAlert('success', 'State updated successfully');
           fetchLocations();
         }
       } else {
-        const response = await axios.post(`${BASE_URL}/state/addLocation`, formData, config);
+        const response = await axios.post(`${BASE_URL}/state/addState`, formData, config);
         if (response.data.status) {
           showAlert('success', 'State Created successfully');
           fetchLocations();

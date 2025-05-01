@@ -1,6 +1,6 @@
 const stateModel = require('../Models/stateModel')
 
-exports.addLocation = async (req, res) => {
+exports.addState = async (req, res) => {
   const { state, code } = req.body;
   try {
     const stateData = new stateModel({ state, code })
@@ -12,7 +12,7 @@ exports.addLocation = async (req, res) => {
   }
 }
 
-exports.getAllLocations = async (req, res) => {
+exports.getAllStates = async (req, res) => {
   try {
     const stateData = await stateModel.find();
     return res.status(200).json({ status: true, message: "State fetched Successfully", state: stateData })
@@ -22,7 +22,7 @@ exports.getAllLocations = async (req, res) => {
   }
 }
 
-exports.updateLocation = async (req, res) => {
+exports.updateState = async (req, res) => {
   try {
     const { id } = req.params;
     const { state, code } = req.body;

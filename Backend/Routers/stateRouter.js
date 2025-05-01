@@ -5,9 +5,9 @@ const auth = require('../Middleware/auth')
 const stateController = require('../Controllers/stateController')
 
 
-router.post('/addLocation', auth, stateController.addLocation)
-router.get('/getAllLocation', auth, stateController.getAllLocations)
-router.patch('/updateLocation/:id', auth, stateController.updateLocation)
+router.post('/addState', auth, stateController.addState)
+router.get('/getAllState', auth, stateController.getAllStates)
+router.patch('/updateState/:id', auth, stateController.updateState)
 router.delete('/softDelete/:id', auth, stateController.softDelete)
 router.delete('/hardDelete/:id', auth, stateController.hardDelete)
 

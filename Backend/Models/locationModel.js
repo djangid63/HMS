@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const locationSchema = new Schema({
   stateId: {
     type: Schema.Types.ObjectId,
-    ref: 'state'
+    ref: 'states'
   },
   name: {
     type: String,
