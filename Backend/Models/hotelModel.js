@@ -3,10 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const hotelSchema = new Schema({
-  locationId: {
-    type: Schema.Types.ObjectId,
-    ref: 'locations'
-  },
+
   name: {
     type: String,
     require: true,
@@ -34,6 +31,10 @@ const hotelSchema = new Schema({
   isDisable: {
     type: Boolean,
     default: false,
+  },
+  locationId: {
+    type: Schema.Types.ObjectId,
+    ref: 'locations'
   }
 }, { timestamps: true, versionKey: false })
 

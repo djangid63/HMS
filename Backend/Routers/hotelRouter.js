@@ -10,8 +10,8 @@ router.get('/getAll', auth, hotelController.getAllHotel)
 router.put('/update/:id', auth, hotelController.updateHotel)
 router.delete('/delete/:id', auth, hotelController.deleteHotel)
 // Keeping the original routes for backwards compatibility
-router.patch('/updateHotel/:id', auth, hotelController.updateHotel)
-router.delete('/softDelete/:id', auth, hotelController.softDelete)
-router.delete('/hardDelete/:id', auth, hotelController.hardDelete)
+// router.patch('/updateHotel/:id', auth, hotelController.updateHotel)
+// router.delete('/softDelete/:id', auth, hotelController.softDelete)
+// router.delete('/hardDelete/:id', auth, hotelController.hardDelete)
 
 module.exports = router;

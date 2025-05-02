@@ -85,7 +85,7 @@ const Room = () => {
 
     try {
       if (isEditing) {
-        await axios.put(`${BASE_URL}/room/update/${editId}`, formData, config);
+        await axios.patch(`${BASE_URL}/room/update/${editId}`, formData, config);
       } else {
         await axios.post(`${BASE_URL}/room/add`, formData, config);
       }
@@ -113,14 +113,14 @@ const Room = () => {
 
   const handleEdit = (room) => {
     setFormData({
-      roomNumber: room.roomNumber,
-      hotelId: room.hotelId,
-      type: room.type,
-      capacity: room.capacity,
-      price: room.price,
+      roomNumber: room.roomNumber || '',
+      hotelId: room.hotelId || '',
+      type: room.type || '',
+      capacity: room.capacity || 1,
+      price: room.price || 0,
       amenities: room.amenities || [],
-      isAvailable: room.isAvailable,
-      isActive: room.isActive,
+      isAvailable: room.isAvailable !== undefined ? room.isAvailable : true,
+      isActive: room.isActive !== undefined ? room.isActive : true,
       description: room.description || '',
       imageUrls: room.imageUrls || []
     });
@@ -137,6 +137,16 @@ const Room = () => {
       console.error('Error deleting room:', error);
     }
   };
+
+  const handleDisable = async (id) => {
+    try {
+      await axios.delete(`${BASE_URL}/room/disable/${id}`, config);
+      fetchRooms();
+    } catch (error) {
+      console.error('Error disabling the room:', error);
+    }
+  };
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">

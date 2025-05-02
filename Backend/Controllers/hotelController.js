@@ -13,8 +13,14 @@ exports.addHotel = async (req, res) => {
 
 exports.getAllHotel = async (req, res) => {
   try {
-    const hotelData = await hotelModel.find().populate('locationId');
-    return res.status(200).json({ status: true, message: "Hotels fetched Successfully", data: hotelData })
+    const hotelData = await hotelModel.find().populate({
+      path: 'locationId',
+      populate: {
+        path: 'stateId',
+        model: 'states'
+      }
+    });
+    return res.status(200).json({ success: true, message: "Hotels fetched Successfully", data: hotelData })
   } catch (error) {
     console.log("Get hotel--------", error);
     return res.status(401).json({ success: false, message: `Failed to get hotels, ${error}` });

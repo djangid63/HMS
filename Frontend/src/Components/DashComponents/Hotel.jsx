@@ -71,6 +71,7 @@ const Hotel = () => {
   const fetchHotels = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/hotel/getAll`, config);
+      console.log("Hotel fetch--------->", response.data.data);
       setHotels(response.data.data || []);
     } catch (error) {
       console.error('Error fetching hotels:', error);
@@ -322,7 +323,8 @@ const Hotel = () => {
                 hotels.map(hotel => (
                   <tr key={hotel._id}>
                     <td className="px-6 py-4 whitespace-nowrap">{hotel.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{hotel.address}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {`${hotel.address}, ${hotel.locationId.stateId.state}, ${hotel.locationId.name}`}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{hotel.room}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{hotel.contactNo}</td>
                     <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
