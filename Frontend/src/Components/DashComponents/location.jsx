@@ -92,7 +92,7 @@ const Location = () => {
     try {
       const response = await axios.get(`${BASE_URL}/location/getAllLocation`, config)
       setLocations(response.data.location)
-      console.log("locations", response.data.location.map((val) => val));
+      // console.log("locations", response.data.location.map((val) => val));
     } catch (error) {
       console.error('Error fetching locations:', error);
       showAlert('error', 'Failed to load locations');
@@ -106,7 +106,7 @@ const Location = () => {
     try {
       const response = await axios.get(`${BASE_URL}/state/getAllState`, config);
       setStates(response.data.state);
-      console.log("States:", response.data.state);
+      // console.log("States:", response.data.state);
     } catch (error) {
       console.error('Error fetching states:', error);
       showAlert('error', 'Failed to load states');

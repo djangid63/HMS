@@ -90,7 +90,7 @@ const State = () => {
     try {
       const response = await axios.get(`${BASE_URL}/state/getAllState`, config)
       setState(response.data.state)
-      console.log(response.data.state);
+      // console.log(response.data.state);
     } catch (error) {
       console.error('Error fetching state:', error);
       showAlert('error', 'Failed to load state');

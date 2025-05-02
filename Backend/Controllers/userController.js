@@ -58,7 +58,7 @@ exports.SignUpUser = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body
-  
+
     const user = await userModel.findOne({ email })
 
     if (!user) {
@@ -75,8 +75,12 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ success: false, message: "Password is incorrect" });
     }
+    // Token With expiry timer
+    // const token = jwt.sign({ email: user.email, role: user.role }, secretKey, { expiresIn: '1h' });
 
-    const token = jwt.sign({ email: user.email, role: user.role }, secretKey, { expiresIn: '1h' });
+    // Token Without expiry timer
+    const token = jwt.sign({ email: user.email, role: user.role }, secretKey);
+
     return res.status(200).json({
       success: true,
       message: "Login successful",

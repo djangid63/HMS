@@ -14,9 +14,13 @@ const Hotel = () => {
   });
 
   const [states, setStates] = useState([]);
+
   const [locations, setLocations] = useState([]);
-  const [selectedState, setSelectedState] = useState('');
+
   const [hotels, setHotels] = useState([]);
+
+
+  const [selectedState, setSelectedState] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
@@ -45,7 +49,7 @@ const Hotel = () => {
     try {
       const response = await axios.get(`${BASE_URL}/state/getAllState`, config);
       setStates(response.data.state);
-      console.log("States:", response.data.state);
+      // console.log("States:", response.data.state);
     } catch (error) {
       console.error('Error fetching states:', error);
       alert('error', 'Failed to load states');
@@ -53,9 +57,11 @@ const Hotel = () => {
   };
 
   const fetchLocations = async (stateId) => {
+    // console.log("stateId------>", stateId);
     try {
-      const response = await axios.get(`${BASE_URL}/location/getLocation/${stateId}`);
-      setLocations(response.data.data);
+      const response = await axios.get(`${BASE_URL}/location/getLocation/${stateId}`, config);
+      // console.log(response.data);
+      setLocations(response.data.location);
     } catch (error) {
       console.error('Error fetching locations:', error);
     }
@@ -63,7 +69,7 @@ const Hotel = () => {
 
   const fetchHotels = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/hotel/getAll`);
+      const response = await axios.get(`${BASE_URL}/hotel/getAll`, config);
       setHotels(response.data.data || []);
     } catch (error) {
       console.error('Error fetching hotels:', error);

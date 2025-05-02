@@ -22,11 +22,12 @@ exports.getAllLocations = async (req, res) => {
     return res.status(401).json({ success: false, message: `Failed to get location, ${error}` });
   }
 }
-exports.getLocations = async (req, res) => {
+exports.getLocation = async (req, res) => {
+  console.log(req.params);
   try {
     const { stateId } = req.params
-    const locationData = await locationModel.findById(stateId).populate('stateId');
-    console.log(locationData);
+    const locationData = await locationModel.find({ stateId }).populate('stateId');
+    console.log("all the location", locationData);
     return res.status(200).json({ status: true, message: "Location fetched Successfully", location: locationData })
   } catch (error) {
     console.log("Get location--------", error);
