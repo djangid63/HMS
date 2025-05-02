@@ -10,6 +10,7 @@ const Location = () => {
 
   const [states, setStates] = useState([]);
   const [locations, setLocations] = useState([]);
+
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,6 +99,9 @@ const Location = () => {
     }
   };
 
+
+
+
   const fetchStates = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/state/getAllState`, config);
@@ -108,6 +112,8 @@ const Location = () => {
       showAlert('error', 'Failed to load states');
     }
   };
+
+
 
   useEffect(() => {
     fetchLocations();
@@ -241,9 +247,12 @@ const Location = () => {
             >
               <option value="">Select State</option>
               {states.map((state) => (
+
                 <option key={state._id} value={state._id}>
                   {state.state}
                 </option>
+
+
               ))}
             </select>
           </div>
