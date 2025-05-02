@@ -26,7 +26,7 @@ mongoose.connect(mongoURL)
 app.use('/user', userRouter)
 app.use('/location', locationRouter)
 app.use('/state', stateRouter)
-app.use('hotel', hotelRouter)
+app.use('/hotel', hotelRouter)
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)

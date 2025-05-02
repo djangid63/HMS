@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Location from '../Components/DashComponents/Location';
+import Location from '../Components/DashComponents/location';
+import Room from '../Components/DashComponents/Room'
 import State from '../Components/DashComponents/State'
 import Hotel from './../Components/DashComponents/Hotel';
 import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
@@ -25,6 +26,9 @@ const Dashboard = () => {
     }
     else if (activeTab === 'addHotel') {
       return <Hotel />
+    }
+    else if (activeTab === 'addRooms') {
+      return <Room />
     }
     return <ComponentPlaceholder title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} />;
   };
@@ -83,8 +87,8 @@ const Dashboard = () => {
             </li>
             <li>
               <button
-                onClick={() => setActiveTab('rooms')}
-                className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'rooms' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                onClick={() => setActiveTab('addRooms')}
+                className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'addRooms' ? 'bg-blue-600' : 'hover:bg-gray-700'
                   }`}
               >
                 <FaBed className="mr-3" />

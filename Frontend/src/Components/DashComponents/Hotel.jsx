@@ -60,7 +60,8 @@ const Hotel = () => {
     // console.log("stateId------>", stateId);
     try {
       const response = await axios.get(`${BASE_URL}/location/getLocation/${stateId}`, config);
-      // console.log(response.data);
+
+      console.log("State list from hotel 64 ", response.data.location);
       setLocations(response.data.location);
     } catch (error) {
       console.error('Error fetching locations:', error);
@@ -92,9 +93,9 @@ const Hotel = () => {
 
     try {
       if (isEditing) {
-        await axios.put(`${BASE_URL}/hotel/update/${editId}`, formData);
+        await axios.put(`${BASE_URL}/hotel/update/${editId}`, formData, config);
       } else {
-        await axios.post(`${BASE_URL}/hotel/add`, formData);
+        await axios.post(`${BASE_URL}/hotel/add`, formData, config);
       }
 
       setFormData({
@@ -138,7 +139,7 @@ const Hotel = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${BASE_URL}/hotel/delete/${id}`);
+      await axios.delete(`${BASE_URL}/hotel/delete/${id}`, config);
       fetchHotels();
     } catch (error) {
       console.error('Error deleting hotel:', error);

@@ -1,8 +1,8 @@
 const locationModel = require('../Models/locationModel')
 
 exports.addLocation = async (req, res) => {
-  const { name, code, stateId } = req.body;
   try {
+    const { name, code, stateId } = req.body;
     const locationData = new locationModel({ name, code, stateId })
     const saveData = await locationData.save()
     return res.status(200).json({ status: true, message: "Location added successfully", updatedLocation: saveData })
@@ -23,11 +23,10 @@ exports.getAllLocations = async (req, res) => {
   }
 }
 exports.getLocation = async (req, res) => {
-  console.log(req.params);
   try {
-    const { stateId } = req.params
-    const locationData = await locationModel.find({ stateId }).populate('stateId');
-    console.log("all the location", locationData);
+    const { id } = req.params;
+    const locationData = await locationModel.find({ stateId: id }).populate('stateId');
+    console.log("locations filtered by stateId:", locationData);
     return res.status(200).json({ status: true, message: "Location fetched Successfully", location: locationData })
   } catch (error) {
     console.log("Get location--------", error);
