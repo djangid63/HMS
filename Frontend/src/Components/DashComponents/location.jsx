@@ -324,7 +324,7 @@ const Location = () => {
                   <tr key={location._id} className="hover:bg-gray-50">
                     <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
                     <td className="py-4 px-4 whitespace-nowrap">
-                      {location.stateId.state || 'Unknown State'}
+                      {typeof location.stateId === "object" && location.stateId ? location.stateId.state : 'Unknown State'}
                     </td>
                     <td className="py-4 px-4 whitespace-nowrap text-right">
                       <button

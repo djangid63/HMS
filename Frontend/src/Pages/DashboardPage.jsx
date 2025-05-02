@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import Location from '../Components/DashComponents/Location';
 import State from '../Components/DashComponents/State'
+import Hotel from './../Components/DashComponents/Hotel';
+import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('location');
+  const [activeTab, setActiveTab] = useState('Dashboard');
 
   // Simple placeholder component that shows when a sidebar option is clicked
   const ComponentPlaceholder = ({ title }) => (
@@ -22,9 +23,12 @@ const Dashboard = () => {
     else if (activeTab === 'state') {
       return <State />
     }
-    // For other tabs, return the placeholder component
+    else if (activeTab === 'addHotel') {
+      return <Hotel />
+    }
     return <ComponentPlaceholder title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} />;
   };
+
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -65,6 +69,16 @@ const Dashboard = () => {
               >
                 <FaMapMarkerAlt className="mr-3" />
                 <span>Location</span>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveTab('addHotel')}
+                className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'addHotel' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                  }`}
+              >
+                <FaMapMarkerAlt className="mr-3" />
+                <span>Add Hotel</span>
               </button>
             </li>
             <li>
