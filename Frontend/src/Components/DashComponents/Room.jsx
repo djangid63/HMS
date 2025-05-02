@@ -156,7 +156,7 @@ const Room = () => {
     try {
       const hotel = hotels.find(h => h._id === room.hotelId);
       if (hotel) {
-        // console.log("hotel---------->>>>", hotel);
+        console.log("hotel---------->>>>", hotel);
         setHotelDetails(hotel);
         setShowModal(true);
       }

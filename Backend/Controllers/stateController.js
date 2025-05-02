@@ -1,4 +1,5 @@
 const stateModel = require('../Models/stateModel')
+const locationModel = require('../Models/locationModel')
 
 exports.addState = async (req, res) => {
   const { state, code } = req.body;
@@ -14,7 +15,7 @@ exports.addState = async (req, res) => {
 
 exports.getAllStates = async (req, res) => {
   try {
-    const stateData = await stateModel.find();
+    const stateData = await stateModel.find({ isDisable: false });
     return res.status(200).json({ status: true, message: "State fetched Successfully", state: stateData })
   } catch (error) {
     console.log("Get state--------", error);
@@ -68,6 +69,7 @@ exports.softDelete = async (req, res) => {
     }
 
     const state = await stateModel.findById(id);
+    // console.log("state by stateCon 71", state);
 
     if (!state) {
       return res.status(404).json({
@@ -88,6 +90,13 @@ exports.softDelete = async (req, res) => {
         message: "State not found"
       });
     }
+
+    // Update locations with the same isDisable value as the state
+    const disableLocation = await locationModel.updateMany(
+      { stateId: id },
+      { isDisable: disabledLocation.isDisable }
+    );
+    console.log("disableLoaciton---------------", disableLocation);
 
     return res.status(200).json({
       success: true,

@@ -26,7 +26,7 @@ exports.getLocation = async (req, res) => {
   try {
     const { id } = req.params;
     const locationData = await locationModel.find({ stateId: id }).populate('stateId');
-    console.log("locations filtered by stateId:", locationData);
+    // console.log("locations filtered by stateId:", locationData);
     return res.status(200).json({ status: true, message: "Location fetched Successfully", location: locationData })
   } catch (error) {
     console.log("Get location--------", error);
