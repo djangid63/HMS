@@ -17,6 +17,7 @@ const State = () => {
   const [currentId, setCurrentId] = useState(null);
 
   const [isDisable, setIsDisable] = useState(false)
+  const [disableState, setIsDisableState] = useState([])
   const [alert, setAlert] = useState({ show: false, type: '', message: '' });
 
   const token = localStorage.getItem('token')
@@ -90,7 +91,8 @@ const State = () => {
     try {
       const response = await axios.get(`${BASE_URL}/state/getAllState`, config)
       setState(response.data.state)
-      // console.log(response.data.state);
+      setIsDisableState(response.data.disabledState)
+      console.log(response.data.disabledState);
     } catch (error) {
       console.error('Error fetching state:', error);
       showAlert('error', 'Failed to load state');
@@ -374,8 +376,10 @@ const State = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {getInactiveLocations().length > 0 ? (
-                getInactiveLocations().map((state) => (
+              {disableState.length > 0 ? (
+                disableState.map((state) => (
+                  /* {getInactiveLocations().length > 0 ? (
+                    getInactiveLocations().map((state) => ( */
                   <tr key={state._id} className="hover:bg-gray-50">
                     <td className="py-4 px-4 whitespace-nowrap">{state.state}</td>
                     <td className="py-4 px-4 whitespace-nowrap">{state.code}</td>

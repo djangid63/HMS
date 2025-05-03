@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Location from '../Components/DashComponents/location';
 import Room from '../Components/DashComponents/Room'
 import State from '../Components/DashComponents/State'
 import Hotel from './../Components/DashComponents/Hotel';
 import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
+  const navigate = useNavigate()
 
+  
   // Simple placeholder component that shows when a sidebar option is clicked
   const ComponentPlaceholder = ({ title }) => (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -33,6 +36,10 @@ const Dashboard = () => {
     return <ComponentPlaceholder title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} />;
   };
 
+  const logOut = () => {
+    localStorage.clear()
+    navigate('/login')
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -159,7 +166,7 @@ const Dashboard = () => {
         </nav>
 
         <div className="p-4 border-t border-gray-700">
-          <button className="flex items-center w-full py-2 px-4 rounded-lg hover:bg-gray-700 text-left">
+          <button onClick={logOut} className="flex items-center w-full py-2 px-4 rounded-lg hover:bg-gray-700 text-left">
             <FaSignOutAlt className="mr-3" />
             <span>Logout</span>
           </button>

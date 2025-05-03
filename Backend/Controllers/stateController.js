@@ -15,8 +15,9 @@ exports.addState = async (req, res) => {
 
 exports.getAllStates = async (req, res) => {
   try {
+    const stateDisabled = await stateModel.find({ isDisable: true })
     const stateData = await stateModel.find({ isDisable: false });
-    return res.status(200).json({ status: true, message: "State fetched Successfully", state: stateData })
+    return res.status(200).json({ status: true, message: "State fetched Successfully", state: stateData, disabledState: stateDisabled })
   } catch (error) {
     console.log("Get state--------", error);
     return res.status(401).json({ success: false, message: `Failed to get state, ${error}` });
@@ -27,6 +28,14 @@ exports.updateState = async (req, res) => {
   try {
     const { id } = req.params;
     const { state, code } = req.body;
+
+    const existing = await stateModel.findOne({ state: req.body.state });
+
+    if (existing) {
+      console.log("exists");
+      return res.status(400).json({ message: "State already exists" });
+    }
+
 
     if (!id) {
       return res.status(400).json({ success: false, message: "State ID is required" });
