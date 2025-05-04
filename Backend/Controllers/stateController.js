@@ -9,7 +9,7 @@ exports.addState = async (req, res) => {
     if (existing) {
       return res.status(400).json({ message: "State already exists" });
     }
-    
+
     const stateData = new stateModel({ state, code })
     const saveData = await stateData.save()
     return res.status(200).json({ status: true, message: "State added successfully", updatedState: saveData })

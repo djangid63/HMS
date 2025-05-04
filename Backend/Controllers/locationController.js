@@ -1,8 +1,13 @@
-const locationModel = require('../Models/locationModel')
+const locationModel = require('../Models/locationModel');
 
 exports.addLocation = async (req, res) => {
   try {
     const { name, code, stateId } = req.body;
+    const existingLocation = await locationModel.findOne({ name })
+
+    if (existingLocation) {
+      return res.status(409).json({ success: false, message: "Location already exists" })
+    }
     const locationData = new locationModel({ name, code, stateId })
     const saveData = await locationData.save()
     return res.status(200).json({ status: true, message: "Location added successfully", updatedLocation: saveData })
@@ -38,6 +43,12 @@ exports.updateLocation = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, code } = req.body;
+
+    const existingLocation = await locationModel.findOne({ name })
+
+    if (existingLocation) {
+      return res.status(409).json({ success: false, message: "Location already exists" })
+    }
 
     if (!id) {
       return res.status(400).json({ success: false, message: "Location ID is required" });

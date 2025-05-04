@@ -19,6 +19,10 @@ const Hotel = () => {
 
   const [hotels, setHotels] = useState([]);
 
+  // New state variables for search and sort
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortField, setSortField] = useState('name');
+  const [sortDirection, setSortDirection] = useState('asc');
 
   const [selectedState, setSelectedState] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -156,6 +160,42 @@ const Hotel = () => {
         <h2 className="text-xl font-semibold mb-4">{isEditing ? 'Edit Hotel' : 'Add New Hotel'}</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className='flex w-full gap-4'>
+            {/* State Selection */}
+            <div className='w-1/2'>
+              <label className="block text-sm font-medium text-gray-700">State</label>
+              <select
+                value={selectedState}
+                onChange={handleStateChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                required
+              >
+                <option value="">Select State</option>
+                {states.map(state => (
+                  <option key={state._id} value={state._id}>{state.state}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* City/Location Selection */}
+            <div className='w-1/2'>
+              <label className="block text-sm font-medium text-gray-700">City</label>
+              <select
+                name="locationId"
+                value={formData.locationId}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                required
+                disabled={!selectedState}
+              >
+                <option value="">Select City</option>
+                {locations.map(location => (
+                  <option key={location._id} value={location._id}>{location.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Name */}
             <div>
@@ -209,39 +249,7 @@ const Hotel = () => {
               />
             </div>
 
-            {/* State Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">State</label>
-              <select
-                value={selectedState}
-                onChange={handleStateChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                required
-              >
-                <option value="">Select State</option>
-                {states.map(state => (
-                  <option key={state._id} value={state._id}>{state.state}</option>
-                ))}
-              </select>
-            </div>
 
-            {/* City/Location Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">City</label>
-              <select
-                name="locationId"
-                value={formData.locationId}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                required
-                disabled={!selectedState}
-              >
-                <option value="">Select City</option>
-                {locations.map(location => (
-                  <option key={location._id} value={location._id}>{location.name}</option>
-                ))}
-              </select>
-            </div>
           </div>
 
           {/* Address */}
@@ -307,6 +315,40 @@ const Hotel = () => {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <h2 className="text-xl font-semibold p-4 border-b">Hotels List</h2>
 
+        {/* Search and Sort Controls */}
+        <div className="p-4 flex flex-wrap justify-between items-center gap-4 border-b">
+          {/* Search Input */}
+          <div className="w-full md:w-1/3">
+            <input
+              type="text"
+              placeholder="Search hotels..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Sort Controls */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">Sort by:</label>
+            <select
+              value={sortField}
+              onChange={(e) => setSortField(e.target.value)}
+              className="p-2 border border-gray-300 rounded-md"
+            >
+              <option value="name">Name</option>
+              <option value="room">Room Count</option>
+            </select>
+
+            <button
+              onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+              className="p-2 bg-gray-100 rounded-md hover:bg-gray-200"
+            >
+              {sortDirection === 'asc' ? '↑' : '↓'}
+            </button>
+          </div>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -320,29 +362,55 @@ const Hotel = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {hotels.length > 0 ? (
-                hotels.map(hotel => (
-                  <tr key={hotel._id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{hotel.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {`${hotel.address}, ${hotel.locationId.stateId.state}, ${hotel.locationId.name}`}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{hotel.room}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{hotel.contactNo}</td>
-                    <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
-                      <button
-                        onClick={() => handleEdit(hotel)}
-                        className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(hotel._id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                hotels
+                  // Filter hotels based on search query
+                  .filter(hotel => {
+                    if (!searchQuery) return true;
+                    const searchLower = searchQuery.toLowerCase();
+                    return hotel.name.toLowerCase().includes(searchLower);
+                  })
+                  // Sort hotels based on selected field and direction
+                  .sort((a, b) => {
+                    let valA, valB;
+
+                    if (sortField === 'name') {
+                      valA = a.name.toLowerCase();
+                      valB = b.name.toLowerCase();
+                    }
+                    else if (sortField === 'room') {
+                      valA = Number(a.room);
+                      valB = Number(b.room);
+                    }
+
+                    if (sortDirection === 'asc') {
+                      return valA > valB ? 1 : -1;
+                    } else {
+                      return valA < valB ? 1 : -1;
+                    }
+                  })
+                  .map(hotel => (
+                    <tr key={hotel._id}>
+                      <td className="px-6 py-4 whitespace-nowrap">{hotel.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {`${hotel.address}, ${hotel.locationId.stateId.state}, ${hotel.locationId.name}`}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{hotel.room}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{hotel.contactNo}</td>
+                      <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
+                        <button
+                          onClick={() => handleEdit(hotel)}
+                          className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(hotel._id)}
+                          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
               ) : (
                 <tr>
                   <td colSpan="5" className="px-6 py-4 text-center text-gray-500">No hotels found</td>

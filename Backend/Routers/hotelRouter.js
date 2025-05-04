@@ -4,7 +4,6 @@ const auth = require('../Middleware/auth')
 
 const hotelController = require('../Controllers/hotelController')
 
-// Fixed routes to match frontend requests
 router.post('/add', auth, hotelController.addHotel)
 router.get('/getAll', auth, hotelController.getAllHotel)
 router.put('/update/:id', auth, hotelController.updateHotel)

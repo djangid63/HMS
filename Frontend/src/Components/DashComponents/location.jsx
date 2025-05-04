@@ -13,6 +13,7 @@ const Location = () => {
 
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [sortOption, setSortOption] = useState('name-asc');
   const [searchTerm, setSearchTerm] = useState('');
 
   const [editMode, setEditMode] = useState(false);
@@ -39,6 +40,25 @@ const Location = () => {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleSortOptionChange = (e) => {
+    const option = e.target.value;
+    setSortOption(option);
+
+    if (option === 'name-asc') {
+      setSortField('name');
+      setSortDirection('asc');
+    } else if (option === 'name-desc') {
+      setSortField('name');
+      setSortDirection('desc');
+    } else if (option === 'state-asc') {
+      setSortField('stateId');
+      setSortDirection('asc');
+    } else if (option === 'state-desc') {
+      setSortField('stateId');
+      setSortDirection('desc');
+    }
   };
 
   const getActiveLocations = () => {
@@ -79,15 +99,6 @@ const Location = () => {
     });
   };
 
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
-
   const fetchLocations = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/location/getAllLocation`, config)
@@ -99,9 +110,6 @@ const Location = () => {
     }
   };
 
-
-
-
   const fetchStates = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/state/getAllState`, config);
@@ -112,8 +120,6 @@ const Location = () => {
       showAlert('error', 'Failed to load states');
     }
   };
-
-
 
   useEffect(() => {
     fetchLocations();
@@ -220,25 +226,11 @@ const Location = () => {
 
         <form onSubmit={handleSubmit} className="flex flex-wrap gap-4">
           <div className="w-full md:w-[calc(50%-0.5rem)]">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-              Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Enter name"
-            />
-          </div>
-
-          <div className="w-full md:w-[calc(50%-0.5rem)]">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="stateId">
               Select State
             </label>
             <select
+
               id="stateId"
               name="stateId"
               value={formData.stateId}
@@ -255,6 +247,20 @@ const Location = () => {
 
               ))}
             </select>
+          </div>
+          <div className="w-full md:w-[calc(50%-0.5rem)]">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+              Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Enter name"
+            />
           </div>
 
           <div className="w-full flex justify-end space-x-2 mt-4">
@@ -284,21 +290,38 @@ const Location = () => {
             <h2 className="text-2xl font-bold text-gray-800">Active Locations</h2>
           </div>
 
-          {/* Search input */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search by name..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="absolute right-3 top-2.5 text-gray-400">
-              {/* Search icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </span>
+          <div className="flex items-center space-x-4">
+            <div>
+              <label htmlFor="sort-options" className="mr-2 text-sm font-medium text-gray-700">Sort by:</label>
+              <select
+                id="sort-options"
+                value={sortOption}
+                onChange={handleSortOptionChange}
+                className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="name-asc">Location (A-Z)</option>
+                <option value="name-desc">Location (Z-A)</option>
+                <option value="state-asc">State (A-Z)</option>
+                <option value="state-desc">State (Z-A)</option>
+              </select>
+            </div>
+
+            {/* Search input */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="absolute right-3 top-2.5 text-gray-400">
+                {/* Search icon */}
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -306,19 +329,13 @@ const Location = () => {
           <table className="min-w-full bg-white">
             <thead>
               <tr>
-                <th
-                  onClick={() => handleSort('name')}
-                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
-                >
-                  Location Name {sortField === 'name' && (
+                <th className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                  State {sortField === 'stateId' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
-                <th
-                  onClick={() => handleSort('stateId')}
-                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
-                >
-                  State {sortField === 'stateId' && (
+                <th className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                  Location Name {sortField === 'name' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
@@ -331,10 +348,10 @@ const Location = () => {
               {getActiveLocations().length > 0 ? (
                 getActiveLocations().map((location) => (
                   <tr key={location._id} className="hover:bg-gray-50">
-                    <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
                     <td className="py-4 px-4 whitespace-nowrap">
                       {typeof location.stateId === "object" && location.stateId ? location.stateId.state : 'Unknown State'}
                     </td>
+                    <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
                     <td className="py-4 px-4 whitespace-nowrap text-right">
                       <button
                         onClick={() => handleEdit(location)}
@@ -375,6 +392,21 @@ const Location = () => {
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Inactive Locations</h2>
           </div>
+
+          <div>
+            <label htmlFor="sort-options-inactive" className="mr-2 text-sm font-medium text-gray-700">Sort by:</label>
+            <select
+              id="sort-options-inactive"
+              value={sortOption}
+              onChange={handleSortOptionChange}
+              className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="name-asc">Location (A-Z)</option>
+              <option value="name-desc">Location (Z-A)</option>
+              <option value="state-asc">State (A-Z)</option>
+              <option value="state-desc">State (Z-A)</option>
+            </select>
+          </div>
         </div>
 
         <div className="w-full overflow-x-auto">
@@ -382,18 +414,16 @@ const Location = () => {
             <thead>
               <tr>
                 <th
-                  onClick={() => handleSort('name')}
-                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
                 >
-                  Location Name {sortField === 'name' && (
+                  State {sortField === 'stateId' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
                 <th
-                  onClick={() => handleSort('stateId')}
-                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
                 >
-                  State {sortField === 'stateId' && (
+                  Location Name {sortField === 'name' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
@@ -406,10 +436,10 @@ const Location = () => {
               {getInactiveLocations().length > 0 ? (
                 getInactiveLocations().map((location) => (
                   <tr key={location._id} className="hover:bg-gray-50">
-                    <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
                     <td className="py-4 px-4 whitespace-nowrap">
                       {typeof location.stateId === "object" && location.stateId ? location.stateId.state : 'Unknown State'}
                     </td>
+                    <td className="py-4 px-4 whitespace-nowrap">{location.name}</td>
                     <td className="py-4 px-4 whitespace-nowrap text-right">
                       <button
                         onClick={() => handleEdit(location)}

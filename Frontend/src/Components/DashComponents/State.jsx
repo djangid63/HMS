@@ -111,7 +111,6 @@ const State = () => {
       const response = await axios.get(`${BASE_URL}/state/getAllState`, config)
       setState(response.data.state)
       setIsDisableState(response.data.disabledState)
-      console.log(response.data.disabledState);
     } catch (error) {
       console.error('Error fetching state:', error);
       showAlert('error', 'Failed to load state');

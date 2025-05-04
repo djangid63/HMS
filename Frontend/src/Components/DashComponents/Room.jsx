@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import BASE_URL from '../../Utils/api';
+import RoomForm from './RoomForm';
 
 const Room = () => {
   const [formData, setFormData] = useState({
@@ -18,16 +19,20 @@ const Room = () => {
 
   const [hotels, setHotels] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [states, setStates] = useState([]);
+  const [locations, setLocations] = useState([]);
+
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [amenity, setAmenity] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+
+  // Search and sort related states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortPriceDirection, setSortPriceDirection] = useState('none'); // 'none', 'asc', 'desc'
+  const [filteredRooms, setFilteredRooms] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [hotelDetails, setHotelDetails] = useState(null);
-
-  const roomTypes = ['Standard', 'Deluxe', 'Suite', 'Premium', 'Executive'];
 
   const token = localStorage.getItem('token');
   const config = {
@@ -37,13 +42,35 @@ const Room = () => {
   };
 
   useEffect(() => {
+    fetchStates();
+    fetchLocations();
     fetchHotels();
     fetchRooms();
   }, []);
 
+  const fetchStates = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/state/getAllState`, config);
+      setStates(response.data.state);
+    } catch (error) {
+      console.error('Error fetching states:', error);
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/location/getAllLocation`, config);
+      console.log("location------>>>>", response.data.location);
+      setLocations(response.data.location || []);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  };
+
   const fetchHotels = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/hotel/getAll`, config);
+      console.log("Hotels--------->>>>>>>>>>><<<<<<", response.data);
       setHotels(response.data.data || []);
     } catch (error) {
       console.error('Error fetching hotels:', error);
@@ -53,59 +80,69 @@ const Room = () => {
   const fetchRooms = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/room/getAll`, config);
-      setRooms(response.data.data || []);
+      const roomData = response.data.data || [];
+      setRooms(roomData);
+      setFilteredRooms(roomData); // Initialize filtered rooms with all rooms
     } catch (error) {
       console.error('Error fetching rooms:', error);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
+  // Handle search input changes
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    filterAndSortRooms(e.target.value, sortPriceDirection);
   };
 
-  const addItem = (key, value, setValue) => {
-    if (value.trim() !== '') {
-      setFormData({
-        ...formData,
-        [key]: [...formData[key], value.trim()]
-      });
-      setValue('');
+  // Toggle price sorting
+  const handleSortPrice = () => {
+    // Cycle through sort states: none -> ascending -> descending -> none
+    const nextSortDirection = sortPriceDirection === 'none' ? 'asc' :
+      sortPriceDirection === 'asc' ? 'desc' : 'none';
+    setSortPriceDirection(nextSortDirection);
+    filterAndSortRooms(searchTerm, nextSortDirection);
+  };
+
+  // Filter and sort the rooms based on search term and sort direction
+  const filterAndSortRooms = (search, sortDirection) => {
+    let result = [...rooms];
+
+    // Apply search filter if search term exists
+    if (search.trim() !== '') {
+      result = result.filter(room =>
+        room.roomNumber.toLowerCase().includes(search.toLowerCase()) ||
+        room.price.toString().includes(search) ||
+        room.type.toLowerCase().includes(search.toLowerCase())
+      );
     }
+
+    // Apply sorting if sort direction is specified
+    if (sortDirection === 'asc') {
+      result = result.sort((a, b) => a.price - b.price);
+    } else if (sortDirection === 'desc') {
+      result = result.sort((a, b) => b.price - a.price);
+    }
+
+    setFilteredRooms(result);
   };
 
-  const removeItem = (key, index) => {
-    setFormData({
-      ...formData,
-      [key]: formData[key].filter((_, i) => i !== index)
-    });
-  };
+  // Re-filter and sort when rooms data changes
+  useEffect(() => {
+    filterAndSortRooms(searchTerm, sortPriceDirection);
+  }, [rooms]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleFormSubmit = async (formData, isEditing, editId) => {
     try {
-      if (isEditing) {
-        await axios.patch(`${BASE_URL}/room/update/${editId}`, formData, config);
-      } else {
-        await axios.post(`${BASE_URL}/room/add`, formData, config);
-      }
+      console.log('Submitting form data with images:', formData);
+      console.log('Image URLs being sent:', formData.imageUrls);
 
-      setFormData({
-        roomNumber: '',
-        hotelId: '',
-        type: '',
-        capacity: 1,
-        price: 0,
-        amenities: [],
-        isAvailable: true,
-        isActive: true,
-        description: '',
-        imageUrls: []
-      });
+      if (isEditing) {
+        const response = await axios.patch(`${BASE_URL}/room/update/${editId}`, formData, config);
+        console.log('Update response:', response.data);
+      } else {
+        const response = await axios.post(`${BASE_URL}/room/add`, formData, config);
+        console.log('Add response:', response.data);
+      }
 
       setIsEditing(false);
       setEditId(null);
@@ -151,12 +188,30 @@ const Room = () => {
     }
   };
 
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditId(null);
+    setFormData({
+      roomNumber: '',
+      hotelId: '',
+      type: '',
+      capacity: 1,
+      price: 0,
+      amenities: [],
+      isAvailable: true,
+      isActive: true,
+      description: '',
+      imageUrls: []
+    });
+  };
+
   const handleViewMore = async (room) => {
     setSelectedRoom(room);
     try {
       const hotel = hotels.find(h => h._id === room.hotelId);
       if (hotel) {
         console.log("hotel---------->>>>", hotel);
+        console.log("room images:", room.imageUrls); // Log room images for debugging
         setHotelDetails(hotel);
         setShowModal(true);
       }
@@ -175,245 +230,38 @@ const Room = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Room Management</h1>
 
-      {/* Room Form */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">{isEditing ? 'Edit Room' : 'Add New Room'}</h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Room Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Room Number</label>
-              <input
-                type="text"
-                name="roomNumber"
-                value={formData.roomNumber}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                required
-              />
-            </div>
-
-            {/* Hotel Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Hotel</label>
-              <select
-                name="hotelId"
-                value={formData.hotelId}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                required
-              >
-                <option value="">Select Hotel</option>
-                {hotels.map(hotel => (
-                  <option key={hotel._id} value={hotel._id}>{hotel.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Room Type */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Room Type</label>
-              <select
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                required
-              >
-                <option value="">Select Type</option>
-                {roomTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Capacity */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Capacity</label>
-              <input
-                type="number"
-                name="capacity"
-                min="1"
-                max="10"
-                value={formData.capacity}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                required
-              />
-            </div>
-
-            {/* Price */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Price per Night</label>
-              <input
-                type="number"
-                name="price"
-                min="0"
-                step="0.01"
-                value={formData.price}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                required
-              />
-            </div>
-
-            {/* Availability */}
-            <div className="flex items-center space-x-4 mt-6">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="isAvailable"
-                  name="isAvailable"
-                  checked={formData.isAvailable}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                />
-                <label htmlFor="isAvailable" className="ml-2 block text-sm text-gray-700">
-                  Available
-                </label>
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  name="isActive"
-                  checked={formData.isActive}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                />
-                <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
-                  Active
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows="3"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-            ></textarea>
-          </div>
-
-          {/* Amenities */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
-            <div className="flex items-center mb-2">
-              <input
-                type="text"
-                value={amenity}
-                onChange={(e) => setAmenity(e.target.value)}
-                placeholder="Add amenity (e.g., WiFi, TV)"
-                className="flex-grow border border-gray-300 rounded-l-md shadow-sm p-2"
-              />
-              <button
-                type="button"
-                onClick={() => addItem('amenities', amenity, setAmenity)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600"
-              >
-                Add
-              </button>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mt-2">
-              {formData.amenities.map((item, index) => (
-                <div key={index} className="bg-gray-100 px-3 py-1 rounded-full flex items-center">
-                  <span>{item}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeItem('amenities', index)}
-                    className="ml-2 text-gray-500 hover:text-red-500"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Image URLs */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Image URLs</label>
-            <div className="flex items-center mb-2">
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="Enter image URL"
-                className="flex-grow border border-gray-300 rounded-l-md shadow-sm p-2"
-              />
-              <button
-                type="button"
-                onClick={() => addItem('imageUrls', imageUrl, setImageUrl)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600"
-              >
-                Add
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-              {formData.imageUrls.map((url, index) => (
-                <div key={index} className="relative">
-                  <img src={url} alt="Room" className="w-full h-32 object-cover rounded" />
-                  <button
-                    type="button"
-                    onClick={() => removeItem('imageUrls', index)}
-                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            {isEditing && (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsEditing(false);
-                  setEditId(null);
-                  setFormData({
-                    roomNumber: '',
-                    hotelId: '',
-                    type: '',
-                    capacity: 1,
-                    price: 0,
-                    amenities: [],
-                    isAvailable: true,
-                    isActive: true,
-                    description: '',
-                    imageUrls: []
-                  });
-                }}
-                className="mr-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-              >
-                Cancel
-              </button>
-            )}
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              {isEditing ? 'Update Room' : 'Add Room'}
-            </button>
-          </div>
-        </form>
-      </div>
+      {/* Room Form - Now using the RoomForm component */}
+      <RoomForm
+        isEditing={isEditing}
+        editId={editId}
+        initialFormData={formData}
+        onFormSubmit={handleFormSubmit}
+        onCancelEdit={handleCancelEdit}
+        states={states}
+        locations={locations}
+        hotels={hotels}
+      />
 
       {/* Rooms List */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <h2 className="text-xl font-semibold p-4 border-b">Rooms List</h2>
 
         <div className="overflow-x-auto">
+          <div className="flex items-center justify-between p-4">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Search rooms..."
+              className="border border-gray-300 rounded-md shadow-sm p-2 w-1/3"
+            />
+            <button
+              onClick={handleSortPrice}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            >
+              Sort by Price ({sortPriceDirection === 'none' ? 'None' : sortPriceDirection === 'asc' ? 'Ascending' : 'Descending'})
+            </button>
+          </div>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -427,8 +275,8 @@ const Room = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {rooms.length > 0 ? (
-                rooms.map(room => (
+              {filteredRooms.length > 0 ? (
+                filteredRooms.map(room => (
                   <tr key={room._id}>
                     <td className="px-6 py-4 whitespace-nowrap">{room.roomNumber}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -478,7 +326,7 @@ const Room = () => {
       {/* Modal */}
       {showModal && selectedRoom && hotelDetails && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Room Details</h2>
               <button
@@ -490,6 +338,26 @@ const Room = () => {
                 </svg>
               </button>
             </div>
+
+            {/* Room Images - Enhanced Gallery */}
+            {selectedRoom.imageUrls && selectedRoom.imageUrls.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Room Images</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {selectedRoom.imageUrls.map((url, index) => (
+                    <div key={index} className="overflow-hidden rounded-lg shadow-md h-48">
+                      <img
+                        src={url}
+                        alt={`Room ${selectedRoom.roomNumber} - Image ${index + 1}`}
+                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                        onClick={() => window.open(url, '_blank')}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -539,17 +407,6 @@ const Room = () => {
               <div className="mt-4">
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Description</h3>
                 <p className="text-gray-700">{selectedRoom.description}</p>
-              </div>
-            )}
-
-            {selectedRoom.imageUrls && selectedRoom.imageUrls.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Images</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {selectedRoom.imageUrls.map((url, index) => (
-                    <img key={index} src={url} alt={`Room ${selectedRoom.roomNumber}`} className="w-full h-32 object-cover rounded" />
-                  ))}
-                </div>
               </div>
             )}
 

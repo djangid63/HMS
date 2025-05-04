@@ -22,7 +22,6 @@ exports.SignUpUser = async (req, res) => {
     const currTimer = moment()
     const otpTimer = currTimer.clone().add(10, "minutes");
 
-    // OTP Send - Updated to match new emailService function signature
     const emailSent = await sendOtpEmail(email, otp, firstname);
     if (!emailSent) {
       return res.status(500).json({ message: "Failed to send OTP email" });
