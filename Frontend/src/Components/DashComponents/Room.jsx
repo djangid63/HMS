@@ -179,12 +179,12 @@ const Room = () => {
     }
   };
 
-  const handleDisable = async (id) => {
+  const handleToggleActive = async (id) => {
     try {
       await axios.delete(`${BASE_URL}/room/disable/${id}`, config);
       fetchRooms();
     } catch (error) {
-      console.error('Error disabling the room:', error);
+      console.error('Error toggling room status:', error);
     }
   };
 
@@ -271,6 +271,7 @@ const Room = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacity</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -291,6 +292,12 @@ const Room = () => {
                         {room.isAvailable ? 'Available' : 'Not Available'}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${!room.isDisable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {!room.isDisable ? 'Active' : 'Disabled'}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
                       <button
                         onClick={() => handleEdit(room)}
@@ -305,6 +312,12 @@ const Room = () => {
                         Delete
                       </button>
                       <button
+                        onClick={() => handleToggleActive(room._id)}
+                        className={`px-3 py-1 ${room.isDisable ? 'bg-green-500 hover:bg-green-600' : 'bg-orange-500 hover:bg-orange-600'} text-white rounded`}
+                      >
+                        {room.isDisable ? 'Enable' : 'Disable'}
+                      </button>
+                      <button
                         onClick={() => handleViewMore(room)}
                         className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                       >
@@ -315,7 +328,7 @@ const Room = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="px-6 py-4 text-center text-gray-500">No rooms found</td>
+                  <td colSpan="8" className="px-6 py-4 text-center text-gray-500">No rooms found</td>
                 </tr>
               )}
             </tbody>
@@ -369,6 +382,11 @@ const Room = () => {
                 <p className="mb-1"><span className="font-semibold">Status:</span>
                   <span className={`ml-1 px-2 py-0.5 text-xs font-semibold rounded-full ${selectedRoom.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                     {selectedRoom.isAvailable ? 'Available' : 'Not Available'}
+                  </span>
+                </p>
+                <p className="mb-1"><span className="font-semibold">Active Status:</span>
+                  <span className={`ml-1 px-2 py-0.5 text-xs font-semibold rounded-full ${!selectedRoom.isDisable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    {!selectedRoom.isDisable ? 'Active' : 'Disabled'}
                   </span>
                 </p>
 

@@ -1,5 +1,7 @@
 const locationModel = require('../Models/locationModel');
 const stateModel = require('../Models/stateModel');
+const hotelModel = require('../Models/hotelModel');
+const roomModel = require('../Models/roomModel');
 
 exports.addLocation = async (req, res) => {
   try {
@@ -28,6 +30,7 @@ exports.getAllLocations = async (req, res) => {
     return res.status(401).json({ success: false, message: `Failed to get location, ${error}` });
   }
 }
+
 exports.getLocation = async (req, res) => {
   try {
     const { id } = req.params;
@@ -124,6 +127,17 @@ exports.softDelete = async (req, res) => {
       });
     }
 
+    await hotelModel.updateMany(
+      { locationId: id },
+      { isDisable: disabledLocation.isDisable }
+    );
+
+    const hotels = await hotelModel.find({ locationId: id });
+    const hotelIds = hotels.map(hotel => hotel._id);
+    await roomModel.updateMany(
+      { hotelId: hotelIds },
+      { isDisable: disabledLocation.isDisable }
+    );
 
     return res.status(200).json({
       success: true,
@@ -149,6 +163,13 @@ exports.hardDelete = async (req, res) => {
       });
     }
 
+    const hotels = await hotelModel.find({ locationId: id });
+    const hotelIds = hotels.map(hotel => hotel._id);
+
+    await roomModel.deleteMany({ hotelId: hotelIds });
+
+    await hotelModel.deleteMany({ locationId: id });
+
     const deleteLocation = await locationModel.findByIdAndDelete(id);
 
     if (!deleteLocation) {
@@ -160,7 +181,7 @@ exports.hardDelete = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Location deleted successfully"
+      message: "Location and all associated hotels and rooms deleted successfully"
     });
   } catch (error) {
     console.log("Hard delete location error:", error);

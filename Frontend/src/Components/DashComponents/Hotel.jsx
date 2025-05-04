@@ -10,7 +10,8 @@ const Hotel = () => {
     description: '',
     contactNo: '',
     email: '',
-    locationId: ''
+    locationId: '',
+    isDisable: false
   });
 
   const [states, setStates] = useState([]);
@@ -110,7 +111,8 @@ const Hotel = () => {
         description: '',
         contactNo: '',
         email: '',
-        locationId: ''
+        locationId: '',
+        isDisable: false
       });
       setSelectedState('');
       setIsEditing(false);
@@ -129,7 +131,8 @@ const Hotel = () => {
       description: hotel.description,
       contactNo: hotel.contactNo,
       email: hotel.email,
-      locationId: hotel.locationId
+      locationId: hotel.locationId,
+      isDisable: hotel.isDisable
     });
 
     // Find state for this location
@@ -148,6 +151,15 @@ const Hotel = () => {
       fetchHotels();
     } catch (error) {
       console.error('Error deleting hotel:', error);
+    }
+  };
+
+  const handleToggleStatus = async (id, currentStatus) => {
+    try {
+      await axios.patch(`${BASE_URL}/hotel/softDelete/${id}`, {}, config);
+      fetchHotels();
+    } catch (error) {
+      console.error('Error toggling hotel status:', error);
     }
   };
 
@@ -278,6 +290,21 @@ const Hotel = () => {
             ></textarea>
           </div>
 
+          {/* Is Disable */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Is Disable</label>
+            <select
+              name="isDisable"
+              value={formData.isDisable}
+              onChange={handleChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              required
+            >
+              <option value={false}>No</option>
+              <option value={true}>Yes</option>
+            </select>
+          </div>
+
           <div className="flex justify-end">
             {isEditing && (
               <button
@@ -292,7 +319,8 @@ const Hotel = () => {
                     description: '',
                     contactNo: '',
                     email: '',
-                    locationId: ''
+                    locationId: '',
+                    isDisable: false
                   });
                   setSelectedState('');
                 }}
@@ -357,6 +385,7 @@ const Hotel = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rooms</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -395,6 +424,7 @@ const Hotel = () => {
                         {`${hotel.address}, ${hotel.locationId.stateId.state}, ${hotel.locationId.name}`}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{hotel.room}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{hotel.contactNo}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{hotel.isDisable ? 'Disabled' : 'Active'}</td>
                       <td className="px-6 py-4 whitespace-nowrap flex space-x-2">
                         <button
                           onClick={() => handleEdit(hotel)}
@@ -408,12 +438,18 @@ const Hotel = () => {
                         >
                           Delete
                         </button>
+                        <button
+                          onClick={() => handleToggleStatus(hotel._id, hotel.isDisable)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                          {hotel.isDisable ? 'Enable' : 'Disable'}
+                        </button>
                       </td>
                     </tr>
                   ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="px-6 py-4 text-center text-gray-500">No hotels found</td>
+                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500">No hotels found</td>
                 </tr>
               )}
             </tbody>

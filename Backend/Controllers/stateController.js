@@ -1,5 +1,7 @@
 const stateModel = require('../Models/stateModel')
 const locationModel = require('../Models/locationModel')
+const hotelModel = require('../Models/hotelModel');
+const roomModel = require('../Models/roomModel');
 
 exports.addState = async (req, res) => {
   try {
@@ -35,16 +37,17 @@ exports.updateState = async (req, res) => {
     const { id } = req.params;
     const { state, code } = req.body;
 
-    const existing = await stateModel.findOne({ state });
-
-    if (existing) {
-      console.log("exists");
-      return res.status(400).json({ message: "State already exists" });
+    if (!id) {
+      return res.status(400).json({ success: false, message: "State ID is required" });
     }
 
 
-    if (!id) {
-      return res.status(400).json({ success: false, message: "State ID is required" });
+    const existing = await stateModel.findOne({
+      state: state,
+    });
+
+    if (existing) {
+      return res.status(400).json({ message: "State name already exists" });
     }
 
     const updatedState = await stateModel.findByIdAndUpdate(
@@ -93,25 +96,41 @@ exports.softDelete = async (req, res) => {
       });
     }
 
-    const disabledLocation = await stateModel.findByIdAndUpdate(
+    const disableState = await stateModel.findByIdAndUpdate(
       id,
       { isDisable: !state.isDisable },
       { new: true }
     );
 
-    if (!disabledLocation) {
+    if (!disableState) {
       return res.status(404).json({
         success: false,
         message: "State not found"
       });
     }
 
-    // Update locations with the same isDisable value as the state
     const disableLocation = await locationModel.updateMany(
       { stateId: id },
-      { isDisable: disabledLocation.isDisable }
+      { isDisable: disableState.isDisable },
+      { new: true }
     );
-    // console.log("disableLoaciton---------------", disableLocation);
+
+
+    const locations = await locationModel.find({ stateId: id });
+    const locationIds = locations.map(location => location._id);
+    await hotelModel.updateMany(
+      { locationId: locationIds },
+      { isDisable: disableState.isDisable }
+    );
+
+
+    const hotels = await hotelModel.find({ locationId: locationIds });
+    const hotelIds = hotels.map(hotel => hotel._id);
+    await roomModel.updateMany(
+      { hotelId: hotelIds },
+      { isDisable: disableState.isDisable }
+    );
+
 
     return res.status(200).json({
       success: true,
@@ -137,9 +156,28 @@ exports.hardDelete = async (req, res) => {
       });
     }
 
-    const deleteLocation = await stateModel.findByIdAndDelete(id);
+    // Find all locations associated with the state
+    const locations = await locationModel.find({ stateId: id });
+    const locationIds = locations.map(location => location._id);
 
-    if (!deleteLocation) {
+    // Find all hotels associated with these locations
+    const hotels = await hotelModel.find({ locationId: locationIds });
+    const hotelIds = hotels.map(hotel => hotel._id);
+
+    // Delete all rooms associated with the hotels
+    const roomModel = require('../Models/roomModel');
+    await roomModel.deleteMany({ hotelId: hotelIds });
+
+    // Delete all hotels associated with the locations
+    await hotelModel.deleteMany({ locationId: locationIds });
+
+    // Delete all locations associated with the state
+    await locationModel.deleteMany({ stateId: id });
+
+    // Finally delete the state itself
+    const deletedState = await stateModel.findByIdAndDelete(id);
+
+    if (!deletedState) {
       return res.status(404).json({
         success: false,
         message: "State not found"
@@ -148,7 +186,7 @@ exports.hardDelete = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "State deleted successfully"
+      message: "State and all associated data deleted successfully"
     });
   } catch (error) {
     console.log("Hard delete state error:", error);
