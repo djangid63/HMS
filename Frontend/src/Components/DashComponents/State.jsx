@@ -9,8 +9,9 @@ const State = () => {
   });
 
   const [state, setState] = useState([]);
-  const [sortField, setSortField] = useState('name');
+  const [sortField, setSortField] = useState('state');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [sortOption, setSortOption] = useState('state-asc');
   const [searchTerm, setSearchTerm] = useState('');
 
   const [editMode, setEditMode] = useState(false);
@@ -40,6 +41,25 @@ const State = () => {
     setSearchTerm(e.target.value);
   };
 
+  const handleSortOptionChange = (e) => {
+    const option = e.target.value;
+    setSortOption(option);
+
+    if (option === 'state-asc') {
+      setSortField('state');
+      setSortDirection('asc');
+    } else if (option === 'state-desc') {
+      setSortField('state');
+      setSortDirection('desc');
+    } else if (option === 'date-newest') {
+      setSortField('createdAt');
+      setSortDirection('desc');
+    } else if (option === 'date-oldest') {
+      setSortField('createdAt');
+      setSortDirection('asc');
+    }
+  };
+
   const getActiveLocations = () => {
     if (!state.length) return [];
 
@@ -50,9 +70,14 @@ const State = () => {
     );
 
     return [...filteredLocations].sort((a, b) => {
+      if (sortField === 'createdAt' || sortField === 'updatedAt') {
+        const aDate = new Date(a[sortField]);
+        const bDate = new Date(b[sortField]);
+        return sortDirection === 'asc' ? aDate - bDate : bDate - aDate;
+      }
+
       const aValue = String(a[sortField] || '').toLowerCase();
       const bValue = String(b[sortField] || '').toLowerCase();
-
       return sortDirection === 'asc'
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue);
@@ -60,31 +85,25 @@ const State = () => {
   };
 
   const getInactiveLocations = () => {
-    if (!state.length) return [];
+    if (!disableState || !disableState.length) return [];
 
-    const inactiveLocations = state.filter(item => item.isDisable);
-
-    const filteredLocations = inactiveLocations.filter(item =>
+    const filteredLocations = disableState.filter(item =>
       item.state && item.state.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return [...filteredLocations].sort((a, b) => {
+      if (sortField === 'createdAt' || sortField === 'updatedAt') {
+        const aDate = new Date(a[sortField]);
+        const bDate = new Date(b[sortField]);
+        return sortDirection === 'asc' ? aDate - bDate : bDate - aDate;
+      }
+
       const aValue = String(a[sortField] || '').toLowerCase();
       const bValue = String(b[sortField] || '').toLowerCase();
-
       return sortDirection === 'asc'
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue);
     });
-  };
-
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
   };
 
   const fetchLocations = async () => {
@@ -105,7 +124,6 @@ const State = () => {
 
   const showAlert = (type, message) => {
     setAlert({ show: true, type, message });
-    // Hide alert after 3 seconds
     setTimeout(() => {
       setAlert({ show: false, type: '', message: '' });
     }, 3000);
@@ -140,7 +158,6 @@ const State = () => {
     }
   };
 
-  // Edit state
   const handleEdit = (state) => {
     setFormData({
       state: state.state,
@@ -150,7 +167,6 @@ const State = () => {
     setCurrentId(state._id);
   };
 
-  // Delete state
   const handleSoftDelete = async (id) => {
     if (window.confirm('Are you sure you want to change the status of this state?')) {
       try {
@@ -179,7 +195,6 @@ const State = () => {
     }
   };
 
-  // Reset form
   const resetForm = () => {
     setFormData({ state: '', code: '' });
     setEditMode(false);
@@ -188,14 +203,12 @@ const State = () => {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Alert message */}
       {alert.show && (
         <div className={`p-3 mb-4 rounded ${alert.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
           {alert.message}
         </div>
       )}
 
-      {/* Form section (25% height) */}
       <div className="bg-white rounded-lg shadow p-6 mb-6" style={{ flex: '0 0 auto' }}>
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
           {editMode ? 'Edit Location' : 'Add New Location'}
@@ -252,28 +265,42 @@ const State = () => {
         </form>
       </div>
 
-      {/* Data table section */}
       <div className="bg-white rounded-lg shadow p-6 overflow-auto mb-6" style={{ flex: '1' }}>
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Active Locations</h2>
           </div>
 
-          {/* Search input */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search by name..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="absolute right-3 top-2.5 text-gray-400">
-              {/* Search icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </span>
+          <div className="flex items-center space-x-4">
+            <div>
+              <label htmlFor="sort-options" className="mr-2 text-sm font-medium text-gray-700">Sort by:</label>
+              <select
+                id="sort-options"
+                value={sortOption}
+                onChange={handleSortOptionChange}
+                className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="state-asc">State (A-Z)</option>
+                <option value="state-desc">State (Z-A)</option>
+                <option value="date-newest">Date (Newest First)</option>
+                <option value="date-oldest">Date (Oldest First)</option>
+              </select>
+            </div>
+
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="absolute right-3 top-2.5 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -282,18 +309,21 @@ const State = () => {
             <thead>
               <tr>
                 <th
-                  onClick={() => handleSort('name')}
-                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
                 >
-                  State {sortField === 'name' && (
+                  State {sortField === 'state' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
                 <th
-                  onClick={() => handleSort('code')}
-                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
                 >
-                  City {sortField === 'code' && (
+                  Code
+                </th>
+                <th
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+                >
+                  Date {sortField === 'createdAt' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
@@ -308,6 +338,9 @@ const State = () => {
                   <tr key={state._id} className="hover:bg-gray-50">
                     <td className="py-4 px-4 whitespace-nowrap">{state.state}</td>
                     <td className="py-4 px-4 whitespace-nowrap">{state.code}</td>
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      {new Date(state.createdAt).toLocaleDateString()}
+                    </td>
                     <td className="py-4 px-4 whitespace-nowrap text-right">
                       <button
                         onClick={() => handleEdit(state)}
@@ -332,7 +365,7 @@ const State = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="py-4 px-4 text-center text-gray-500">
+                  <td colSpan="4" className="py-4 px-4 text-center text-gray-500">
                     No active state found
                   </td>
                 </tr>
@@ -342,11 +375,25 @@ const State = () => {
         </div>
       </div>
 
-      {/* Inactive Locations table section */}
       <div className="bg-white rounded-lg shadow p-6 overflow-auto" style={{ flex: '1' }}>
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Inactive Locations</h2>
+          </div>
+
+          <div>
+            <label htmlFor="sort-options-inactive" className="mr-2 text-sm font-medium text-gray-700">Sort by:</label>
+            <select
+              id="sort-options-inactive"
+              value={sortOption}
+              onChange={handleSortOptionChange}
+              className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="state-asc">State (A-Z)</option>
+              <option value="state-desc">State (Z-A)</option>
+              <option value="date-newest">Date (Newest First)</option>
+              <option value="date-oldest">Date (Oldest First)</option>
+            </select>
           </div>
         </div>
 
@@ -355,18 +402,21 @@ const State = () => {
             <thead>
               <tr>
                 <th
-                  onClick={() => handleSort('name')}
-                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
                 >
-                  State {sortField === 'name' && (
+                  State {sortField === 'state' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
                 <th
-                  onClick={() => handleSort('code')}
-                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer"
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
                 >
-                  City {sortField === 'code' && (
+                  Code
+                </th>
+                <th
+                  className="py-3 px-4 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+                >
+                  Date {sortField === 'createdAt' && (
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
@@ -376,13 +426,14 @@ const State = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {disableState.length > 0 ? (
-                disableState.map((state) => (
-                  /* {getInactiveLocations().length > 0 ? (
-                    getInactiveLocations().map((state) => ( */
+              {getInactiveLocations().length > 0 ? (
+                getInactiveLocations().map((state) => (
                   <tr key={state._id} className="hover:bg-gray-50">
                     <td className="py-4 px-4 whitespace-nowrap">{state.state}</td>
                     <td className="py-4 px-4 whitespace-nowrap">{state.code}</td>
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      {new Date(state.createdAt).toLocaleDateString()}
+                    </td>
                     <td className="py-4 px-4 whitespace-nowrap text-right">
                       <button
                         onClick={() => handleEdit(state)}
@@ -407,7 +458,7 @@ const State = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="py-4 px-4 text-center text-gray-500">
+                  <td colSpan="4" className="py-4 px-4 text-center text-gray-500">
                     No inactive state found
                   </td>
                 </tr>

@@ -2,8 +2,14 @@ const stateModel = require('../Models/stateModel')
 const locationModel = require('../Models/locationModel')
 
 exports.addState = async (req, res) => {
-  const { state, code } = req.body;
   try {
+    const { state, code } = req.body;
+    const existing = await stateModel.findOne({ $or: [{ state }, { code }] });
+
+    if (existing) {
+      return res.status(400).json({ message: "State already exists" });
+    }
+    
     const stateData = new stateModel({ state, code })
     const saveData = await stateData.save()
     return res.status(200).json({ status: true, message: "State added successfully", updatedState: saveData })
@@ -29,7 +35,7 @@ exports.updateState = async (req, res) => {
     const { id } = req.params;
     const { state, code } = req.body;
 
-    const existing = await stateModel.findOne({ state: req.body.state });
+    const existing = await stateModel.findOne({ state });
 
     if (existing) {
       console.log("exists");
