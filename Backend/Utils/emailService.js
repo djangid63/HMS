@@ -1,20 +1,21 @@
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
-const createTransporter = (email, mailkey) => {
+const createTransporter = () => {
   return nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: "jangiddummy6375@gmail.com",
-      pass: "hneo ulux pgln lgts"
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD
     }
   });
 };
 
-const sendOtpEmail = async (email, otp, firstname, senderEmail, mailkey) => {
+const sendOtpEmail = async (email, otp, firstname) => {
   try {
-    const transporter = createTransporter(senderEmail, mailkey);
+    const transporter = createTransporter();
     const mailOptions = {
-      from: "jangiddummy6375@gmail.com",
+      from: process.env.GMAIL_USER,
       to: email,
       subject: 'Your OTP Verification Code',
       html: `
@@ -37,11 +38,11 @@ const sendOtpEmail = async (email, otp, firstname, senderEmail, mailkey) => {
   }
 };
 
-const sendCreationEmail = async (email, firstname, lastname, title, senderEmail, mailkey) => {
+const sendCreationEmail = async (email, firstname, lastname, title) => {
   try {
-    const transporter = createTransporter(senderEmail, mailkey);
+    const transporter = createTransporter();
     const mailOptions = {
-      from: "jangiddummy6375@gmail.com",
+      from: process.env.GMAIL_USER,
       to: email,
       subject: 'Task Created Successfully',
       html: `
@@ -65,14 +66,14 @@ const sendCreationEmail = async (email, firstname, lastname, title, senderEmail,
   }
 }
 
-const sendStatusUpdateEmail = async (email, firstname, lastname, title, status, senderEmail, mailkey) => {
+const sendStatusUpdateEmail = async (email, firstname, lastname, title, status) => {
   try {
-    const transporter = createTransporter(senderEmail, mailkey);
+    const transporter = createTransporter();
     const statusText = status === 'completed' ? 'completed' : 'marked as pending';
     const colorStyle = status === 'completed' ? '#4CAF50' : '#FFC107';
 
     const mailOptions = {
-      from: "jangiddummy6375@gmail.com",
+      from: process.env.GMAIL_USER,
       to: email,
       subject: `Task ${statusText}: ${title}`,
       html: `

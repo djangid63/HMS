@@ -6,9 +6,6 @@ const { sendOtpEmail, sendCreationEmail, sendStatusUpdateEmail } = require('../U
 const jwt = require('jsonwebtoken')
 const secretKey = process.env.JWT_SECRET
 
-const SENDER_EMAIL = "jangiddummy6375@gmail.com";
-const mailkey = "hneo ulux pgln lgts"
-
 exports.SignUpUser = async (req, res) => {
   try {
     const { firstname, lastname, email, password, gender, age, role } = req.body
@@ -25,8 +22,8 @@ exports.SignUpUser = async (req, res) => {
     const currTimer = moment()
     const otpTimer = currTimer.clone().add(10, "minutes");
 
-    // OTP Send
-    const emailSent = await sendOtpEmail(email, otp, firstname, SENDER_EMAIL, mailkey);
+    // OTP Send - Updated to match new emailService function signature
+    const emailSent = await sendOtpEmail(email, otp, firstname);
     if (!emailSent) {
       return res.status(500).json({ message: "Failed to send OTP email" });
     }
@@ -131,7 +128,6 @@ exports.verifyOtp = async (req, res) => {
   }
 }
 
-
 exports.forgetPassword = async (req, res) => {
 
   const { email } = req.body;
@@ -151,7 +147,8 @@ exports.forgetPassword = async (req, res) => {
     user.otpTimer = otpTimer
     await user.save()
 
-    const emailSent = await sendOtpEmail(email, otp, user.firstname, SENDER_EMAIL, mailkey);
+    // Updated to match new emailService function signature
+    const emailSent = await sendOtpEmail(email, otp, user.firstname);
     if (!emailSent) {
       return res.status(500).json({ message: "Failed to send OTP email" });
     }
@@ -180,7 +177,6 @@ exports.resetPassword = async (req, res) => {
     if (dbOtp != otp) {
       return res.status(400).json({ success: false, message: "OTP does not match" });
     }
-
 
     const currentTime = moment();
     const otpExpiry = moment(user.otpTimer);
