@@ -11,6 +11,7 @@ const roomSchema = new mongoose.Schema({
     ref: 'hotel',
     required: [true, 'Hotel ID is required']
   },
+  
   type: {
     type: String,
     required: [true, 'Room type is required'],

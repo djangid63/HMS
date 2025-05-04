@@ -105,7 +105,7 @@ exports.softDelete = async (req, res) => {
     }
 
     const hotel = await hotelModel.findById(id);
-
+    // console.log("Hotel", hotel);
     if (!hotel) {
       return res.status(404).json({
         success: false,
@@ -126,7 +126,6 @@ exports.softDelete = async (req, res) => {
       });
     }
 
-    // Update all rooms associated with this hotel to match the hotel's disabled status
     const roomUpdateResult = await roomModel.updateMany(
       { hotelId: id },
       { isDisable: disableHotel.isDisable }
@@ -165,6 +164,10 @@ exports.hardDelete = async (req, res) => {
         message: "Hotel not found"
       });
     }
+
+    const roomUpdateResult = await roomModel.deleteMany(
+      { hotelId: id },
+    );
 
     return res.status(200).json({
       success: true,
