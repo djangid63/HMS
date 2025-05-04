@@ -1,4 +1,5 @@
 const hotelModel = require('../Models/hotelModel')
+const roomModel = require('../Models/roomModel')
 
 exports.addHotel = async (req, res) => {
   try {
@@ -112,18 +113,25 @@ exports.softDelete = async (req, res) => {
       });
     }
 
-    const disabledLocation = await hotelModel.findByIdAndUpdate(
+    const disableHotel = await hotelModel.findByIdAndUpdate(
       id,
       { isDisable: !hotel.isDisable },
       { new: true }
     );
 
-    if (!disabledLocation) {
+    if (!disableHotel) {
       return res.status(404).json({
         success: false,
         message: "Hotel not found"
       });
     }
+
+    // Update all rooms associated with this hotel to match the hotel's disabled status
+    const roomUpdateResult = await roomModel.updateMany(
+      { hotelId: id },
+      { isDisable: disableHotel.isDisable }
+    );
+
 
     return res.status(200).json({
       success: true,
