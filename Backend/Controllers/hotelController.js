@@ -19,6 +19,7 @@ exports.getAllHotel = async (req, res) => {
       populate: {
         path: 'stateId',
         model: 'states'
+
       }
     });
     return res.status(200).json({ success: true, message: "Hotels fetched Successfully", data: hotelData })

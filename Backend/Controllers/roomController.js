@@ -38,6 +38,18 @@ exports.addRoom = async (req, res) => {
 exports.getAllRooms = async (req, res) => {
   try {
     const allRooms = await roomModel.find()
+      .populate({
+        path: 'hotelId',
+        populate: {
+          path: 'locationId',
+          model: 'locations',
+          populate: {
+            path: 'stateId',
+            model: 'states'
+          }
+        }
+      })
+
     return res.status(200).json({ status: true, message: "Fetched all the rooms", data: allRooms })
   } catch (error) {
     console.log("------- Fetch Room 22--------", error);

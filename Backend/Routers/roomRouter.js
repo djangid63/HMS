@@ -6,7 +6,7 @@ const roomController = require('../Controllers/roomController')
 
 router.post('/add', auth, roomController.addRoom)
 router.patch('/update/:id', auth, roomController.updateRoom)
-router.get('/getAll', auth, roomController.getAllRooms)
+router.get('/getAll', roomController.getAllRooms)
 router.post('/upload-images', auth, roomController.uploadImages)  // New route for image uploads
 
 router.delete('/delete/:id', auth, roomController.deleteRoom)

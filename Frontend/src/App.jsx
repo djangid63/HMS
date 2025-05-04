@@ -3,8 +3,8 @@ import Login from './Components/AuthComponents/Login'
 import Signup from './Components/AuthComponents/Signup'
 import OtpValidation from './Components/AuthComponents/OtpValidation'
 import ForgetPassword from './Components/AuthComponents/PasswordReset'
-import User from './Components/UserComponent/User'
 import Dashboard from './Pages/DashboardPage'
+import UserPage from './Pages/UserPage'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 const App = () => {
@@ -16,7 +16,7 @@ const App = () => {
         <Route path='/otp' element={<OtpValidation />} />
         <Route path='forgetPassword' element={<ForgetPassword />} />
         <Route path='dashboard' element={<Dashboard />} />
-        <Route path='user' element={<User />} />
+        <Route path='user' element={<UserPage />} />
       </Routes>
     </BrowserRouter>
   )
