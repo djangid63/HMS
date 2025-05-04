@@ -111,7 +111,7 @@ exports.softDelete = async (req, res) => {
       { stateId: id },
       { isDisable: disabledLocation.isDisable }
     );
-    console.log("disableLoaciton---------------", disableLocation);
+    // console.log("disableLoaciton---------------", disableLocation);
 
     return res.status(200).json({
       success: true,

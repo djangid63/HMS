@@ -1,4 +1,5 @@
 const locationModel = require('../Models/locationModel');
+const stateModel = require('../Models/stateModel');
 
 exports.addLocation = async (req, res) => {
   try {
@@ -90,6 +91,7 @@ exports.softDelete = async (req, res) => {
       });
     }
 
+
     const location = await locationModel.findById(id);
 
     if (!location) {
@@ -97,6 +99,16 @@ exports.softDelete = async (req, res) => {
         success: false,
         message: "Location not found"
       });
+    }
+
+    if (location.isDisable === true) {
+      const existingState = await stateModel.findById(location.stateId);
+      if (!existingState || existingState.isDisable === true) {
+        return res.status(404).json({
+          success: false,
+          message: "Cannot enable this location because its associated state is not found or is disabled"
+        });
+      }
     }
 
     const disabledLocation = await locationModel.findByIdAndUpdate(
@@ -111,6 +123,7 @@ exports.softDelete = async (req, res) => {
         message: "Location not found"
       });
     }
+
 
     return res.status(200).json({
       success: true,

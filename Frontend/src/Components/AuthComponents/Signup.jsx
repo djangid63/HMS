@@ -42,9 +42,9 @@ const SignUp = () => {
       // API call would go here
       const response = await axios.post(`${BASE_URL}/user/signup`, formData)
       if (response.data.success) {
-        alert('Account created')
+        alert('Otp Successfully send to your email')
         navigate('/otp', { state: { email: formData.email } });
-     
+
       }
     } catch (err) {
       setError(err.message || 'Something went wrong');

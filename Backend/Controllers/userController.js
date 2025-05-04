@@ -14,17 +14,17 @@ exports.SignUpUser = async (req, res) => {
     if (isMailExists) {
       return res.status(409).json({ status: false, message: "Email already exists" })
     }
-
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt)
-
     const otp = Math.floor((Math.random() * 9000) + (1000 - 1));
     const currTimer = moment()
     const otpTimer = currTimer.clone().add(10, "minutes");
 
-    const emailSent = await sendOtpEmail(email, otp, firstname);
-    if (!emailSent) {
-      return res.status(500).json({ message: "Failed to send OTP email" });
+    if (!role || role === '' || role === 'user') {
+      const emailSent = await sendOtpEmail(email, otp, firstname);
+      if (!emailSent) {
+        return res.status(500).json({ success: false, message: "Failed to send OTP email" });
+      }
     }
 
     const signData = new userModel({

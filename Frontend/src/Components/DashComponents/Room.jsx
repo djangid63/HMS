@@ -210,8 +210,8 @@ const Room = () => {
     try {
       const hotel = hotels.find(h => h._id === room.hotelId);
       if (hotel) {
-        console.log("hotel---------->>>>", hotel);
-        console.log("room images:", room.imageUrls); // Log room images for debugging
+        // console.log("hotel---------->>>>", hotel);
+        // console.log("room images:", room.imageUrls); 
         setHotelDetails(hotel);
         setShowModal(true);
       }
