@@ -82,7 +82,8 @@ const Room = () => {
       const response = await axios.get(`${BASE_URL}/room/getAll`, config);
       const roomData = response.data.data || [];
       setRooms(roomData);
-      setFilteredRooms(roomData); // Initialize filtered rooms with all rooms
+      setFilteredRooms(roomData);
+      // console.log(roomData);
     } catch (error) {
       console.error('Error fetching rooms:', error);
     }
@@ -281,7 +282,8 @@ const Room = () => {
                   <tr key={room._id}>
                     <td className="px-6 py-4 whitespace-nowrap">{room.roomNumber}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {hotels.find(h => h._id === room.hotelId)?.name || 'Unknown'}
+                      {/* {hotels.find(h => h._id === room.hotelId)?.name || 'Unknown'} */}
+                      {room.hotelId.name || 'Not found'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{room.type}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{room.capacity}</td>
@@ -317,12 +319,12 @@ const Room = () => {
                       >
                         {room.isDisable ? 'Enable' : 'Disable'}
                       </button>
-                      <button
+                      {/* <button
                         onClick={() => handleViewMore(room)}
                         className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                       >
                         View More
-                      </button>
+                      </button> */}
                     </td>
                   </tr>
                 ))

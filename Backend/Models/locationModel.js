@@ -13,7 +13,7 @@ const locationSchema = new Schema({
   },
   code: {
     type: String,
-    require: true,
+    require: true,  
   },
   isDisable: {
     type: Boolean,

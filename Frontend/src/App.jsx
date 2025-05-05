@@ -5,7 +5,9 @@ import OtpValidation from './Components/AuthComponents/OtpValidation'
 import ForgetPassword from './Components/AuthComponents/PasswordReset'
 import Dashboard from './Pages/DashboardPage'
 import UserPage from './Pages/UserPage'
+import RoomListing from './Components/UserComponents/RoomListing'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import RoomBooking from './Pages/BookingPage'
 
 const App = () => {
   return (
@@ -17,6 +19,8 @@ const App = () => {
         <Route path='forgetPassword' element={<ForgetPassword />} />
         <Route path='dashboard' element={<Dashboard />} />
         <Route path='user' element={<UserPage />} />
+        <Route path='/roomlist/:hotelId' element={<RoomListing />} />
+        <Route path='/roomBooking/:roomId' element={<RoomBooking />} />
       </Routes>
     </BrowserRouter>
   )

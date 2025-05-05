@@ -1,0 +1,188 @@
+import React, { useState } from 'react'
+import SearchNavBar from '../Components/UserComponents/BookNavbar'
+import { useParams } from 'react-router-dom'
+
+
+const RoomBooking = () => {
+  const { roomId } = useParams()
+
+  const [formData, setFormData] = useState({
+    userId: '',
+    hotelId: '',
+    roomId: '',
+    checkInDate: '',
+    checkOutDate: '',
+    numberOfGuests: '',
+    totalAmount: '',
+    userName: '',
+    userPhone: ''
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    // Add your form submission logic here
+  };
+  return (
+    <div className="bg-gray-50 min-h-screen w-full bg-gradient-to-r from-amber-500 via-orange-400 to-amber-500">
+      {/* SearchNavBar component */}
+      {/* <div>
+        <SearchNavBar roomId={roomId} />
+      </div> */}
+
+      {/* Booking form container */}
+      <div className="px-4 py-4 flex items-center justify-center">
+        <div className="max-w-3xl w-full bg-white rounded-2xl shadow-xl p-8 md:p-10 transform transition-all hover:shadow-2xl">
+          <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-amber-500 to-amber-400 bg-clip-text text-transparent">
+            Book Your Stay
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="userId" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">User ID</label>
+                <input
+                  type="text"
+                  id="userId"
+                  name="userId"
+                  value={formData.userId}
+                  onChange={handleChange}
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="hotelId" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Hotel ID</label>
+                <input
+                  type="text"
+                  id="hotelId"
+                  name="hotelId"
+                  value={formData.hotelId}
+                  onChange={handleChange}
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="roomId" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Room ID</label>
+                <input
+                  type="text"
+                  id="roomId"
+                  name="roomId"
+                  value={formData.roomId}
+                  onChange={handleChange}
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="numberOfGuests" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Number of Guests</label>
+                <input
+                  type="number"
+                  id="numberOfGuests"
+                  name="numberOfGuests"
+                  value={formData.numberOfGuests}
+                  onChange={handleChange}
+                  min="1"
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="checkInDate" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Check-in Date</label>
+                <input
+                  type="date"
+                  id="checkInDate"
+                  name="checkInDate"
+                  value={formData.checkInDate}
+                  onChange={handleChange}
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="checkOutDate" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Check-out Date</label>
+                <input
+                  type="date"
+                  id="checkOutDate"
+                  name="checkOutDate"
+                  value={formData.checkOutDate}
+                  onChange={handleChange}
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="totalAmount" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Total Amount ($)</label>
+              <input
+                type="number"
+                id="totalAmount"
+                name="totalAmount"
+                value={formData.totalAmount}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="userName" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Full Name</label>
+                <input
+                  type="text"
+                  id="userName"
+                  name="userName"
+                  value={formData.userName}
+                  onChange={handleChange}
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="userPhone" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Phone Number</label>
+                <input
+                  type="tel"
+                  id="userPhone"
+                  name="userPhone"
+                  value={formData.userPhone}
+                  onChange={handleChange}
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-center mt-8">
+              <button
+                type="submit"
+                className="px-8 py-3 bg-gradient-to-r from-amber-500 via-orange-400 to-amber-500 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 transform transition-all hover:scale-105 shadow-md"
+              >
+                Confirm Booking
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default RoomBooking
