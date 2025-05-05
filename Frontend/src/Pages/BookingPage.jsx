@@ -46,26 +46,14 @@ const RoomBooking = () => {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
               <div>
-                <label htmlFor="userId" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">User ID</label>
+                <label htmlFor="hotelName" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Hotel</label>
                 <input
                   type="text"
-                  id="userId"
-                  name="userId"
-                  value={formData.userId}
-                  onChange={handleChange}
-                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="hotelId" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Hotel ID</label>
-                <input
-                  type="text"
-                  id="hotelId"
-                  name="hotelId"
-                  value={formData.hotelId}
+                  id="hotelName"
+                  name="hotelName"
+                  value={formData.hotelName}
                   onChange={handleChange}
                   className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
                   required
