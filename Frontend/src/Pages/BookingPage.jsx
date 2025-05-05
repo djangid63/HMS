@@ -46,7 +46,19 @@ const RoomBooking = () => {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="userName" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Full Name</label>
+                <input
+                  type="text"
+                  id="userName"
+                  name="userName"
+                  value={formData.userName}
+                  onChange={handleChange}
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  required
+                />
+              </div>
               <div>
                 <label htmlFor="hotelName" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Hotel</label>
                 <input
@@ -63,12 +75,12 @@ const RoomBooking = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="roomId" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Room ID</label>
+                <label htmlFor="type" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Room Type</label>
                 <input
                   type="text"
-                  id="roomId"
-                  name="roomId"
-                  value={formData.roomId}
+                  id="type"
+                  name="type"
+                  value={formData.type}
                   onChange={handleChange}
                   className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
                   required
@@ -115,47 +127,35 @@ const RoomBooking = () => {
                 />
               </div>
             </div>
-
             <div>
-              <label htmlFor="totalAmount" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Total Amount ($)</label>
+              <label htmlFor="userPhone" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Phone Number</label>
               <input
-                type="number"
-                id="totalAmount"
-                name="totalAmount"
-                value={formData.totalAmount}
+                type="tel"
+                id="userPhone"
+                name="userPhone"
+                value={formData.userPhone}
                 onChange={handleChange}
-                min="0"
-                step="0.01"
                 className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
                 required
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
               <div>
-                <label htmlFor="userName" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Full Name</label>
+                <label htmlFor="totalAmount" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Total Amount ($)</label>
                 <input
-                  type="text"
-                  id="userName"
-                  name="userName"
-                  value={formData.userName}
+                  type="number"
+                  id="totalAmount"
+                  name="totalAmount"
+                  value={formData.totalAmount}
                   onChange={handleChange}
+                  min="0"
+                  step="0.01"
                   className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
                   required
                 />
               </div>
-              <div>
-                <label htmlFor="userPhone" className="block text-sm text-gray-700 mb-2 font-medium tracking-wide">Phone Number</label>
-                <input
-                  type="tel"
-                  id="userPhone"
-                  name="userPhone"
-                  value={formData.userPhone}
-                  onChange={handleChange}
-                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
-                  required
-                />
-              </div>
+
             </div>
 
             <div className="flex justify-center mt-8">
