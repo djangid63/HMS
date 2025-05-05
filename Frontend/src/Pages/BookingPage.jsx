@@ -1,10 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import SearchNavBar from '../Components/UserComponents/BookNavbar'
 import { useParams } from 'react-router-dom'
-
+import axios from 'axios'
+import BASE_URL from '../Utils/api'
 
 const RoomBooking = () => {
   const { roomId } = useParams()
+  const [rooms, setRooms] = useState([])
+  const [location, setLocation] = useState('')
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const roomList = await axios.get(`${BASE_URL}/room/getAll`);
+        const filterRoom = roomList.data.data.filter((room) => room._id == roomId)
+        setRooms(filterRoom)
+        console.log(filterRoom);
+        setLocation(filterRoom.map((room) => room.hotelId.name))
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchRooms();
+  }, []);
 
   const [formData, setFormData] = useState({
     userId: '',
@@ -65,9 +82,9 @@ const RoomBooking = () => {
                   type="text"
                   id="hotelName"
                   name="hotelName"
-                  value={formData.hotelName}
-                  onChange={handleChange}
-                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  value={location}
+                  readOnly
+                  className="w-full rounded-lg px-4 py-3 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200 bg-gray-100 cursor-not-allowed"
                   required
                 />
               </div>
@@ -82,6 +99,7 @@ const RoomBooking = () => {
                   name="type"
                   value={formData.type}
                   onChange={handleChange}
+                  readOnly
                   className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
                   required
                 />
@@ -148,9 +166,9 @@ const RoomBooking = () => {
                   id="totalAmount"
                   name="totalAmount"
                   value={formData.totalAmount}
-                  onChange={handleChange}
                   min="0"
                   step="0.01"
+                  readOnly
                   className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
                   required
                 />
