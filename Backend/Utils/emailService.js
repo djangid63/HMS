@@ -97,4 +97,39 @@ const sendStatusUpdateEmail = async (email, firstname, lastname, title, status) 
   }
 };
 
-module.exports = { sendOtpEmail, sendCreationEmail, sendStatusUpdateEmail };
+const bookingSuccess = async (req, res) => {
+  try {
+    const transporter = createTransporter();
+    const statusText = status === 'completed' ? 'completed' : 'marked as pending';
+    const colorStyle = status === 'completed' ? '#4CAF50' : '#FFC107';
+
+    const { email, firstname, lastname, hotelName, bookingId, checkInDate, checkOutDate } = req.body;
+
+    const mailOptions = {
+      from: process.env.GMAIL_USER,
+      to: email,
+      subject: `Booking Confirmed: ${hotelName}`,
+      html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+      <h2>Hello ${firstname} ${lastname},</h2>
+      <p>Your booking at <strong>${hotelName}</strong> has been <span style="color: #4CAF50;">confirmed</span>!</p>
+      <div style="background-color: #f8f9fa; padding: 15px; margin: 20px 0; border-left: 4px solid #4CAF50;">
+        <p><strong>Booking ID:</strong> ${bookingId}</p>
+        <p><strong>Check-in:</strong> ${checkInDate}</p>
+        <p><strong>Check-out:</strong> ${checkOutDate}</p>
+      </div>
+      <p>We look forward to hosting you. If you have any questions or need assistance, please contact our support team.</p>
+      <p style="margin-top: 20px; color: #666;">Thank you for choosing our hotel!</p>
+      </div>
+      `
+    };
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Status update email sent: ', info.messageId);
+    return true;
+  } catch (error) {
+    console.error('Error sending status update email: ', error);
+    return false;
+  }
+}
+
+module.exports = { sendOtpEmail, sendCreationEmail, sendStatusUpdateEmail, bookingSuccess };
