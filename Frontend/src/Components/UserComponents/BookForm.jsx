@@ -59,7 +59,6 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
     };
 
     try {
-      // TODO: Replace with your actual API endpoint for creating a booking
       const response = await axios.post(`${BASE_URL}/booking/add`, bookingData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in localStorage

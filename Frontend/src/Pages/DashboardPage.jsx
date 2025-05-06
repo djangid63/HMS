@@ -3,6 +3,7 @@ import Location from '../Components/DashComponents/location';
 import Room from '../Components/DashComponents/Room'
 import State from '../Components/DashComponents/State'
 import Hotel from './../Components/DashComponents/Hotel';
+import BookingPanel from '../Components/DashComponents/BookingPanel';
 import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +11,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
   const navigate = useNavigate()
 
-  
+
   // Simple placeholder component that shows when a sidebar option is clicked
   const ComponentPlaceholder = ({ title }) => (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -33,6 +34,10 @@ const Dashboard = () => {
     else if (activeTab === 'addRooms') {
       return <Room />
     }
+    else if (activeTab === 'bookingPanel') {
+      return <BookingPanel />
+    }
+
     return <ComponentPlaceholder title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} />;
   };
 
@@ -54,12 +59,12 @@ const Dashboard = () => {
           <ul className="space-y-2">
             <li>
               <button
-                onClick={() => setActiveTab('dashboard')}
-                className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'dashboard' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                onClick={() => setActiveTab('bookingPanel')}
+                className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'bookingPanel' ? 'bg-blue-600' : 'hover:bg-gray-700'
                   }`}
               >
                 <FaHotel className="mr-3" />
-                <span>Dashboard</span>
+                <span>Booking Panel</span>
               </button>
             </li>
             <li>
