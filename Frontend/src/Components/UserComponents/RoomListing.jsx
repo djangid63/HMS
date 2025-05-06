@@ -57,7 +57,7 @@ function RoomListingPage() {
   }, []);
 
   const navigateToRoomBooking = (roomId) => {
-    navigate(`/roomBooking/${roomId}`)
+    navigate(`/roomDetails/${roomId}`)
   }
 
   return (
@@ -123,7 +123,7 @@ function RoomListingPage() {
 
                   <div className="mt-5">
                     <button onClick={() => navigateToRoomBooking(room._id)} className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2 rounded-lg transition-all shadow-md hover:shadow-lg">
-                      Book Now
+                      Show Details
                     </button>
                   </div>
                 </div>

@@ -21,8 +21,7 @@ const App = () => {
         <Route path='dashboard' element={<Dashboard />} />
         <Route path='user' element={<UserPage />} />
         <Route path='/roomlist/:hotelId' element={<RoomListing />} />
-        <Route path='/roomBooking/:roomId' element={<RoomBooking />} />
-        <Route path='/RoomDetails' element={<RoomDetails />} />
+        <Route path='/roomDetails/:roomId' element={<RoomDetails />} />
       </Routes>
     </BrowserRouter>
   )

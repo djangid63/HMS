@@ -250,12 +250,12 @@ const SignUp = () => {
             {/* Or divider */}
             <div className="flex items-center justify-center my-3">
               <div className="flex-grow border-t border-gray-200"></div>
-              <span className="px-3 text-xs text-gray-400 font-medium">Or continue with</span>
+              <span className="px-3 text-xs text-gray-400 font-medium">Or </span>
               <div className="flex-grow border-t border-gray-200"></div>
             </div>
 
             {/* Social Login Options */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               <button type="button" className="flex items-center justify-center border border-gray-200 bg-white rounded-lg py-2 px-3 hover:bg-gray-50 hover:shadow-sm text-sm transition-all">
                 <img src="https://cdn.cdnlogo.com/logos/g/35/google-icon.svg" alt="Google" className="h-4 w-4 mr-2" />
                 <span className="text-gray-700 font-medium">Google</span>
@@ -264,7 +264,7 @@ const SignUp = () => {
                 <img src="https://cdn.cdnlogo.com/logos/a/92/apple.svg" alt="Apple" className="h-4 w-4 mr-2" />
                 <span className="text-gray-700 font-medium">Apple</span>
               </button>
-            </div>
+            </div> */}
           </form>
 
           <div className="text-center text-sm text-gray-500 mt-4">

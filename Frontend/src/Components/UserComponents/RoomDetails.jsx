@@ -1,40 +1,76 @@
-import React, { useState } from "react";
-
-const tabs = ["Overview", "Details", "Amenities", "Reviews", "Location"];
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import BASE_URL from "../../Utils/api";
+const tabs = ["Overview", "Amenities", "Reviews", "Location"];
 
 const RoomDetail = () => {
-
+  const { roomId } = useParams()
   const [activeTab, setActiveTab] = useState("Overview");
+  const [selectedRoom, setSelectedRoom] = useState([])
+
+  useEffect(() => {
+
+    const fetchRoom = async () => {
+      const response = await axios.get(`${BASE_URL}/room/getAll`)
+      const filterRoom = response.data.data.filter((room) => room._id == roomId)
+      setSelectedRoom(filterRoom)
+      console.log("room", filterRoom)
+
+    }
+    fetchRoom()
+  }, [])
 
   const renderContent = () => {
     switch (activeTab) {
       case "Overview":
         return (
-          <p className="text-gray-700">
-            Enjoy a luxurious stay in our Deluxe Room with modern amenities and a stunning city view.
-            Spacious and elegantly designed, this room includes a king-sized bed, ensuite bathroom, and a private balcony.
-          </p>
-        );
-      case "Details":
-        return (
-          <ul className="list-disc list-inside text-gray-700 space-y-1">
-            <li>Room Size: 400 sq ft</li>
-            <li>Bed Type: King Size</li>
-            <li>Occupancy: 2 Adults + 1 Child</li>
-            <li>View: Cityscape</li>
-            <li>Bathroom: Ensuite with Rain Shower</li>
-          </ul>
+          selectedRoom[0] ? (
+            <div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">Images</h3>
+                {selectedRoom[0].imageUrls
+                  && selectedRoom[0].imageUrls
+                    .length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {selectedRoom[0].imageUrls
+                      .map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`Room image ${index + 1}`}
+                          className="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+                        />
+                      ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No images available for this room.</p>
+                )}
+              </div>
+              <div className="py-4">
+                <p className="text-gray-700 mb-4">
+                  {selectedRoom[0].description}
+                </p>
+                <div className="mb-4">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">Room Details</h3>
+                  <p className="text-gray-600"><span className="font-medium">Type:</span> {selectedRoom[0].roomType}</p>
+                  <p className="text-gray-600"><span className="font-medium">Price:</span> ₹{selectedRoom[0].price} / night</p>
+                </div>
+
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-700">Loading...</p>
+          )
         );
       case "Amenities":
         return (
           <ul className="list-disc list-inside text-gray-700 space-y-1">
-            <li>Free Wi-Fi</li>
-            <li>Air Conditioning</li>
-            <li>Mini Bar</li>
-            <li>Flat Screen TV</li>
-            <li>Room Service</li>
-            <li>Private Balcony</li>
-            <li>24/7 Front Desk</li>
+            {selectedRoom[0].amenities
+              .map((amentie, index) => (
+                <li key={index} >{amentie}</li>
+              ))
+            }
           </ul>
         );
       case "Reviews":
