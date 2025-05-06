@@ -7,7 +7,6 @@ import Dashboard from './Pages/DashboardPage'
 import UserPage from './Pages/UserPage'
 import RoomListing from './Components/UserComponents/RoomListing'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import RoomBooking from './Pages/BookingPage'
 import RoomDetails from './Components/UserComponents/RoomDetails'
 
 const App = () => {

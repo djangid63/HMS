@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import SearchNavBar from '../Components/UserComponents/BookNavbar'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import BASE_URL from '../Utils/api'
@@ -64,7 +63,7 @@ const RoomBooking = () => {
     const end = new Date(checkOut);
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays || 1; 
+    return diffDays || 1;
   };
 
   // Calculate total amount when dates change
