@@ -282,8 +282,8 @@ const Room = () => {
                   <tr key={room._id}>
                     <td className="px-6 py-4 whitespace-nowrap">{room.roomNumber}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {/* {hotels.find(h => h._id === room.hotelId)?.name || 'Unknown'} */}
-                      {room.hotelId.name || 'Not found'}
+                      {hotels.find(h => h._id === room.hotelId)?.name || 'Unknown'}
+                      {/* {room.hotelId.name || 'Not found'} */}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{room.type}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{room.capacity}</td>

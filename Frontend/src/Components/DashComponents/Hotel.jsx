@@ -290,21 +290,6 @@ const Hotel = () => {
             ></textarea>
           </div>
 
-          {/* Is Disable */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Is Disable</label>
-            <select
-              name="isDisable"
-              value={formData.isDisable}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              required
-            >
-              <option value={false}>No</option>
-              <option value={true}>Yes</option>
-            </select>
-          </div>
-
           <div className="flex justify-end">
             {isEditing && (
               <button

@@ -8,6 +8,7 @@ import UserPage from './Pages/UserPage'
 import RoomListing from './Components/UserComponents/RoomListing'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import RoomBooking from './Pages/BookingPage'
+import RoomDetails from './Components/UserComponents/RoomDetails'
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
         <Route path='user' element={<UserPage />} />
         <Route path='/roomlist/:hotelId' element={<RoomListing />} />
         <Route path='/roomBooking/:roomId' element={<RoomBooking />} />
+        <Route path='/RoomDetails' element={<RoomDetails />} />
       </Routes>
     </BrowserRouter>
   )
