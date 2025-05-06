@@ -8,32 +8,76 @@ const RoomBooking = () => {
   const { roomId } = useParams()
   const [rooms, setRooms] = useState([])
   const [location, setLocation] = useState('')
+  const [roomPrice, setRoomPrice] = useState(0)
+  const [roomType, setRoomType] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  const token = localStorage.getItem('token')
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  }
+
   useEffect(() => {
     const fetchRooms = async () => {
       try {
         const roomList = await axios.get(`${BASE_URL}/room/getAll`);
         const filterRoom = roomList.data.data.filter((room) => room._id == roomId)
         setRooms(filterRoom)
-        console.log(filterRoom);
-        setLocation(filterRoom.map((room) => room.hotelId.name))
+
+        if (filterRoom.length > 0) {
+          setLocation(filterRoom[0].hotelId.name)
+          setRoomPrice(filterRoom[0].price || 0)
+          setRoomType(filterRoom[0].type || '')
+
+          setFormData(prev => ({
+            ...prev,
+            roomId: roomId,
+            type: filterRoom[0].type || ''
+          }))
+        }
       } catch (error) {
         console.error(error);
+        setError('Failed to fetch room details');
       }
     };
     fetchRooms();
-  }, []);
+  }, [roomId]);
 
   const [formData, setFormData] = useState({
-    userId: '',
-    hotelId: '',
-    roomId: '',
+    roomId: roomId,
     checkInDate: '',
     checkOutDate: '',
     numberOfGuests: '',
     totalAmount: '',
     userName: '',
-    userPhone: ''
+    userPhone: '',
+    type: ''
   });
+
+  const calculateDays = (checkIn, checkOut) => {
+    if (!checkIn || !checkOut) return 0;
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays || 1; 
+  };
+
+  // Calculate total amount when dates change
+  useEffect(() => {
+    if (formData.checkInDate && formData.checkOutDate) {
+      const days = calculateDays(formData.checkInDate, formData.checkOutDate);
+      const total = days * roomPrice;
+      setFormData(prev => ({
+        ...prev,
+        totalAmount: total
+      }));
+    }
+  }, [formData.checkInDate, formData.checkOutDate, roomPrice]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,13 +85,72 @@ const RoomBooking = () => {
       ...prev,
       [name]: value
     }));
+
+    setError('');
+    setSuccess('');
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add your form submission logic here
+  const validateForm = () => {
+    const { checkInDate, checkOutDate, numberOfGuests, userName, userPhone } = formData;
+
+    if (!checkInDate || !checkOutDate) {
+      setError('Please select check-in and check-out dates');
+      return false;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (new Date(checkInDate) < today) {
+      setError('Check-in date cannot be in the past');
+      return false;
+    }
+
+    if (new Date(checkOutDate) <= new Date(checkInDate)) {
+      setError('Check-out date must be after check-in date');
+      return false;
+    }
+
+    if (!numberOfGuests || numberOfGuests < 1) {
+      setError('Please enter at least 1 guest');
+      return false;
+    }
+
+    if (!userName.trim()) {
+      setError('Please enter your name');
+      return false;
+    }
+
+    if (!userPhone || userPhone.length < 10) {
+      setError('Please enter a valid phone number');
+      return false;
+    }
+
+    return true;
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.post(`${BASE_URL}/booking/add`, formData, config);
+      console.log(response.data);
+      setSuccess('Booking confirmed successfully!');
+    } catch (error) {
+      console.error('Booking error:', error.response?.data?.message || error.message);
+      setError(error.response?.data?.message || 'Failed to submit booking. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen w-full bg-gradient-to-r from-amber-500 via-orange-400 to-amber-500">
       {/* SearchNavBar component */}
@@ -61,6 +164,18 @@ const RoomBooking = () => {
           <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-amber-500 to-amber-400 bg-clip-text text-transparent">
             Book Your Stay
           </h2>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700">
+              {success}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -97,10 +212,9 @@ const RoomBooking = () => {
                   type="text"
                   id="type"
                   name="type"
-                  value={formData.type}
-                  onChange={handleChange}
+                  value={roomType}
                   readOnly
-                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200 bg-gray-100 cursor-not-allowed"
                   required
                 />
               </div>
@@ -128,6 +242,7 @@ const RoomBooking = () => {
                   name="checkInDate"
                   value={formData.checkInDate}
                   onChange={handleChange}
+                  min={new Date().toISOString().split('T')[0]}
                   className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
                   required
                 />
@@ -140,6 +255,7 @@ const RoomBooking = () => {
                   name="checkOutDate"
                   value={formData.checkOutDate}
                   onChange={handleChange}
+                  min={formData.checkInDate || new Date().toISOString().split('T')[0]}
                   className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
                   required
                 />
@@ -166,22 +282,25 @@ const RoomBooking = () => {
                   id="totalAmount"
                   name="totalAmount"
                   value={formData.totalAmount}
-                  min="0"
-                  step="0.01"
                   readOnly
-                  className="w-full rounded-lg px-4 py-3 bg-gray-50 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200"
+                  className="w-full rounded-lg px-4 py-3 bg-gray-100 border border-gray-200 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 transition duration-200 cursor-not-allowed"
                   required
                 />
+                <p className="text-sm text-gray-500 mt-1">
+                  {formData.checkInDate && formData.checkOutDate
+                    ? `${calculateDays(formData.checkInDate, formData.checkOutDate)} nights at $${roomPrice}/night`
+                    : 'Select dates to calculate total'}
+                </p>
               </div>
-
             </div>
 
             <div className="flex justify-center mt-8">
               <button
                 type="submit"
-                className="px-8 py-3 bg-gradient-to-r from-amber-500 via-orange-400 to-amber-500 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 transform transition-all hover:scale-105 shadow-md"
+                disabled={loading}
+                className={`px-8 py-3 bg-gradient-to-r from-amber-500 via-orange-400 to-amber-500 text-white rounded-lg font-semibold ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:from-amber-600 hover:to-amber-600 transform hover:scale-105'} focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 transition-all shadow-md`}
               >
-                Confirm Booking
+                {loading ? 'Processing...' : 'Confirm Booking'}
               </button>
             </div>
           </form>

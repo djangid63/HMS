@@ -30,6 +30,15 @@ const bookingSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+    status: {
+      type: String,
+      default: 'pending'
+    },
+    isChecking: {
+      type: String,
+      enum: ['Pending', 'Confirm', 'Cancel']
+    }
+
   },
   { timestamps: true, versionKey: false }
 );

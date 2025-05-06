@@ -24,6 +24,7 @@ const locationRouter = require('./Routers/locationRouter')
 const stateRouter = require('./Routers/stateRouter')
 const hotelRouter = require('./Routers/hotelRouter')
 const roomRouter = require('./Routers/roomRouter')
+const bookingRouter = require('./Routers/bookingRouter')
 
 
 mongoose.connect(mongoURL)
@@ -36,6 +37,7 @@ app.use('/location', locationRouter)
 app.use('/state', stateRouter)
 app.use('/hotel', hotelRouter)
 app.use('/room', roomRouter)
+app.use('/booking', bookingRouter)
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)

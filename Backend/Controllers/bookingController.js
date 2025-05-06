@@ -10,7 +10,6 @@ exports.getBooking = async (req, res) => {
   }
 }
 
-
 exports.addBooking = async (req, res) => {
   try {
     const booking = new bookingModel(req.body);
