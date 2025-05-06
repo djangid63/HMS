@@ -14,31 +14,27 @@ const BookingPanel = () => {
     },
   };
 
+  const fetchBooking = async () => {
+    const response = await axios.get(`${BASE_URL}/booking/getAll`, config);
+    setBookings(response.data.data);
+  };
   useEffect(() => {
-    const fetchBooking = async () => {
-      const response = await axios.get(`${BASE_URL}/booking/getAll`, config);
-      setBookings(response.data.data);
-    };
     fetchBooking();
   }, []);
 
   const handleStatusChange = async (id, newStatus) => {
-    const updatedBookings = bookings.map((booking) =>
-      booking._id === id ? { ...booking, status: newStatus } : booking
-    );
+
     try {
       await axios.patch(
-      `${BASE_URL}/booking/update/${id}`,
-      { status: newStatus },
-      config
+        `${BASE_URL}/booking/update/${id}`,
+        { status: newStatus },
+        config
       );
     } catch (error) {
       console.error("Failed to update booking status:", error);
     }
 
-
-
-    setBookings(updatedBookings);
+    fetchBooking()
   };
 
   const getStatusBadge = (status) => {
