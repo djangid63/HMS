@@ -4,13 +4,31 @@ import { useParams } from "react-router-dom";
 import BASE_URL from "../../Utils/api";
 import BookForm from "./BookForm";
 const tabs = ["Overview", "Amenities", "Reviews", "Location"];
+import { jwtDecode } from "jwt-decode";
 
 const RoomDetail = () => {
   const { roomId } = useParams();
   const [activeTab, setActiveTab] = useState("Overview");
   const [selectedRoom, setSelectedRoom] = useState([]);
+  const [user, setUser] = useState()
+
+  const token = localStorage.getItem('token')
+  const decoded = jwtDecode(token);
+  console.log(decoded);
+
+
 
   useEffect(() => {
+
+    const fetchUser = async () => {
+      const response = await axios.get(`${BASE_URL}/user/getAll`)
+      const userData = response.data.data.filter((user) => user.email == decoded.email);
+
+      setUser(userData)
+    }
+
+
+
     const fetchRoom = async () => {
       const response = await axios.get(`${BASE_URL}/room/getAll`);
       const filterRoom = response.data.data.filter((room) => room._id == roomId);
@@ -18,7 +36,10 @@ const RoomDetail = () => {
       console.log("room", filterRoom);
     };
     fetchRoom();
+    fetchUser()
   }, []);
+  if (user)
+    console.log("user", user);
 
   const renderContent = () => {
     switch (activeTab) {

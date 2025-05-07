@@ -204,3 +204,18 @@ exports.resetPassword = async (req, res) => {
     });
   }
 }
+
+exports.getUser = async (req, res) => {
+  try {
+    const userData = await userModel.find()
+    return res.status(201).json({ success: true, message: "User successfully fetched", data: userData })
+  } catch (error) {
+    console.log("User fetch failed:", error);
+    return res.status(500).json({
+      success: false,
+      message: "User fetch failed",
+      error: error.message || "An unexpected error occurred"
+    });
+  }
+
+}
