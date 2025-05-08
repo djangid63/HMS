@@ -44,9 +44,18 @@ const BookingPanel = () => {
     return `${base} bg-yellow-100 text-yellow-700`;
   };
 
-  const filteredBookings = bookings.filter((b) =>
-    activeTab === "pending" ? b.status === "Pending" : b.status === "Approved"
-  );
+  const filteredBookings = bookings.filter((b) => {
+
+    if (activeTab === 'pending') {
+      return b.status === 'Pending';
+    } else if (activeTab === 'approved') {
+      return b.status === 'Approved';
+    } else if (activeTab === 'rejected') {
+      return b.status === 'Rejected';
+    }
+
+
+  });
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
@@ -72,6 +81,15 @@ const BookingPanel = () => {
             onClick={() => setActiveTab("approved")}
           >
             Approved Requests
+          </button>
+          <button
+            className={`px-4 py-2 rounded-lg font-medium ${activeTab === "rejected"
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700 border border-gray-300"
+              } transition`}
+            onClick={() => setActiveTab("rejected")}
+          >
+            Rejected Requests
           </button>
         </div>
 
