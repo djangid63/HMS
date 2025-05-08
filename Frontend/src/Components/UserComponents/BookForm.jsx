@@ -9,6 +9,7 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
   const [numberOfGuests, setNumberOfGuests] = useState(1);
+  const [userPhone, setUserPhone] = useState('')
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -53,7 +54,7 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
       checkInDate,
       checkOutDate,
       numberOfGuests,
-      userPhone: 85214632,
+      userPhone,
       userName: 'DJ',
       totalAmount: price * Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24)),
     };
@@ -61,13 +62,12 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
     try {
       const response = await axios.post(`${BASE_URL}/booking/add`, bookingData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in localStorage
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       setSuccess('Booking successful! You will be redirected shortly.');
-      // Optionally, redirect to a confirmation page or user's bookings page
       setTimeout(() => {
-        navigate('/my-bookings'); // Example redirect
+        navigate('/my-bookings');
       }, 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create booking. Please try again.');
@@ -86,7 +86,7 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
             id="checkInDate"
             value={checkInDate}
             onChange={(e) => setCheckInDate(e.target.value)}
-            min={new Date().toISOString().split('T')[0]} // Prevent selecting past dates
+            min={new Date().toISOString().split('T')[0]}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             required
           />
@@ -98,7 +98,7 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
             id="checkOutDate"
             value={checkOutDate}
             onChange={(e) => setCheckOutDate(e.target.value)}
-            min={checkInDate || new Date().toISOString().split('T')[0]} // Prevent selecting dates before check-in
+            min={checkInDate || new Date().toISOString().split('T')[0]}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             required
           />
@@ -111,6 +111,17 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
             value={numberOfGuests}
             onChange={(e) => setNumberOfGuests(parseInt(e.target.value, 10))}
             min="1"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor='contact' className="block text-sm font-medium text-gray-700 mb-1">Contact No</label>
+          <input
+            type='tel'
+            id='contact'
+            value={userPhone}
+            onChange={(e) => setUserPhone(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             required
           />
