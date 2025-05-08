@@ -93,7 +93,7 @@ function RoomListingPage() {
                 <div className="p-5">
                   <div className="flex justify-between items-center">
                     <h2 className="text-xl font-bold text-gray-800 ">{room.hotelId?.name}</h2>
-                    <p className="text-gray-800 text-xs font-semibold bg-green-500 px-2 py-1 text-center w-fit rounded-xl">{room.isAvailable == true ? "Available" : "Booked"}</p>
+                    <p className={`text-gray-600 text-xs font-semibold ${room.isAvailable == true ? "bg-green-500" : "bg-red-500"} px-2 py-1 text-center w-fit rounded-xl`}>{room.isAvailable == true ? "Available" : "Not Available"}</p>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-4">
                     <div className="flex items-center text-sm text-gray-600">

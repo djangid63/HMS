@@ -3,7 +3,7 @@ import axios from 'axios';
 import BASE_URL from '../../Utils/api';
 import { useNavigate } from 'react-router-dom';
 
-const BookForm = ({ price, roomId, hotelId, capacity }) => {
+const BookForm = ({ price, roomId, capacity, hotelId }) => {
   const navigate = useNavigate();
 
   const [checkInDate, setCheckInDate] = useState('');
@@ -73,7 +73,7 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
       });
 
       setSuccess('Booking successful! You will be redirected shortly.');
-      
+
       setTimeout(() => {
         navigate('/my-bookings');
       }, 3000);
@@ -82,6 +82,15 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
       setError(err.response?.data?.message || 'Failed to create booking. Please try again.');
       console.error("Booking error:", err);
     }
+  };
+
+  const getNights = () => {
+    if (!checkInDate || !checkOutDate) return 1;
+    const start = new Date(checkInDate);
+    const end = new Date(checkOutDate);
+    const diffTime = end - start;
+    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return nights > 0 ? nights : 1;
   };
 
   return (
@@ -136,7 +145,9 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
           />
         </div>
         <div className="text-lg font-semibold text-gray-800">
-          Price per night: <span className="text-blue-600">₹{price * Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24)) || price}</span>
+          Nights: <span className="text-blue-600">{getNights()}</span><br />
+          Price per night: <span className="text-blue-600">₹{price}</span><br />
+          Total: <span className="text-blue-600">₹{price * getNights()}</span>
         </div>
         {error && <p className="text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</p>}
         {success && <p className="text-sm text-green-600 bg-green-100 p-3 rounded-md">{success}</p>}
