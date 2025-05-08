@@ -60,15 +60,24 @@ const BookForm = ({ price, roomId, hotelId, capacity }) => {
     };
 
     try {
-      const response = await axios.post(`${BASE_URL}/booking/add`, bookingData, {
+      await axios.post(`${BASE_URL}/booking/add`, bookingData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
+
+      await axios.patch(`${BASE_URL}/room/update/${roomId}`, { isAvailable: false }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
       setSuccess('Booking successful! You will be redirected shortly.');
+      
       setTimeout(() => {
         navigate('/my-bookings');
       }, 3000);
+
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create booking. Please try again.');
       console.error("Booking error:", err);

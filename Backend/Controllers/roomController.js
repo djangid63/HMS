@@ -2,9 +2,8 @@ const roomModel = require('../Models/roomModel')
 const cloudinary = require('cloudinary').v2
 const fileUpload = require('express-fileupload')
 const express = require('express')
-
-// Configure cloudinary - this ensures it's properly configured in this file
 require('dotenv').config()
+
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
@@ -25,7 +24,7 @@ exports.addRoom = async (req, res) => {
     const roomData = new roomModel(req.body)
     const saveData = await roomData.save()
 
-    console.log("Room saved successfully with data:", saveData);
+    // console.log("Room saved successfully with data:", saveData);
 
     return res.status(200).json({ status: true, message: "Room added successfully", data: saveData })
 
@@ -62,9 +61,9 @@ exports.updateRoom = async (req, res) => {
     const { id } = req.params
     const formData = req.body
 
-    console.log("Updating room with ID:", id);
+    // console.log("Updating room with ID:", id);
     console.log("Update data:", formData);
-    console.log("Image URLs in update:", formData.imageUrls);
+    // console.log("Image URLs in update:", formData.imageUrls);
 
     const updatedRoom = await roomModel.findByIdAndUpdate(id, formData, { new: true })
 
@@ -97,7 +96,6 @@ exports.disableRoom = async (req, res) => {
 
   try {
     const { id } = req.params;
-
 
     const findRoom = await roomModel.findByIdAndUpdate(id)
     const disableRoom = await roomModel.findByIdAndUpdate(id, { isDisable: !findRoom.isDisable }, { new: true })

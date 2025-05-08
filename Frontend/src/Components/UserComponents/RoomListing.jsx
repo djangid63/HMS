@@ -3,6 +3,7 @@ import { Search, SlidersHorizontal, Star, Bed, Users, DollarSign, Calendar } fro
 import axios from "axios";
 import BASE_URL from "../../Utils/api";
 import { useNavigate, useParams } from "react-router-dom";
+import Room from './../DashComponents/Room';
 
 function RoomListingPage() {
   const { hotelId } = useParams()
@@ -14,7 +15,7 @@ function RoomListingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [sortOption, setSortOption] = useState("default");
+  // const [sortOption, setSortOption] = useState("default");
 
   const navigate = useNavigate()
 
@@ -24,20 +25,19 @@ function RoomListingPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch rooms and hotels
         const [roomsRes, hotelsRes] = await Promise.all([
           axios.get(`${BASE_URL}/room/getAll`),
           axios.get(`${BASE_URL}/hotel/getAll`)
         ]);
 
+        const hotelData = hotelsRes.data.data;
+        setHotels(hotelData);
 
         const roomData = roomsRes.data.data.filter((room) => room.hotelId._id === hotelId);
-        const hotelData = hotelsRes.data.data;
         // console.log("roomdata", roomData);
-
         setRooms(roomData);
         setFilteredRooms(roomData);
-        setHotels(hotelData);
+
 
         // Extract unique amenities
         const allAmenities = Array.from(
@@ -66,7 +66,6 @@ function RoomListingPage() {
         <h1 className="text-5xl font-extrabold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
           Find Your Perfect Room
         </h1>
-
         {/* Error Message */}
         {error && (
           <div className="mb-8 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg">
@@ -84,7 +83,7 @@ function RoomListingPage() {
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={room.imageUrls[0]}
+                    src={room.imageUrls[0] || placeholderImage}
                     alt={room.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -92,9 +91,10 @@ function RoomListingPage() {
                 </div>
 
                 <div className="p-5">
-                  <h2 className="text-xl font-bold text-gray-800">{room.name}</h2>
-                  <p className="text-gray-600 text-sm mt-1">{room.hotelId?.name}</p>
-
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-800 ">{room.hotelId?.name}</h2>
+                    <p className="text-gray-800 text-xs font-semibold bg-green-500 px-2 py-1 text-center w-fit rounded-xl">{room.isAvailable == true ? "Available" : "Booked"}</p>
+                  </div>
                   <div className="mt-4 flex flex-wrap gap-4">
                     <div className="flex items-center text-sm text-gray-600">
                       <DollarSign className="w-4 h-4 mr-1 text-green-500" />
@@ -122,9 +122,16 @@ function RoomListingPage() {
                   </div>
 
                   <div className="mt-5">
-                    <button onClick={() => navigateToRoomBooking(room._id)} className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2 rounded-lg transition-all shadow-md hover:shadow-lg">
-                      Show Details
-                    </button>
+                    {room.isAvailable == true ? (
+                      <button onClick={() => navigateToRoomBooking(room._id)} className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2 rounded-lg transition-all shadow-md hover:shadow-lg">
+                        Show Details
+                      </button>
+                    ) : (
+                      <button className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-2 rounded-lg transition-all shadow-md hover:shadow-lg">
+                        Booked
+                      </button>
+                    )
+                    }
                   </div>
                 </div>
               </div>
@@ -136,7 +143,7 @@ function RoomListingPage() {
           )}
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 

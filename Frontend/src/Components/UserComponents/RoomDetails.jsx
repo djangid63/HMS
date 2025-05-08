@@ -23,11 +23,8 @@ const RoomDetail = () => {
     const fetchUser = async () => {
       const response = await axios.get(`${BASE_URL}/user/getAll`)
       const userData = response.data.data.filter((user) => user.email == decoded.email);
-
       setUser(userData)
     }
-
-
 
     const fetchRoom = async () => {
       const response = await axios.get(`${BASE_URL}/room/getAll`);
@@ -38,8 +35,9 @@ const RoomDetail = () => {
     fetchRoom();
     fetchUser()
   }, []);
-  if (user)
-    console.log("user", user);
+
+  // if (user)
+  //   console.log("user", user);
 
   const renderContent = () => {
     switch (activeTab) {
