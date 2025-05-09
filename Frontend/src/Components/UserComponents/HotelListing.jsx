@@ -99,13 +99,11 @@ function HotelListingPage() {
         break;
       default:
         break;
-    }
-
-    setFilteredHotels(updatedHotels);
+    }    setFilteredHotels(updatedHotels);
   }, [searchTerm, sortOption, hotels]);
 
   const navigateToRooms = (hotelId) => {
-    navigate(`/roomlist/${hotelId}`);
+    navigate(`/userPage/rooms/${hotelId}`);
   };
 
   return (

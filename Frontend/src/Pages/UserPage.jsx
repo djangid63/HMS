@@ -1,8 +1,14 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Routes, Route, useNavigate, Navigate } from 'react-router-dom'
+import HotelListing from '../Components/UserComponents/HotelListing'
+import RoomListing from '../Components/UserComponents/RoomListing'
+import RoomDetails from '../Components/UserComponents/RoomDetails'
+import MyBookings from '../Components/UserComponents/MyBooking'
+
 
 const UserPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -21,20 +27,15 @@ const UserPage = () => {
 
               {/* Desktop Navigation Menu */}
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                <Link to="/" className="px-3 py-2 text-sm font-medium text-indigo-600 border-b-2 border-indigo-500">Home</Link>
-                <Link to="/rooms" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">Rooms</Link>
-                <Link to="/bookings" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">My Bookings</Link>
-                <Link to="/services" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">Services</Link>
-                <Link to="/contact" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">Contact</Link>
+                <Link to="/userPage" className="px-3 py-2 text-sm font-medium text-indigo-600 border-b-2 border-indigo-500">Home</Link>
+                <Link to="/userPage/bookings" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">My Bookings</Link>
+                <Link to="/userPage/services" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">Services</Link>
+                <Link to="/userPage/contact" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">Contact</Link>
               </div>
             </div>
 
             {/* User profile and action buttons */}
             <div className="hidden sm:flex sm:items-center space-x-4">
-              <button className="px-4 py-2 text-sm rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Book Now
-              </button>
-
               <div className="ml-3 relative flex items-center">
                 <img className="h-8 w-8 rounded-full object-cover" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User profile" />
                 <span className="ml-2 text-gray-700 font-medium">John Doe</span>
@@ -62,15 +63,13 @@ const UserPage = () => {
           </div>
         </div>
 
-        {/* Mobile menu, show/hide based on menu state */}
         {isMenuOpen && (
           <div className="sm:hidden bg-white border-t border-gray-200">
             <div className="pt-2 pb-3 space-y-1">
-              <Link to="/" className="block pl-3 pr-4 py-2 text-base font-medium text-indigo-600 border-l-4 border-indigo-500">Home</Link>
-              <Link to="/rooms" className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50 hover:border-l-4 hover:border-indigo-500">Rooms</Link>
-              <Link to="/bookings" className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50 hover:border-l-4 hover:border-indigo-500">My Bookings</Link>
-              <Link to="/services" className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50 hover:border-l-4 hover:border-indigo-500">Services</Link>
-              <Link to="/contact" className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50 hover:border-l-4 hover:border-indigo-500">Contact</Link>
+              <Link to="/userPage" className="block pl-3 pr-4 py-2 text-base font-medium text-indigo-600 border-l-4 border-indigo-500">Home</Link>
+              <Link to="/userPage/bookings" className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50 hover:border-l-4 hover:border-indigo-500">My Bookings</Link>
+              <Link to="/userPage/services" className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50 hover:border-l-4 hover:border-indigo-500">Services</Link>
+              <Link to="/userPage/contact" className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50 hover:border-l-4 hover:border-indigo-500">Contact</Link>
             </div>
             <div className="pt-4 pb-3 border-t border-gray-200">
               <div className="flex items-center px-4">
@@ -92,17 +91,37 @@ const UserPage = () => {
         )}
       </nav>
 
-      {/* Page content will go here */}
+      {/* Page content with nested routes */}
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 flex items-center justify-center">
-            <p className="text-gray-500 text-xl">User Page Content Goes Here</p>
-
-
-
-            
-          </div>
-        </div>
+        <Routes>
+          <Route path="/" element={<Navigate to="/userPage/hotels" replace />} />
+          <Route path="/hotels" element={<HotelListing />} />
+          <Route path="/rooms/:hotelId" element={<RoomListing />} />
+          <Route path="/room-details/:roomId" element={<RoomDetails />} />
+          <Route path="/bookings" element={
+            <div className="px-4 py-6 sm:px-0">
+              <div className="bg-white rounded-lg shadow p-6">
+                {<MyBookings />}
+              </div>
+            </div>
+          } />
+          <Route path="/services" element={
+            <div className="px-4 py-6 sm:px-0">
+              <div className="bg-white rounded-lg shadow p-6">
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">Our Services</h1>
+                <p className="text-gray-600">Explore our premium hotel services.</p>
+              </div>
+            </div>
+          } />
+          <Route path="/contact" element={
+            <div className="px-4 py-6 sm:px-0">
+              <div className="bg-white rounded-lg shadow p-6">
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">Contact Us</h1>
+                <p className="text-gray-600">Get in touch with our customer support team.</p>
+              </div>
+            </div>
+          } />
+        </Routes>
       </div>
     </div>
   )

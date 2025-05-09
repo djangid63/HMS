@@ -31,7 +31,7 @@ const Login = () => {
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(response.data.role));
         if (response.data.role === 'user') {
-          navigate('/hotelList')
+          navigate('/userPage')
         }
         else {
           navigate('/dashboard')

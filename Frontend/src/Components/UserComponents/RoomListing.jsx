@@ -51,13 +51,11 @@ function RoomListingPage() {
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchData();
+    }; fetchData();
   }, []);
 
   const navigateToRoomBooking = (roomId) => {
-    navigate(`/roomDetails/${roomId}`)
+    navigate(`/userPage/room-details/${roomId}`)
   }
 
   return (
