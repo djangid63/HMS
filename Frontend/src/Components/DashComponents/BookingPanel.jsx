@@ -64,7 +64,6 @@ const BookingPanel = () => {
     else if (activeTab === 'isChecking rejected') {
       return b.isChecking === 'Cancel';
     }
-
   });
 
   return (

@@ -1,10 +1,10 @@
 const bookingModel = require('../Models/bookingModel')
-
+const { bookingSuccess } = require('../Utils/emailService')
 
 exports.getBooking = async (req, res) => {
   try {
     const bookings = await bookingModel.find().populate('userId')
-    console.log("booookk", bookings);
+    // console.log("booookk", bookings);
     res.status(200).json({ status: true, message: "Data found", data: bookings })
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -33,18 +33,31 @@ exports.addBooking = async (req, res) => {
 exports.updateBooking = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
+    const { status } = req.body;
+    console.log(status);
+
+    const findBooking = await bookingModel.findById(id).populate('userId');
+    console.log("findbooking controller 38", findBooking);
+
 
     if (!id) {
       return res.status(400).json({ success: false, message: "Hotel ID is required" });
     }
-    const { status } = req.body;
+
+    const email = await bookingSuccess(findBooking.userId.email, findBooking.userId.firstname, findBooking.userId.lastname, findBooking.roomId, findBooking.checkInDate, findBooking.checkOutDate)
+
+    if (!email) {
+      return res.status(500).json({ success: false, message: "Failed to send booking success email" });
+    }
+
     const booking = await bookingModel.findByIdAndUpdate(id, { status }, { new: true })
     return res.status(200).json({
       success: true,
       message: "Booking status updated successfully",
       data: booking
     });
+
+
   } catch (error) {
     console.log("Update hotel error:", error);
     return res.status(500).json({

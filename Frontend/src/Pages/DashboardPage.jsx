@@ -9,7 +9,7 @@ import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBa
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [activeTab, setActiveTab] = useState('bookingPanel');
   const navigate = useNavigate()
 
 

@@ -97,22 +97,18 @@ const sendStatusUpdateEmail = async (email, firstname, lastname, title, status) 
   }
 };
 
-const bookingSuccess = async (req, res) => {
+const bookingSuccess = async (email, firstname, lastname, bookingId, checkInDate, checkOutDate) => {
   try {
     const transporter = createTransporter();
-    const statusText = status === 'completed' ? 'completed' : 'marked as pending';
-    const colorStyle = status === 'completed' ? '#4CAF50' : '#FFC107';
-
-    const { email, firstname, lastname, hotelName, bookingId, checkInDate, checkOutDate } = req.body;
 
     const mailOptions = {
       from: process.env.GMAIL_USER,
       to: email,
-      subject: `Booking Confirmed: ${hotelName}`,
+      subject: `Booking Confirmed`,
       html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
       <h2>Hello ${firstname} ${lastname},</h2>
-      <p>Your booking at <strong>${hotelName}</strong> has been <span style="color: #4CAF50;">confirmed</span>!</p>
+      <p>Your booking at <strong>The great Khalifa</strong> has been <span style="color: #4CAF50;">confirmed</span>!</p>
       <div style="background-color: #f8f9fa; padding: 15px; margin: 20px 0; border-left: 4px solid #4CAF50;">
         <p><strong>Booking ID:</strong> ${bookingId}</p>
         <p><strong>Check-in:</strong> ${checkInDate}</p>

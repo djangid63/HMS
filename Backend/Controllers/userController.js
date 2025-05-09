@@ -21,6 +21,7 @@ exports.SignUpUser = async (req, res) => {
     const otpTimer = currTimer.clone().add(10, "minutes");
 
     if (!role || role === '' || role === 'user') {
+      
       const emailSent = await sendOtpEmail(email, otp, firstname);
       if (!emailSent) {
         return res.status(500).json({ success: false, message: "Failed to send OTP email" });
