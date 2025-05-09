@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, Phone, Mail } from "lucide-react";
 import axios from "axios";
-import BASE_URL from './../../Utils/api';
+import BASE_URL from '../../Utils/api';
 import { useNavigate } from 'react-router-dom';
 
 function HotelListingPage() {
