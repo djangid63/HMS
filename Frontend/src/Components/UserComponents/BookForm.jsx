@@ -68,7 +68,7 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
 
 
 
-    // if (!user) {
+    // if (localStorage.getItem('token') == '') {
     //   setError('You must be logged in to make a booking.');
     //   navigate('/login');
     //   return;
@@ -93,7 +93,6 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
     const finalTotal = discountValue ? (totalBeforeDiscount * (1 - discountValue / 100)) : totalBeforeDiscount;
 
     const bookingData = {
-      // userId: user._id || '',
       roomId,
       checkInDate,
       checkOutDate,

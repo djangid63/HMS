@@ -3,7 +3,8 @@ const bookingModel = require('../Models/bookingModel')
 
 exports.getBooking = async (req, res) => {
   try {
-    const bookings = await bookingModel.find()
+    const bookings = await bookingModel.find().populate('userId')
+    console.log("booookk", bookings);
     res.status(200).json({ status: true, message: "Data found", data: bookings })
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -14,9 +15,12 @@ exports.addBooking = async (req, res) => {
   try {
     const { roomId } = req.body;
     const existingBooking = await bookingModel.findOne({ roomId });
+
     if (existingBooking) {
       return res.status(409).json({ success: false, message: 'Room Booked already' })
     }
+
+    req.body.userId = req.user._id
 
     const booking = new bookingModel(req.body);
     const savedBooking = await booking.save();

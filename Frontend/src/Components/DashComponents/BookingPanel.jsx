@@ -48,12 +48,22 @@ const BookingPanel = () => {
 
     if (activeTab === 'pending') {
       return b.status === 'Pending';
-    } else if (activeTab === 'approved') {
+    }
+    else if (activeTab === 'approved') {
       return b.status === 'Approved';
-    } else if (activeTab === 'rejected') {
+    }
+    else if (activeTab === 'rejected') {
       return b.status === 'Rejected';
     }
-
+    else if (activeTab === 'isChecking pending') {
+      return b.isChecking === 'Pending' && b.status !== 'Rejected';
+    }
+    else if (activeTab === 'isChecking rejected') {
+      return b.isChecking === 'Confirm';
+    }
+    else if (activeTab === 'isChecking rejected') {
+      return b.isChecking === 'Cancel';
+    }
 
   });
 
@@ -90,6 +100,36 @@ const BookingPanel = () => {
             onClick={() => setActiveTab("rejected")}
           >
             Rejected Requests
+          </button>
+
+          {/* User options */}
+
+          <button
+            className={`px-4 py-2 rounded-lg font-medium ${activeTab === "isChecking pending"
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700 border border-gray-300"
+              } transition`}
+            onClick={() => setActiveTab("isChecking pending")}
+          >
+            Check In Pending
+          </button>
+          <button
+            className={`px-4 py-2 rounded-lg font-medium ${activeTab === "isChecking approved"
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700 border border-gray-300"
+              } transition`}
+            onClick={() => setActiveTab("isChecking approved")}
+          >
+            Check In
+          </button>
+          <button
+            className={`px-4 py-2 rounded-lg font-medium ${activeTab === "isChecking rejected"
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700 border border-gray-300"
+              } transition`}
+            onClick={() => setActiveTab("isChecking rejected")}
+          >
+            Check In rejected
           </button>
         </div>
 

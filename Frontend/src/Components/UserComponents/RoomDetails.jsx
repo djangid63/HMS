@@ -14,8 +14,6 @@ const RoomDetail = () => {
 
   const token = localStorage.getItem('token')
   const decoded = jwtDecode(token);
-  console.log(decoded);
-
 
 
   useEffect(() => {
@@ -30,7 +28,7 @@ const RoomDetail = () => {
       const response = await axios.get(`${BASE_URL}/room/getAll`);
       const filterRoom = response.data.data.filter((room) => room._id == roomId);
       setSelectedRoom(filterRoom);
-      console.log("room", filterRoom);
+      // console.log("room", filterRoom);
     };
     fetchRoom();
     fetchUser()
