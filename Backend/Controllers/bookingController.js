@@ -12,6 +12,12 @@ exports.getBooking = async (req, res) => {
 
 exports.addBooking = async (req, res) => {
   try {
+    const { roomId } = req.body;
+    const existingBooking = await bookingModel.findOne({ roomId });
+    if (existingBooking) {
+      return res.status(409).json({ success: false, message: 'Room Booked already' })
+    }
+
     const booking = new bookingModel(req.body);
     const savedBooking = await booking.save();
     res.status(201).json(savedBooking);

@@ -12,7 +12,9 @@ exports.addState = async (req, res) => {
       return res.status(400).json({ message: "State already exists" });
     }
 
-    const stateData = new stateModel({ state, code })
+    const userId = req.user._id;
+
+    const stateData = new stateModel({ state, code, userId })
     const saveData = await stateData.save()
     return res.status(200).json({ status: true, message: "State added successfully", updatedState: saveData })
   } catch (error) {
