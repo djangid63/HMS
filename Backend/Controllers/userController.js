@@ -164,24 +164,12 @@ exports.forgetPassword = async (req, res) => {
 }
 
 exports.resetPassword = async (req, res) => {
-  const { email, otp, newPassword } = req.body;
-  console.log(email, otp, newPassword);
-
+  const { email, newPassword } = req.body;
+  
   try {
-    const user = await userModel.findOne({ email })
+    const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(404).json({ success: false, message: "No user found" });
-    }
-
-    const dbOtp = user.otp;
-    if (dbOtp != otp) {
-      return res.status(400).json({ success: false, message: "OTP does not match" });
-    }
-
-    const currentTime = moment();
-    const otpExpiry = moment(user.otpTimer);
-    if (currentTime.isAfter(otpExpiry)) {
-      return res.status(401).json({ success: false, message: "OTP has expired" });
     }
 
     // Hash the new password
@@ -190,12 +178,9 @@ exports.resetPassword = async (req, res) => {
 
     // Update password
     user.password = hashedPassword;
-    user.otp = null;
-    user.otpTimer = null;
     await user.save();
 
-    return res.status(200).json({ status: true, message: "Password Reset successfully" })
-
+    return res.status(200).json({ success: true, message: "Password reset successfully" });
   } catch (error) {
     console.log("Reset password error:", error);
     return res.status(500).json({

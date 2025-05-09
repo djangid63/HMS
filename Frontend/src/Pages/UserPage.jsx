@@ -1,14 +1,36 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, Routes, Route, useNavigate, Navigate } from 'react-router-dom'
 import HotelListing from '../Components/UserComponents/HotelListing'
 import RoomListing from '../Components/UserComponents/RoomListing'
 import RoomDetails from '../Components/UserComponents/RoomDetails'
 import MyBookings from '../Components/UserComponents/MyBooking'
+import Settings from '../Components/UserComponents/Settings'
+import { jwtDecode } from 'jwt-decode'
+import BASE_URL from '../Utils/api'
+import axios from 'axios'
 
 
 const UserPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userSetting, setUserSetting] = useState(false)
+  const [user, setUser] = useState()
   const navigate = useNavigate();
+
+  const token = localStorage.getItem('token')
+  const decoded = jwtDecode(token);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/user/getAll`)
+        const user = res.data.data.filter((user) => user.email == decoded.email)
+        setUser(user)
+        console.log(user);
+      } catch (error) {
+        console.log("User not found on main", error);
+      }
+    }
+    fetchUser()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -26,8 +48,8 @@ const UserPage = () => {
               </div>
 
               {/* Desktop Navigation Menu */}
-              <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                <Link to="/userPage" className="px-3 py-2 text-sm font-medium text-indigo-600 border-b-2 border-indigo-500">Home</Link>
+              <div className="sm:ml-6 sm:flex sm:items-center">
+                <Link to="/userPage" className="px-3 py-2 text-sm font-medium hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">Home</Link>
                 <Link to="/userPage/bookings" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">My Bookings</Link>
                 <Link to="/userPage/services" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">Services</Link>
                 <Link to="/userPage/contact" className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 hover:border-b-2 hover:border-indigo-500 transition-colors">Contact</Link>
@@ -36,9 +58,40 @@ const UserPage = () => {
 
             {/* User profile and action buttons */}
             <div className="hidden sm:flex sm:items-center space-x-4">
-              <div className="ml-3 relative flex items-center">
-                <img className="h-8 w-8 rounded-full object-cover" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User profile" />
-                <span className="ml-2 text-gray-700 font-medium">John Doe</span>
+              <div className="relative">
+                <div
+                  onClick={() => setUserSetting(!userSetting)}
+                  className="flex items-center cursor-pointer hover:bg-gray-50 rounded-full py-1 px-2 transition-colors"
+                >
+                  <img
+                    className="h-8 w-8 rounded-full object-cover border border-gray-200"
+                    src={user && user[0]?.profilePic ? user[0].profilePic : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                    alt="User profile"
+                  />
+                  <span className="ml-2 text-gray-700 font-medium"></span>
+                  {user ? `${user[0]?.firstname || ''} ${user[0]?.lastname || ''}` : "User"}
+                </div>
+
+                {userSetting && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200 animate-fadeIn">                    <button className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600">
+                    Your Profile
+                  </button>
+                    <Link to='/userPage/settings'>
+                      <button className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600">
+                        Settings
+                      </button>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('token');
+                        navigate('/login');
+                      }}
+                      className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -84,7 +137,10 @@ const UserPage = () => {
               <div className="mt-3 space-y-1">
                 <button className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50">Your Profile</button>
                 <button className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50">Settings</button>
-                <button className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50">Sign out</button>
+                <button className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50" onClick={() => {
+                  localStorage.removeItem('token');
+                  navigate('/login');
+                }}>Sign out</button>
               </div>
             </div>
           </div>
@@ -98,13 +154,8 @@ const UserPage = () => {
           <Route path="/hotels" element={<HotelListing />} />
           <Route path="/rooms/:hotelId" element={<RoomListing />} />
           <Route path="/room-details/:roomId" element={<RoomDetails />} />
-          <Route path="/bookings" element={
-            <div className="px-4 py-6 sm:px-0">
-              <div className="bg-white rounded-lg shadow p-6">
-                {<MyBookings />}
-              </div>
-            </div>
-          } />
+          <Route path="/bookings" element={<MyBookings />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/services" element={
             <div className="px-4 py-6 sm:px-0">
               <div className="bg-white rounded-lg shadow p-6">

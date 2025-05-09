@@ -4,6 +4,8 @@ import BASE_URL from "../../Utils/api";
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const token = localStorage.getItem('token')
   const config = {
@@ -12,31 +14,51 @@ function MyBookings() {
     }
   }
 
-  useEffect(() => {
-    const fetchBooking = async () => {
-      const response = await axios.get(`${BASE_URL}/booking/getAll`, config)
-      setBookings(response.data.data)
+  const fetchBooking = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${BASE_URL}/booking/getAll`, config);
+      setBookings(response.data.data);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+      setError("Failed to load your bookings. Please try again later.");
+    } finally {
+      setLoading(false);
     }
-    fetchBooking()
+  }
+  
+  useEffect(() => {
+    fetchBooking();
   }, [])
 
-  const handleAction = async (id, action) => {
-
-    setBookings((prev) =>
-      prev.map((b) =>
-        b._id === id
-          ? { ...b, isChecking: action === "checkin" ? "Confirm" : "Cancel" }
-          : b
-      )
-    );
+  const handleAction = async (id, isChecking) => {
+    try {
+      const res = await axios.patch(`${BASE_URL}/booking/update/${id}`, { isChecking }, config);
+      if (res.status === 200) {
+        fetchBooking()
+        alert(`Booking ${isChecking === 'Cancel' ? 'cancelled' : 'confirmed'} successfully!`);
+      }
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      alert("Failed to update booking. Please try again.");
+    }
   };
-
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 text-center">My Bookings</h1>
 
-      {bookings.length === 0 ? (
-        <p className="text-center text-gray-500">No bookings found.</p>
+      {loading ? (
+        <div className="text-center py-10">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
+          <p className="mt-4 text-gray-600">Loading your bookings...</p>
+        </div>
+      ) : error ? (
+        <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md">
+          <p className="font-medium">{error}</p>
+        </div>
+      ) : bookings.length === 0 ? (
+        <p className="text-center text-gray-500 py-10">No bookings found.</p>
       ) : (
         bookings.map((booking) => (
           <div
@@ -53,21 +75,25 @@ function MyBookings() {
                 <p><span className="font-semibold">Amount:</span> ₹{booking.totalAmount}</p>
                 <p><span className="font-semibold">Status:</span> {booking.isChecking}</p>
                 <div className="mt-4 space-x-3">
-                  <button
-                    className="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
-                    onClick={() => handleAction(booking._id, "checkin")}
-                    disabled={booking.isChecking !== "Pending"}
-                  >
-                    Check In
-                  </button>
+                  {booking.status == 'Approved' && (
+                    <button
+                      className="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+                      onClick={() => handleAction(booking._id, "Confirm")}
+                      disabled={booking.isChecking !== "Pending"}
+                    >
+                      Check In
+                    </button>
+                  )
+                  }
                   <button
                     className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
-                    onClick={() => handleAction(booking._id, "cancel")}
+                    onClick={() => handleAction(booking._id, "Cancel")}
                     disabled={booking.isChecking !== "Pending"}
                   >
                     Cancel Booking
                   </button>
                 </div>
+
               </div>
             </div>
           </div>

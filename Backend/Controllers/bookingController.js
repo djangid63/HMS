@@ -33,7 +33,16 @@ exports.addBooking = async (req, res) => {
 exports.updateBooking = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, isChecking } = req.body;
+
+    // Determine which field to update based on the request body
+    let updateFields = {};
+    if (typeof status !== 'undefined') {
+      updateFields.status = status;
+    }
+    if (typeof isChecking !== 'undefined') {
+      updateFields.isChecking = isChecking;
+    }
     console.log(status);
 
     const findBooking = await bookingModel.findById(id).populate('userId');
@@ -49,8 +58,7 @@ exports.updateBooking = async (req, res) => {
     if (!email) {
       return res.status(500).json({ success: false, message: "Failed to send booking success email" });
     }
-
-    const booking = await bookingModel.findByIdAndUpdate(id, { status }, { new: true })
+    const booking = await bookingModel.findByIdAndUpdate(id, updateFields, { new: true })
     return res.status(200).json({
       success: true,
       message: "Booking status updated successfully",
