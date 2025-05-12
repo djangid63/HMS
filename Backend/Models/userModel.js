@@ -41,6 +41,9 @@ const userSchema = new Schema({
   },
   otpTimer: {
     type: Number
+  },
+  img: {
+    type: String
   }
 }, { timestamps: true, versionKey: false })
 

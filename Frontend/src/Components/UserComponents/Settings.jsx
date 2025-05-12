@@ -41,7 +41,7 @@ function Settings() {
         onSubmit={handleSubmit}
         className="bg-white shadow-md rounded-2xl p-6 space-y-5 border"
       >
-        {/* <div>
+        <div>
           <label className="block text-gray-700 font-medium mb-1">
             Username
           </label>
@@ -51,7 +51,7 @@ function Settings() {
             value={formData.username}
             onChange={handleChange}
             className="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            placeholder="D J"
           />
         </div>
 
@@ -63,7 +63,7 @@ function Settings() {
             value={formData.email}
             onChange={handleChange}
             className="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            placeholder="Jangiddevesh031@gmail.com"
           />
         </div>
 
@@ -79,7 +79,7 @@ function Settings() {
             className="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Optional"
           />
-        </div> */}
+        </div>
 
         <div>
           <label className="block text-gray-700 font-medium mb-1">
