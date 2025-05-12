@@ -46,21 +46,18 @@ function MyBookings() {
     }
   };
 
-  let filteredBookings = bookings;
-
-  if (activeTab !== 'all') {
-    filteredBookings = bookings.filter(booking => {
-      if (activeTab === 'pending') {
-        return booking.isChecking === 'Pending';
-      } else if (activeTab === 'confirmed') {
-        return booking.isChecking === 'Confirm';
-      } else if (activeTab === 'cancelled') {
-        return booking.isChecking === 'Cancel';
-      } else {
-        return true;
-      }
-    });
-  }
+  // Filter bookings based on active tab
+  const filteredBookings = activeTab === 'all'
+    ? bookings
+    : bookings.filter(booking =>
+      activeTab === 'pending'
+        ? booking.isChecking === 'Pending'
+        : activeTab === 'confirmed'
+          ? booking.isChecking === 'Confirm'
+          : activeTab === 'cancelled'
+            ? booking.isChecking === 'Cancel'
+            : true
+    );
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

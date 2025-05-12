@@ -5,6 +5,7 @@ import State from '../Components/DashComponents/State'
 import Hotel from './../Components/DashComponents/Hotel';
 import BookingPanel from '../Components/DashComponents/BookingPanel';
 import CouponPanel from '../Components/DashComponents/CouponPanel'
+import UserPage from './UserPage';
 import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
@@ -40,6 +41,9 @@ const Dashboard = () => {
     }
     else if (activeTab === 'couponPanel') {
       return <CouponPanel />
+    }
+    else if (activeTab === 'ViewUI') {
+      return <UserPage />
     }
 
     return <ComponentPlaceholder title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} />;
@@ -113,22 +117,22 @@ const Dashboard = () => {
             </li>
             <li>
               <button
-                onClick={() => setActiveTab('bookings')}
-                className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'bookings' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                  }`}
-              >
-                <FaCalendarCheck className="mr-3" />
-                <span>Bookings</span>
-              </button>
-            </li>
-            <li>
-              <button
                 onClick={() => setActiveTab('couponPanel')}
                 className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'couponPanel' ? 'bg-blue-600' : 'hover:bg-gray-700'
                   }`}
               >
                 <FaUsers className="mr-3" />
                 <span>Generate Coupon</span>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveTab('ViewUI')}
+                className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'bookings' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                  }`}
+              >
+                <FaCalendarCheck className="mr-3" />
+                <span>View User Interface</span>
               </button>
             </li>
             <li>

@@ -143,6 +143,7 @@ const Room = () => {
       } else {
         const response = await axios.post(`${BASE_URL}/room/add`, formData, config);
         console.log('Add response:', response.data);
+        setFormData("")
       }
 
       setIsEditing(false);
@@ -271,7 +272,7 @@ const Room = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacity</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -282,8 +283,8 @@ const Room = () => {
                   <tr key={room._id}>
                     <td className="px-6 py-4 whitespace-nowrap">{room.roomNumber}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {hotels.find(h => h._id === room.hotelId)?.name || 'Unknown'}
-                      {/* {room.hotelId.name || 'Not found'} */}
+                      {/* {hotels.find(h => h._id === room.hotelId)?.name || 'Unknown'} */}
+                      {room.hotelId.name || 'Not found'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{room.type}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{room.capacity}</td>
