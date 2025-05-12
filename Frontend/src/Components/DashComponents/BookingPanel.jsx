@@ -40,7 +40,7 @@ const BookingPanel = () => {
   const getStatusBadge = (status) => {
     const base = "px-3 py-1 rounded-full text-sm font-medium";
     if (status === "Approved") return `${base} bg-green-100 text-green-700`;
-    if (status === "Rejected") return `${base} bg-red-100 text-red-700`;
+    if (status === "Rejected" || status == "Cancel") return `${base} bg-red-100 text-red-700`;
     return `${base} bg-yellow-100 text-yellow-700`;
   };
 
@@ -58,7 +58,7 @@ const BookingPanel = () => {
     else if (activeTab === 'isChecking pending') {
       return b.isChecking === 'Pending' && b.status !== 'Rejected';
     }
-    else if (activeTab === 'isChecking rejected') {
+    else if (activeTab === 'isChecking approved') {
       return b.isChecking === 'Confirm';
     }
     else if (activeTab === 'isChecking rejected') {
@@ -144,7 +144,11 @@ const BookingPanel = () => {
                   <h2 className="text-lg font-semibold text-gray-800">{booking.userName}</h2>
                   <p className="text-gray-500 text-sm">Phone: {booking.userPhone}</p>
                   <p className="text-gray-500 text-sm">Guests: {booking.numberOfGuests}</p>
-                  <span className={getStatusBadge(booking.status)}>{booking.status}</span>
+                  {activeTab === 'pending' || activeTab === 'approved' || activeTab === 'rejected' ?
+                    <span className={getStatusBadge(booking.status)}>{booking.status}</span>
+                    :
+                    <span className={getStatusBadge(booking.isChecking)}>{booking.isChecking}</span>
+                  }
                 </div>
 
                 <div className="flex gap-3 mt-4 md:mt-0">

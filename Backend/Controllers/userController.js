@@ -5,6 +5,7 @@ const moment = require('moment')
 const { sendOtpEmail, sendCreationEmail, sendStatusUpdateEmail } = require('../Utils/emailService')
 const jwt = require('jsonwebtoken')
 const secretKey = process.env.JWT_SECRET
+const { uploadProfilePicture } = require('../Utils/cloudinary')
 
 exports.SignUpUser = async (req, res) => {
   try {
@@ -21,12 +22,14 @@ exports.SignUpUser = async (req, res) => {
     const otpTimer = currTimer.clone().add(10, "minutes");
 
     if (!role || role === '' || role === 'user') {
-      
+
       const emailSent = await sendOtpEmail(email, otp, firstname);
       if (!emailSent) {
         return res.status(500).json({ success: false, message: "Failed to send OTP email" });
       }
     }
+
+
 
     const signData = new userModel({
       firstname,
@@ -164,23 +167,50 @@ exports.forgetPassword = async (req, res) => {
 }
 
 exports.resetPassword = async (req, res) => {
-  const { email, newPassword } = req.body;
-  
+  const { firstname, lastname, email, newPassword, img } = req.body;
+
   try {
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(404).json({ success: false, message: "No user found" });
     }
 
-    // Hash the new password
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(newPassword, salt);
+    const updates = {};
 
-    // Update password
-    user.password = hashedPassword;
-    await user.save();
+    if (firstname) updates.firstname = firstname;
+    if (lastname) updates.lastname = lastname;
+    if (img) {
+      try {
+        console.log("Image data present, attempting upload...");
+        const imageUrl = await uploadProfilePicture(img, user._id);
+        if (imageUrl) {
+          console.log("Image uploaded successfully, URL:", imageUrl);
+          updates.img = imageUrl;
+        } else {
+          console.log("Image upload returned null");
+        }
+      } catch (imageError) {
+        console.error("Error uploading profile picture:", imageError);
+      }
+    } else {
+      console.log("No image data provided for upload");
+    }
 
-    return res.status(200).json({ success: true, message: "Password reset successfully" });
+    // Hash and update password if provided
+    if (newPassword && newPassword.trim() !== '') {
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(newPassword, salt);
+      updates.password = hashedPassword;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await userModel.findByIdAndUpdate(user._id, updates);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully"
+    });
   } catch (error) {
     console.log("Reset password error:", error);
     return res.status(500).json({

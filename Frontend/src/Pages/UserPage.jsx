@@ -18,6 +18,7 @@ const UserPage = () => {
 
   const token = localStorage.getItem('token')
   const decoded = jwtDecode(token);
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -65,7 +66,7 @@ const UserPage = () => {
                 >
                   <img
                     className="h-8 w-8 rounded-full object-cover border border-gray-200"
-                    src={user && user[0]?.profilePic ? user[0].profilePic : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                    src={user && user[0]?.img ? user[0].img : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                     alt="User profile"
                   />
                   <span className="ml-2 text-gray-700 font-medium"></span>
@@ -73,9 +74,10 @@ const UserPage = () => {
                 </div>
 
                 {userSetting && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200 animate-fadeIn">                    <button className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600">
-                    Your Profile
-                  </button>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200 animate-fadeIn">
+                    <button className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600">
+                      Your Profile
+                    </button>
                     <Link to='/userPage/settings'>
                       <button className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600">
                         Settings
@@ -155,7 +157,7 @@ const UserPage = () => {
           <Route path="/rooms/:hotelId" element={<RoomListing />} />
           <Route path="/room-details/:roomId" element={<RoomDetails />} />
           <Route path="/bookings" element={<MyBookings />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings" element={<Settings user={user} />} />
           <Route path="/services" element={
             <div className="px-4 py-6 sm:px-0">
               <div className="bg-white rounded-lg shadow p-6">

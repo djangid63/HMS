@@ -36,7 +36,7 @@ const roomSchema = new mongoose.Schema({
   },
   isDisable: {
     type: Boolean,
-    default: true
+    default: false
   },
   description: {
     type: String,

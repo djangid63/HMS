@@ -36,3 +36,33 @@ exports.uploadFile = async (files) => {
 
   return results; // Return the list of upload results
 };
+
+
+exports.uploadProfilePicture = async (imageData, userId) => {
+  try {
+    // Return null if no image data is provided
+    
+    if (!imageData) {
+      console.log('No image data provided');
+      return null;
+    }
+
+
+    const publicId = `profile_pictures/${userId}`; 
+
+    // Use the direct upload method for base64 strings
+    const result = await cloudinary.uploader.upload(imageData, {
+      public_id: publicId,
+      overwrite: true,
+      transformation: [
+        { width: 300, height: 300, crop: 'fill', gravity: 'face' }
+      ]
+    });
+
+    console.log('Upload successful:', result.secure_url);
+    return result.secure_url; // Return just the secure URL for storing in the database
+  } catch (error) {
+    console.error('Error uploading profile picture:', error);
+    throw error;
+  }
+};
