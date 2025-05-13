@@ -15,7 +15,6 @@ const RoomDetail = () => {
   const token = localStorage.getItem('token')
   const decoded = jwtDecode(token);
 
-
   useEffect(() => {
 
     const fetchUser = async () => {
@@ -158,6 +157,7 @@ const RoomDetail = () => {
               roomId={roomId}
               hotelId={selectedRoom[0].hotel}
               capacity={selectedRoom[0].capacity}
+              user={user[0]}
             />
           )}
         </div>

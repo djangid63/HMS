@@ -3,7 +3,7 @@ import axios from 'axios';
 import BASE_URL from '../../Utils/api';
 import { useNavigate } from 'react-router-dom';
 
-const BookForm = ({ price, roomId, capacity, hotelId }) => {
+const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
   const navigate = useNavigate();
 
   const [checkInDate, setCheckInDate] = useState('');
@@ -18,7 +18,7 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
   const role = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
   const isAdmin = role === 'admin';
   const adminDiscount = isAdmin ? 20 : 0;
-
+  console.log('user', user);
   const config = {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -92,14 +92,12 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
       return;
     } const totalBeforeDiscount = price * getNights();
 
-    // Calculate discount percentages and use the greater one
     const couponDiscountPercent = discountValue || 0;
     const effectiveDiscountPercent = isAdmin ? Math.max(adminDiscount, couponDiscountPercent) : couponDiscountPercent;
 
-    // Apply the effective discount
     const finalTotal = effectiveDiscountPercent > 0
       ? (totalBeforeDiscount * (1 - effectiveDiscountPercent / 100))
-      : totalBeforeDiscount;    // Determine which discount is being applied
+      : totalBeforeDiscount;   
     const isAdminDiscountApplied = isAdmin && (!discountValue || adminDiscount >= discountValue);
     const bookingData = {
       roomId,
@@ -107,7 +105,7 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
       checkOutDate,
       numberOfGuests,
       userPhone,
-      userName: 'DJ',
+      userName: `${user.firstname} ${user.lastname}`,
       totalAmount: finalTotal,
       appliedCoupon: isAdminDiscountApplied ? null : (discountValue ? coupon : null),
       adminDiscount: isAdminDiscountApplied ? adminDiscount : null,

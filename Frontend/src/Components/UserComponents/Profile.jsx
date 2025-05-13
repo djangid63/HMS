@@ -152,7 +152,7 @@ function Settings({ user }) {
             name="email"
             value={formData.email || decoded.email}
             onChange={handleChange}
-            className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+            className="w-full text-gray-400 border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
             placeholder="Enter email"
             disabled
           />

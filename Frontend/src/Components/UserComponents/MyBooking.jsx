@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import BASE_URL from "../../Utils/api";
 
-function MyBookings() {
+function MyBookings({ user }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +19,8 @@ function MyBookings() {
     try {
       setLoading(true);
       const response = await axios.get(`${BASE_URL}/booking/getAll`, config);
-      setBookings(response.data.data);
+      const filteredBooking = response.data.data.filter((bookings) => bookings.userBooking[0].email === user[0].email);
+      setBookings(filteredBooking);
       setError(null);
     } catch (err) {
       console.error("Error fetching bookings:", err);
@@ -30,8 +31,10 @@ function MyBookings() {
   }
 
   useEffect(() => {
-    fetchBooking();
-  }, [])
+    if (user && user.length > 0) {
+      fetchBooking();
+    }
+  }, [user])
 
   const handleAction = async (id, isChecking) => {
     try {

@@ -17,6 +17,8 @@ const BookingPanel = () => {
   const fetchBooking = async () => {
     const response = await axios.get(`${BASE_URL}/booking/getAll`, config);
     setBookings(response.data.data);
+    console.log("Booking data with aggregate", response.data.data);
+    // console.log("Booking data with Populate", response.data.newData);
   };
   useEffect(() => {
     fetchBooking();

@@ -4,7 +4,7 @@ import HotelListing from '../Components/UserComponents/HotelListing'
 import RoomListing from '../Components/UserComponents/RoomListing'
 import RoomDetails from '../Components/UserComponents/RoomDetails'
 import MyBookings from '../Components/UserComponents/MyBooking'
-import Settings from '../Components/UserComponents/Settings'
+import Profile from '../Components/UserComponents/Profile'
 import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
 import BASE_URL from '../Utils/api'
@@ -25,7 +25,6 @@ const UserPage = () => {
         const res = await axios.get(`${BASE_URL}/user/getAll`)
         const user = res.data.data.filter((user) => user.email == decoded.email)
         setUser(user)
-        console.log(user);
       } catch (error) {
         console.log("User not found on main", error);
       }
@@ -75,14 +74,14 @@ const UserPage = () => {
 
                 {userSetting && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200 animate-fadeIn">
-                    <button className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600">
-                      Your Profile
-                    </button>
-                    <Link to='/userPage/settings'>
+                    <Link to='/userPage/profile'>
                       <button className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600">
-                        Settings
+                        Your Profile
                       </button>
                     </Link>
+                    <button className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600">
+                      Settings
+                    </button>
                     <button
                       onClick={() => {
                         localStorage.removeItem('token');
@@ -156,8 +155,8 @@ const UserPage = () => {
           <Route path="/hotels" element={<HotelListing />} />
           <Route path="/rooms/:hotelId" element={<RoomListing />} />
           <Route path="/room-details/:roomId" element={<RoomDetails />} />
-          <Route path="/bookings" element={<MyBookings />} />
-          <Route path="/settings" element={<Settings user={user} />} />
+          <Route path="/bookings" element={<MyBookings user={user} />} />
+          <Route path="/profile" element={<Profile user={user} />} />
           <Route path="/services" element={
             <div className="px-4 py-6 sm:px-0">
               <div className="bg-white rounded-lg shadow p-6">
