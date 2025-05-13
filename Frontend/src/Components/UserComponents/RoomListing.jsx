@@ -92,8 +92,8 @@ function RoomListingPage() {
 
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className={`text-xl font-bold mb-1 transition-colors ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'} group-hover:text-indigo-600`}>
-                      {room.name}
+                    <h3 className={`text-xl font-bold mb-1 transition-colors ${theme === 'dark' ? 'text-gray-200' : 'text-gray-200'} group-hover:text-indigo-600`}>
+                      {room.type}
                     </h3>
                     <div className="flex items-center">
                       <div className="flex items-center bg-indigo-100 px-2 py-1 rounded text-xs font-bold text-indigo-800">

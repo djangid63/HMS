@@ -84,7 +84,7 @@ const UserPage = () => {
                     alt="User profile"
                   />
                   <span className={`ml-2 font-medium ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}`}></span>
-                  {user ? `${user[0]?.firstname || ''} ${user[0]?.lastname || ''}` : "User"}
+                  {user ? `${user[0].firstname || ''} ${user[0].lastname || ''}` : "User"}
                 </div>
 
                 {userSetting && (

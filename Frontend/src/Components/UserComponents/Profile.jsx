@@ -129,7 +129,7 @@ function Settings({ user }) {
               id="firstname"
               value={formData.firstname}
               onChange={handleChange}
-              className={`p-3 mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${theme === 'dark'
+              className={`mt-1 p-2 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${theme === 'dark'
                 ? 'bg-gray-800 border-gray-700 text-gray-100'
                 : 'bg-gray-50 border-gray-300 text-gray-900'
                 }`}
@@ -147,7 +147,7 @@ function Settings({ user }) {
               id="lastname"
               value={formData.lastname}
               onChange={handleChange}
-              className={`p-3  mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${theme === 'dark'
+              className={`mt-1 p-2 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${theme === 'dark'
                 ? 'bg-gray-800 border-gray-700 text-gray-100'
                 : 'bg-gray-50 border-gray-300 text-gray-900'
                 }`}
@@ -167,7 +167,7 @@ function Settings({ user }) {
             id="email"
             value={decoded.email}
             disabled
-            className={`p-3  mt-1 block w-full rounded-md shadow-sm sm:text-sm bg-gray-100 cursor-not-allowed ${theme === 'dark'
+            className={`mt-1 p-2 block w-full rounded-md shadow-sm sm:text-sm bg-gray-100 cursor-not-allowed ${theme === 'dark'
               ? 'border-gray-700 text-gray-400'
               : 'border-gray-300 text-gray-500'
               }`}
@@ -185,7 +185,7 @@ function Settings({ user }) {
             id="password"
             value={formData.password}
             onChange={handleChange}
-            className={`p-3  mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${theme === 'dark'
+            className={`mt-1 p-2 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${theme === 'dark'
               ? 'bg-gray-800 border-gray-700 text-gray-100'
               : 'bg-gray-50 border-gray-300 text-gray-900'
               }`}

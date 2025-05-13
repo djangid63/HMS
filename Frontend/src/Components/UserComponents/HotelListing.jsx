@@ -118,7 +118,7 @@ function HotelListingPage() {
       </div>
 
       <div className="mb-8">
-        <div className="flex  gap-4 mb-6">
+        <div className="flex gap-4 mb-6">
           {/* Search Input */}
           <div className="relative flex-grow min-w-[200px] xl:max-w-md">
             <input
@@ -135,7 +135,7 @@ function HotelListingPage() {
           <select
             value={stateFilter}
             onChange={(e) => setStateFilter(e.target.value)}
-            className={`w-full p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-300'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out appearance-none pr-8`}
+            className={`w-full p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-300'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out appearance-none pr-8 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2212%22 height%3D%2212%22 fill%3D%22none%22 stroke%3D%22%236b7280%22 strokeLinecap%3D%22round%22 strokeLinejoin%3D%22round%22 strokeWidth%3D%222%22 viewBox%3D%220 0 24 24%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3`}
           >
             <option value="">Filter by State</option>
             {states.map((state) => (
@@ -149,7 +149,7 @@ function HotelListingPage() {
           <select
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
-            className={`w-full p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-300'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out appearance-none pr-8 bg-no-repeat bg-right-3`}
+            className={`w-full p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-300'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out appearance-none pr-8 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2212%22 height%3D%2212%22 fill%3D%22none%22 stroke%3D%22%236b7280%22 strokeLinecap%3D%22round%22 strokeLinejoin%3D%22round%22 strokeWidth%3D%222%22 viewBox%3D%220 0 24 24%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3`}
           >
             <option value="">Filter by Location</option>
             {locations
@@ -165,7 +165,7 @@ function HotelListingPage() {
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className={`w-full p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-300'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out appearance-none pr-8 bg-no-repeat bg-right-3`}
+            className={`w-full p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-300'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out appearance-none pr-8 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2212%22 height%3D%2212%22 fill%3D%22none%22 stroke%3D%22%236b7280%22 strokeLinecap%3D%22round%22 strokeLinejoin%3D%22round%22 strokeWidth%3D%222%22 viewBox%3D%220 0 24 24%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3`}
           >
             <option value="default">Sort By</option>
             <option value="name-asc">Name (A-Z)</option>
