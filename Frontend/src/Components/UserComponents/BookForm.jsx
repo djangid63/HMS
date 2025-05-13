@@ -13,8 +13,11 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [coupon, setCoupon] = useState('');
-  const [discountValue, setDiscountValue] = useState(null);
-  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [discountValue, setDiscountValue] = useState(null); const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
+  const role = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const isAdmin = role === 'admin';
+  const adminDiscount = isAdmin ? 20 : 0;
 
   const config = {
     headers: {
@@ -68,11 +71,11 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
 
 
 
-    // if (localStorage.getItem('token') == '') {
-    //   setError('You must be logged in to make a booking.');
-    //   navigate('/login');
-    //   return;
-    // }
+    if (localStorage.getItem('token') == '') {
+      setError('You must be logged in to make a booking.');
+      navigate('/login');
+      return;
+    }
 
     if (!checkInDate || !checkOutDate) {
       setError('Please select check-in and check-out dates.');
@@ -87,11 +90,17 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
     if (numberOfGuests > capacity) {
       setError(`Number of guests cannot exceed the room capacity of ${capacity}.`);
       return;
-    }
+    } const totalBeforeDiscount = price * getNights();
 
-    const totalBeforeDiscount = price * getNights();
-    const finalTotal = discountValue ? (totalBeforeDiscount * (1 - discountValue / 100)) : totalBeforeDiscount;
+    // Calculate discount percentages and use the greater one
+    const couponDiscountPercent = discountValue || 0;
+    const effectiveDiscountPercent = isAdmin ? Math.max(adminDiscount, couponDiscountPercent) : couponDiscountPercent;
 
+    // Apply the effective discount
+    const finalTotal = effectiveDiscountPercent > 0
+      ? (totalBeforeDiscount * (1 - effectiveDiscountPercent / 100))
+      : totalBeforeDiscount;    // Determine which discount is being applied
+    const isAdminDiscountApplied = isAdmin && (!discountValue || adminDiscount >= discountValue);
     const bookingData = {
       roomId,
       checkInDate,
@@ -100,7 +109,8 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
       userPhone,
       userName: 'DJ',
       totalAmount: finalTotal,
-      appliedCoupon: discountValue ? coupon : null,
+      appliedCoupon: isAdminDiscountApplied ? null : (discountValue ? coupon : null),
+      adminDiscount: isAdminDiscountApplied ? adminDiscount : null,
     };
 
     try {
@@ -111,7 +121,7 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
       setSuccess('Booking successful! You will be redirected shortly.');
 
       setTimeout(() => {
-        // navigate('/my-bookings');
+        navigate('/userPage/bookings');
       }, 3000);
 
     } catch (err) {
@@ -204,24 +214,40 @@ const BookForm = ({ price, roomId, capacity, hotelId }) => {
             <div className="flex justify-between items-center">
               <span>Price per night:</span>
               <span className="text-blue-600">₹{price}</span>
-            </div>
-            <div className="flex justify-between items-center">
+            </div>            <div className="flex justify-between items-center">
               <span>Nights:</span>
               <span className="text-blue-600">{getNights()}</span>
             </div>
+
+            {isAdmin && (
+              <div className="flex justify-between items-center">
+                <span>Admin Discount:</span>
+                <span className="text-green-600">- {adminDiscount}%</span>
+              </div>
+            )}
+
             {discountValue && (
               <div className="flex justify-between items-center">
-                <span>Discount:</span>
+                <span>Coupon Discount:</span>
                 <span className="text-green-600">- {discountValue}%</span>
               </div>
             )}
+
+            {isAdmin && discountValue && (
+              <div className="text-xs text-blue-600 italic">
+                {Math.max(adminDiscount, discountValue) === adminDiscount
+                  ? "Admin discount applied (higher)"
+                  : "Coupon discount applied (higher)"}
+              </div>
+            )}
+
             <div className="border-t border-gray-200 pt-2 mt-1 flex justify-between items-center font-bold">
               <span>Total:</span>
               <span className="text-blue-700">
-                {discountValue ? (
+                {(isAdmin || discountValue) ? (
                   <>
                     <span className="text-gray-500 line-through text-sm mr-2">₹{price * getNights()}</span>
-                    ₹{(price * getNights() * (1 - discountValue / 100)).toFixed(0)}
+                    ₹{(price * getNights() * (1 - Math.max(adminDiscount, discountValue || 0) / 100)).toFixed(0)}
                   </>
                 ) : (
                   <>₹{price * getNights()}</>

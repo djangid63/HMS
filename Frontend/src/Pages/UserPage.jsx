@@ -6,8 +6,8 @@ import RoomDetails from '../Components/UserComponents/RoomDetails'
 import MyBookings from '../Components/UserComponents/MyBooking'
 import Settings from '../Components/UserComponents/Settings'
 import { jwtDecode } from 'jwt-decode'
-import BASE_URL from '../Utils/api'
 import axios from 'axios'
+import BASE_URL from '../Utils/api'
 
 
 const UserPage = () => {

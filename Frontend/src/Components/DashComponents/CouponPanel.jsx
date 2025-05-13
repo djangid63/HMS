@@ -16,6 +16,7 @@ export default function CouponManager() {
   const [editId, setEditId] = useState(null);
 
   const token = localStorage.getItem('token')
+  const role = localStorage.getItem('user')
   const config = {
     headers: {
       'Authorization': `Bearer ${token}`
