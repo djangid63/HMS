@@ -5,6 +5,7 @@ import RoomListing from '../Components/UserComponents/RoomListing'
 import RoomDetails from '../Components/UserComponents/RoomDetails'
 import MyBookings from '../Components/UserComponents/MyBooking'
 import Profile from '../Components/UserComponents/Profile'
+import Settings from '../Components/UserComponents/Settings'
 import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
 import BASE_URL from '../Utils/api'
@@ -79,9 +80,11 @@ const UserPage = () => {
                         Your Profile
                       </button>
                     </Link>
+                    <Link to='/userPage/settings'>
                     <button className="w-full text-left block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-indigo-600">
                       Settings
                     </button>
+                    </Link>
                     <button
                       onClick={() => {
                         localStorage.removeItem('token');
@@ -157,6 +160,7 @@ const UserPage = () => {
           <Route path="/room-details/:roomId" element={<RoomDetails />} />
           <Route path="/bookings" element={<MyBookings user={user} />} />
           <Route path="/profile" element={<Profile user={user} />} />
+          <Route path="/settings" element={<Settings user={user} />} />
           <Route path="/services" element={
             <div className="px-4 py-6 sm:px-0">
               <div className="bg-white rounded-lg shadow p-6">
