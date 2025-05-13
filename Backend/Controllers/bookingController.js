@@ -17,7 +17,7 @@ exports.getBooking = async (req, res) => {
     ]);
 
 
-    console.log("booookk", bookings);
+    // console.log("booookk", bookings);
 
     res.status(200).json({ status: true, message: "Data found", data: bookings })
   } catch (error) {

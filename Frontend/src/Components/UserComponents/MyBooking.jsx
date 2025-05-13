@@ -1,8 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import BASE_URL from "../../Utils/api";
+import { useSelector } from 'react-redux';
 
 function MyBookings({ user }) {
+  const { theme } = useSelector((state) => state.theme);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,42 +76,74 @@ function MyBookings({ user }) {
     });
   };
 
-  const getStatusColor = (status) => {
+  const getStatusClass = (status) => {
     switch (status) {
-      case 'Pending': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'Confirm': return 'bg-green-100 text-green-800 border-green-300';
-      case 'Cancel': return 'bg-red-100 text-red-800 border-red-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'Pending':
+        return theme === 'dark'
+          ? 'bg-yellow-900 text-yellow-200 border-yellow-700'
+          : 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'Confirm':
+        return theme === 'dark'
+          ? 'bg-green-900 text-green-200 border-green-700'
+          : 'bg-green-100 text-green-800 border-green-300';
+      case 'Cancel':
+        return theme === 'dark'
+          ? 'bg-red-900 text-red-200 border-red-700'
+          : 'bg-red-100 text-red-800 border-red-300';
+      default:
+        return theme === 'dark'
+          ? 'bg-gray-700 text-gray-200 border-gray-600'
+          : 'bg-gray-100 text-gray-800 border-gray-300';
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-4xl font-bold mb-6 text-center text-indigo-800">My Bookings</h1>
+    <div className={`max-w-6xl mx-auto p-6 min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <h1 className={`text-4xl font-bold mb-6 text-center ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-800'}`}>My Bookings</h1>
 
       {/* Tabs */}
       <div className="flex justify-center mb-8">
-        <div className="inline-flex rounded-md shadow-sm bg-white" role="group">
+        <div className={`inline-flex rounded-md shadow-sm ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`} role="group">
           <button
-            className={`px-5 py-3 text-sm font-medium rounded-l-lg ${activeTab === 'all' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+            className={`px-5 py-3 text-sm font-medium rounded-l-lg ${activeTab === 'all'
+                ? 'bg-indigo-600 text-white'
+                : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
             onClick={() => setActiveTab('all')}
           >
             All Bookings
           </button>
           <button
-            className={`px-5 py-3 text-sm font-medium ${activeTab === 'pending' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+            className={`px-5 py-3 text-sm font-medium ${activeTab === 'pending'
+                ? 'bg-indigo-600 text-white'
+                : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
             onClick={() => setActiveTab('pending')}
           >
             Pending
           </button>
           <button
-            className={`px-5 py-3 text-sm font-medium ${activeTab === 'confirmed' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+            className={`px-5 py-3 text-sm font-medium ${activeTab === 'confirmed'
+                ? 'bg-indigo-600 text-white'
+                : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
             onClick={() => setActiveTab('confirmed')}
           >
             Confirmed
           </button>
           <button
-            className={`px-5 py-3 text-sm font-medium rounded-r-lg ${activeTab === 'cancelled' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+            className={`px-5 py-3 text-sm font-medium rounded-r-lg ${activeTab === 'cancelled'
+                ? 'bg-indigo-600 text-white'
+                : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
             onClick={() => setActiveTab('cancelled')}
           >
             Cancelled
@@ -118,47 +152,35 @@ function MyBookings({ user }) {
       </div>
 
       {loading ? (
-        <div className="text-center py-10">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
-          <p className="mt-4 text-gray-600 font-medium">Loading your bookings...</p>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
         </div>
       ) : error ? (
-        <div className="p-6 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md shadow-md">
-          <p className="font-medium">{error}</p>
-          <button
-            onClick={fetchBooking}
-            className="mt-3 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-          >
-            Try Again
-          </button>
+        <div className={`p-6 rounded-lg shadow-md text-center ${theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-700'}`}>
+          <p>{error}</p>
         </div>
       ) : filteredBookings.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-          </svg>
-          <p className="text-gray-500 mt-4 text-lg">No bookings found in this category.</p>
-          {activeTab !== 'all' && (
-            <button
-              onClick={() => setActiveTab('all')}
-              className="mt-4 px-5 py-2 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 transition-colors font-medium"
-            >
-              View All Bookings
-            </button>
-          )}
+        <div className={`p-6 rounded-lg shadow-md text-center ${theme === 'dark' ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'}`}>
+          <p>No bookings found.</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="grid gap-6">
           {filteredBookings.map((booking) => (
-            <div
-              key={booking._id}
-              className="bg-white shadow-lg rounded-2xl overflow-hidden transition-transform hover:scale-[1.01] duration-300 border border-gray-100"
-            >
-              <div className="border-b border-gray-100 bg-gray-50 px-6 py-4 flex justify-between items-center">
-                <h3 className="font-medium text-lg text-gray-800">Booking #{booking._id.slice(-6)}</h3>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(booking.isChecking)}`}>
-                  {booking.isChecking}
-                </span>
+            <div key={booking._id} className={`rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+              <div className={`p-6 flex flex-col md:flex-row md:items-center md:justify-between border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div>
+                  <h3 className={`text-xl font-bold mb-1 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>
+                    {booking.roomId ? booking.roomId.name : 'Room Name Not Available'}
+                  </h3>
+                  <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {booking.hotelId ? booking.hotelId.name : 'Hotel Name Not Available'}
+                  </p>
+                </div>
+                <div className="mt-4 md:mt-0">
+                  <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusClass(booking.isChecking)}`}>
+                    {booking.isChecking}
+                  </span>
+                </div>
               </div>
 
               <div className="p-6">

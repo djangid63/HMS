@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail, Search } from "lucide-react";
 import axios from "axios";
 import BASE_URL from '../../Utils/api';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 function HotelListingPage() {
+  const { theme } = useSelector((state) => state.theme);
   const [hotels, setHotels] = useState([]);
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [error, setError] = useState(null);
@@ -107,78 +109,70 @@ function HotelListingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <header className="mb-16 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">
-            Find Your Perfect Stay
-          </h1>
-          <p className="mt-4 text-lg text-gray-600">
-            Explore a wide range of hotels and book your room with ease.
-          </p>
-        </header>
+    <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className={`mb-8 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
+        <h1 className="text-3xl font-bold mb-2">Find Your Perfect Stay</h1>
+        <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          Browse our collection of premium hotels and resorts
+        </p>
+      </div>
 
-        {/* Search and Filters Bar */}
-        <div className="mb-12 p-6 bg-white rounded-xl shadow-lg">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Search Input */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search hotels by name or address..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out bg-gray-50"
-              />
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-              </span>
-            </div>
+      <div className="mb-8">
+        <div className="flex  gap-4 mb-6">
+          {/* Search Input */}
+          <div className="relative flex-grow min-w-[200px] xl:max-w-md">
+            <input
+              type="text"
+              placeholder="Search hotels by name or location"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`w-full p-3 pl-10 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-300 text-gray-800'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out`}
+            />
+            <Search className={`absolute top-3 left-3 h-5 w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+          </div>
 
-            {/* State Filter */}
-            <select
-              value={stateFilter}
-              onChange={(e) => setStateFilter(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out bg-gray-50 appearance-none pr-8 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2212%22 height%3D%2212%22 fill%3D%22none%22 stroke%3D%22%236b7280%22 strokeLinecap%3D%22round%22 strokeLinejoin%3D%22round%22 strokeWidth%3D%222%22 viewBox%3D%220 0 24 24%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3"
-            >
-              <option value="">Filter by State</option>
-              {states.map((state) => (
-                <option key={state._id} value={state._id}>
-                  {state.state}
-                </option>
-              ))}
-            </select>
+          {/* State Filter */}
+          <select
+            value={stateFilter}
+            onChange={(e) => setStateFilter(e.target.value)}
+            className={`w-full p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-300'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out appearance-none pr-8`}
+          >
+            <option value="">Filter by State</option>
+            {states.map((state) => (
+              <option key={state._id} value={state._id}>
+                {state.state}
+              </option>
+            ))}
+          </select>
 
-            {/* Location Filter */}
-            <select
-              value={locationFilter}
-              onChange={(e) => setLocationFilter(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out bg-gray-50 appearance-none pr-8 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2212%22 height%3D%2212%22 fill%3D%22none%22 stroke%3D%22%236b7280%22 strokeLinecap%3D%22round%22 strokeLinejoin%3D%22round%22 strokeWidth%3D%222%22 viewBox%3D%220 0 24 24%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3"
-            >
-              <option value="">Filter by Location</option>
-              {locations.map((location) => (
+          {/* Location Filter */}
+          <select
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+            className={`w-full p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-300'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out appearance-none pr-8 bg-no-repeat bg-right-3`}
+          >
+            <option value="">Filter by Location</option>
+            {locations
+              .filter((location) => !stateFilter || location.stateId._id === stateFilter)
+              .map((location) => (
                 <option key={location._id} value={location._id}>
                   {location.name}
                 </option>
               ))}
-            </select>
+          </select>
 
-            {/* Sort Options */}
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out bg-gray-50 appearance-none pr-8 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2212%22 height%3D%2212%22 fill%3D%22none%22 stroke%3D%22%236b7280%22 strokeLinecap%3D%22round%22 strokeLinejoin%3D%22round%22 strokeWidth%3D%222%22 viewBox%3D%220 0 24 24%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3"
-            >
-              <option value="default">Sort by: Default</option>
-              <option value="name-asc">Name (A-Z)</option>
-              <option value="name-desc">Name (Z-A)</option>
-              <option value="rooms-desc">Rooms (High to Low)</option>
-              <option value="rooms-asc">Rooms (Low to High)</option>
-            </select>
-          </div>
+          {/* Sort Options */}
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className={`w-full p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-gray-50 border-gray-300'} focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-colors duration-200 ease-in-out appearance-none pr-8 bg-no-repeat bg-right-3`}
+          >
+            <option value="default">Sort By</option>
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="rooms-desc">Rooms (High to Low)</option>
+            <option value="rooms-asc">Rooms (Low to High)</option>
+          </select>
         </div>
 
         {error && (
@@ -195,7 +189,7 @@ function HotelListingPage() {
               <div
                 key={hotel._id}
                 onClick={() => navigateToRooms(hotel._id)}
-                className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out overflow-hidden cursor-pointer flex flex-col"
+                className={`group rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out overflow-hidden cursor-pointer flex flex-col ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}
               >
                 <div className="relative h-60 overflow-hidden">
                   <img
@@ -207,11 +201,11 @@ function HotelListingPage() {
                 </div>
 
                 <div className="p-5 flex flex-col flex-grow">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2 truncate group-hover:text-indigo-600 transition-colors duration-200">
+                  <h2 className={`text-xl font-semibold mb-2 truncate group-hover:text-indigo-600 transition-colors duration-200 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
                     {hotel.name}
                   </h2>
 
-                  <div className="flex items-center text-gray-500 text-sm mb-3">
+                  <div className={`flex items-center text-sm mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                     <MapPin className="w-4 h-4 mr-1.5 text-indigo-500 flex-shrink-0" />
                     <span className="line-clamp-1" title={`${hotel.address}, ${hotel.locationId.name}, ${hotel.locationId.stateId.state}`}>
                       {`${hotel.address}, ${hotel.locationId.name}, ${hotel.locationId.stateId.state}` || "No address available"}

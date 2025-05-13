@@ -44,6 +44,9 @@ const userSchema = new Schema({
   },
   img: {
     type: String
+  },
+  bgImg: {
+    type: String
   }
 }, { timestamps: true, versionKey: false })
 

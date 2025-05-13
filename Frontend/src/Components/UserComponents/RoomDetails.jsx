@@ -5,8 +5,10 @@ import BASE_URL from "../../Utils/api";
 import BookForm from "./BookForm";
 const tabs = ["Overview", "Amenities", "Reviews", "Location"];
 import { jwtDecode } from "jwt-decode";
+import { useSelector } from 'react-redux';
 
 const RoomDetail = () => {
+  const { theme } = useSelector((state) => state.theme);
   const { roomId } = useParams();
   const [activeTab, setActiveTab] = useState("Overview");
   const [selectedRoom, setSelectedRoom] = useState([]);
@@ -42,7 +44,7 @@ const RoomDetail = () => {
         return selectedRoom[0] ? (
           <div className="h-[400px]">
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Images</h3>
+              <h3 className={`text-xl font-semibold mb-3 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>Images</h3>
               {selectedRoom[0].imageUrls && selectedRoom[0].imageUrls.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {selectedRoom[0].imageUrls.map((image, index) => (
@@ -55,24 +57,37 @@ const RoomDetail = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">No images available for this room.</p>
+                <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>No images available for this room.</p>
               )}
             </div>
             <div className="py-4">
-              <p className="text-gray-700 mb-4">{selectedRoom[0].description}</p>
+              <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{selectedRoom[0].description}</p>
               <div className="mb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Room Details</h3>
-                <p className="text-gray-600">
+                <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>Room Details</h3>
+                <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   <span className="font-medium">Type:</span> {selectedRoom[0].roomType}
                 </p>
-                <p className="text-gray-600">
+                <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   <span className="font-medium">Price:</span> ₹{selectedRoom[0].price} / night
                 </p>
+                <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <span className="font-medium">Max Guests:</span> {selectedRoom[0].capacity}
+                </p>
+              </div>
+              <div>
+                <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>Room Features</h3>
+                <ul className="list-disc list-inside">
+                  {selectedRoom[0].features && selectedRoom[0].features.map((feature, index) => (
+                    <li key={index} className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
         ) : (
-          <p className="text-gray-700">Loading...</p>
+          <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Loading room details...</p>
         );
       case "Amenities":
         return (
@@ -113,32 +128,24 @@ const RoomDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Image */}
-      <div className="relative">
-        <img
-          src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          alt="Hotel Room"
-          className="w-full h-[400px] object-cover"
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-4xl md:text-5xl text-white font-bold">Deluxe Room</h1>
-        </div>
-      </div>
+    <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-8 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column - Room Details */}
+        <div className="lg:col-span-2">
+          <h1 className={`text-3xl font-bold mb-2 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
+            {selectedRoom[0]?.name || "Room Details"}
+          </h1>
 
-      {/* Tabs and Content & Booking Form */}
-      <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
-        {/* Tabs and Content */}
-        <div className="lg:w-2/3">
-          <div className="mb-6">
-            <div className="flex gap-4 border-b border-gray-300 overflow-auto">
+          {/* Tab Navigation */}
+          <div className="mb-6 border-b border-gray-200">
+            <div className="flex overflow-x-auto">
               {tabs.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={` py-2 px-4 font-medium whitespace-nowrap ${activeTab === tab
-                    ? "border-b-4 border-blue-600 text-blue-600"
-                    : "text-gray-600 hover:text-blue-500"
+                  className={`py-3 px-6 font-medium text-sm transition-colors duration-200 whitespace-nowrap focus:outline-none ${activeTab === tab
+                      ? `border-b-2 border-indigo-600 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`
+                      : `${theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
                     }`}
                 >
                   {tab}
@@ -146,20 +153,18 @@ const RoomDetail = () => {
               ))}
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-lg">{renderContent()}</div>
+
+          {/* Tab Content */}
+          <div className={`rounded-lg shadow-md p-6 mb-8 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+            {renderContent()}
+          </div>
         </div>
 
-        {/* Booking Sidebar */}
-        <div className="lg:w-1/3 pt-[72px] pl-4">
-          {selectedRoom[0] && (
-            <BookForm
-              price={selectedRoom[0].price}
-              roomId={roomId}
-              hotelId={selectedRoom[0].hotel}
-              capacity={selectedRoom[0].capacity}
-              user={user[0]}
-            />
-          )}
+        {/* Right Column - Booking Form */}
+        <div className="lg:col-span-1">
+          <div className={`rounded-lg shadow-md p-6 ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+            <BookForm price={selectedRoom[0]?.price} roomId={selectedRoom[0]?._id} capacity={selectedRoom[0]?.capacity} user={user} hotelId={selectedRoom[0]?.hotelId} />
+          </div>
         </div>
       </div>
     </div>

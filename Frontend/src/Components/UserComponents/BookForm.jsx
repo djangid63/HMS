@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import BASE_URL from '../../Utils/api';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
+  const { theme } = useSelector((state) => state.theme);
   const navigate = useNavigate();
 
   const [checkInDate, setCheckInDate] = useState('');
@@ -97,7 +99,7 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
 
     const finalTotal = effectiveDiscountPercent > 0
       ? (totalBeforeDiscount * (1 - effectiveDiscountPercent / 100))
-      : totalBeforeDiscount;   
+      : totalBeforeDiscount;
     const isAdminDiscountApplied = isAdmin && (!discountValue || adminDiscount >= discountValue);
     const bookingData = {
       roomId,
@@ -138,127 +140,139 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
   };
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow-lg sticky top-24">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Book Your Stay</h2>
+    <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-5 rounded-xl shadow-lg sticky top-24`}>
+      <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Book Your Stay</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className='flex gap-3'>
           <div>
-            <label htmlFor="checkInDate" className="block text-sm font-medium text-gray-700 mb-1">Check-in Date</label>
+            <label htmlFor="checkInDate" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Check-in Date</label>
             <input
               type="date"
               id="checkInDate"
               value={checkInDate}
               onChange={(e) => setCheckInDate(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
+                  ? 'bg-gray-700 border-gray-600 text-white'
+                  : 'border-gray-300 text-gray-900'
+                }`}
               required
             />
           </div>
           <div>
-            <label htmlFor="checkOutDate" className="block text-sm font-medium text-gray-700 mb-1">Check-out Date</label>
+            <label htmlFor="checkOutDate" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Check-out Date</label>
             <input
               type="date"
               id="checkOutDate"
               value={checkOutDate}
               onChange={(e) => setCheckOutDate(e.target.value)}
               min={checkInDate || new Date().toISOString().split('T')[0]}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
+                  ? 'bg-gray-700 border-gray-600 text-white'
+                  : 'border-gray-300 text-gray-900'
+                }`}
               required
             />
           </div>
         </div>
-        <div className='flex gap-3'>
-          <div>
-            <label htmlFor="numberOfGuests" className="block text-sm font-medium text-gray-700 mb-1">Number of Guests</label>
-            <input
-              type="number"
-              id="numberOfGuests"
-              value={numberOfGuests}
-              onChange={(e) => setNumberOfGuests(parseInt(e.target.value, 10))}
-              min="1"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor='contact' className="block text-sm font-medium text-gray-700 mb-1">Contact No</label>
-            <input
-              type='tel'
-              id='contact'
-              value={userPhone}
-              onChange={(e) => setUserPhone(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-        </div>
+
         <div>
-          <label htmlFor='coupon' className="block text-sm font-medium text-gray-700 mb-1">Coupon Code</label>
+          <label htmlFor="numberOfGuests" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Number of Guests</label>
+          <input
+            type="number"
+            id="numberOfGuests"
+            value={numberOfGuests}
+            onChange={(e) => setNumberOfGuests(Math.max(1, Math.min(e.target.value, capacity)))}
+            min="1"
+            max={capacity}
+            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
+                ? 'bg-gray-700 border-gray-600 text-white'
+                : 'border-gray-300 text-gray-900'
+              }`}
+            required
+          />
+          <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Maximum capacity: {capacity} guests</p>
+        </div>
+
+        <div>
+          <label htmlFor="userPhone" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Phone Number</label>
+          <input
+            type="tel"
+            id="userPhone"
+            value={userPhone}
+            onChange={(e) => setUserPhone(e.target.value)}
+            placeholder="Your contact number"
+            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
+                ? 'bg-gray-700 border-gray-600 text-white'
+                : 'border-gray-300 text-gray-900'
+              }`}
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="couponCode" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Coupon Code (Optional)</label>
           <div className="flex">
             <input
-              type='text'
-              id='coupon'
+              type="text"
+              id="couponCode"
               value={coupon}
-              onChange={(e) => setCoupon(e.target.value.toUpperCase())}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder='Enter code (e.g. NEW50)'
+              onChange={(e) => setCoupon(e.target.value)}
+              placeholder="Enter coupon code"
+              className={`w-full px-3 py-2 border rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
+                  ? 'bg-gray-700 border-gray-600 text-white'
+                  : 'border-gray-300 text-gray-900'
+                }`}
             />
+            <button
+              type="button"
+              onClick={handleApplyCoupon}
+              disabled={isApplyingCoupon}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Apply
+            </button>
           </div>
-          {isApplyingCoupon && <p className="text-xs text-gray-500 mt-1">Checking coupon...</p>}
-          {discountValue && <p className="text-xs text-green-600 mt-1">Coupon applied! {discountValue}% off</p>}
         </div>
-        <div className="text-lg font-semibold text-gray-800 p-4 bg-gray-50 rounded-lg border border-gray-100 mt-4">
-          <div className="flex flex-col space-y-2">
-            <div className="flex justify-between items-center">
-              <span>Price per night:</span>
-              <span className="text-blue-600">₹{price}</span>
-            </div>            <div className="flex justify-between items-center">
-              <span>Nights:</span>
-              <span className="text-blue-600">{getNights()}</span>
-            </div>
 
-            {isAdmin && (
-              <div className="flex justify-between items-center">
-                <span>Admin Discount:</span>
-                <span className="text-green-600">- {adminDiscount}%</span>
-              </div>
-            )}
+        <div className={`border-t border-b py-4 my-4 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className="flex justify-between">
+            <span className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Base Price</span>
+            <span className={`font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>₹{price}</span>
+          </div>
 
-            {discountValue && (
-              <div className="flex justify-between items-center">
-                <span>Coupon Discount:</span>
-                <span className="text-green-600">- {discountValue}%</span>
-              </div>
-            )}
-
-            {isAdmin && discountValue && (
-              <div className="text-xs text-blue-600 italic">
-                {Math.max(adminDiscount, discountValue) === adminDiscount
-                  ? "Admin discount applied (higher)"
-                  : "Coupon discount applied (higher)"}
-              </div>
-            )}
-
-            <div className="border-t border-gray-200 pt-2 mt-1 flex justify-between items-center font-bold">
-              <span>Total:</span>
-              <span className="text-blue-700">
-                {(isAdmin || discountValue) ? (
-                  <>
-                    <span className="text-gray-500 line-through text-sm mr-2">₹{price * getNights()}</span>
-                    ₹{(price * getNights() * (1 - Math.max(adminDiscount, discountValue || 0) / 100)).toFixed(0)}
-                  </>
-                ) : (
-                  <>₹{price * getNights()}</>
-                )}
+          {(discountValue || adminDiscount > 0) && (
+            <div className="flex justify-between mt-2">
+              <span className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Discount</span>
+              <span className="font-medium text-green-600">
+                -{(discountValue || 0) + adminDiscount}%
               </span>
             </div>
+          )}
+
+          {nights > 0 && (
+            <div className="flex justify-between mt-2">
+              <span className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Stay Duration</span>
+              <span className={`font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>{nights} {nights === 1 ? 'night' : 'nights'}</span>
+            </div>
+          )}
+
+          <div className="flex justify-between mt-4 text-lg font-bold">
+            <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>Total</span>
+            <span className="text-indigo-600">
+              ₹{calculateTotal()}
+            </span>
           </div>
         </div>
-        {error && <p className="text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</p>}
-        {success && <p className="text-sm text-green-600 bg-green-100 p-3 rounded-md">{success}</p>}
+
+        {error && <div className="text-red-600 text-sm">{error}</div>}
+        {success && <div className="text-green-600 text-sm">{success}</div>}
+
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+          className={`w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${!checkInDate || !checkOutDate || !numberOfGuests || !userPhone ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
+          disabled={!checkInDate || !checkOutDate || !numberOfGuests || !userPhone}
         >
           Book Now
         </button>
