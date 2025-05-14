@@ -1,44 +1,14 @@
 const cron = require('node-cron');
 const bookingModel = require('../Models/bookingModel')
 const { getBooking } = require('../Controllers/bookingController')
-
-const getAll = async () => {
-  const booking = await getBooking()
-
-
-  // console.log("filteredBooking", filteredBooking.length);
-}
-// getAll()
-// const getAllBookings = async () => {
-//   try {
-//     const bookings = await bookingModel.find().populate('userId');
-//     return bookings;
-
-//     // const bookings = await bookingModel.aggregate([
-//     //   {
-//     //     $lookup: {
-//     //       from: 'usersdatas',
-//     //       localField: 'userId',
-//     //       foreignField: '_id',
-//     //       as: 'userDetails'
-//     //     }
-//     //   }
-//     // ]);
-//     // return bookings;
-//   } catch (error) {
-//     console.error('Error getting bookings:', error.message);
-//   }
-// };
-
-
-
+const userModel = require('../Models/userModel')
 
 const scheduleTasks = () => {
-  cron.schedule('* * * * *', async () => {
+  const task = cron.schedule('* * * * *', async () => {
 
-    const users = await userbooking.find({
-      status: 'pending',
-      ischecking: { $ne: 'checkIn' }
+    const users = await bookingModel.find({
+      status: 'Pending' || 'Approved',
+      ischecking: { $ne: 'Confirm' }
 
     })
 
@@ -47,18 +17,41 @@ const scheduleTasks = () => {
     for (let i = 0; i < users.length; i++) {
       const id = users[i].userId.toString()
 
-      mapping[id] = (mapping[id] || 0) + 1
-    }
+      // mapping[id] = (mapping[id] || 0) + 1
 
-    for (let id in mapping) {
-      if (mapping[id] >= 3) {
-        console.log(`user ${id} has ${mapping[id]} failed`)
+      // Same as this
+      if (mapping[id] === undefined) {
+        mapping[id] = 1;
+      } else {
+        mapping[id] += 1;
       }
     }
 
-    console.log(' >>> Bookings >>>>', users);
-    console.log('>>>>totalbookings>>>>', users.length)
+    let filteredUser = []
+    for (let id in mapping) {
+      // Here id means the key
+      if (mapping[id] >= 1) {
+        filteredUser.push(id)
+      }
+    }
+
+    async function disableUser(userId) {
+      try {
+        const disableUser = await userModel.findByIdAndUpdate(userId, { isDisabled: true }, { new: true })
+        console.log('User disabled successfully', disableUser);
+      } catch (error) {
+        console.log("error disabling user", error);
+      }
+    }
+
+
+    for (let i = 0; i < filteredUser.length; i++) {
+      disableUser(filteredUser[i])
+    }
+
   })
+  task.stop()
 };
+
 
 module.exports = scheduleTasks;
