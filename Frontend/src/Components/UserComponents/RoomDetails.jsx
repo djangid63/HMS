@@ -129,12 +129,12 @@ const RoomDetail = () => {
   };
 
   return (
-    <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-8 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className={`w-[1300px] flex justify-center items-center rounded-2xl px-4 sm:px-6 lg:px-8 py-8 ${theme === 'dark' ? 'text-gray-200' && 'bg-red-200' : 'text-gray-800' && 'bg-gray-50'}`}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 ">
         {/* Left Column - Room Details */}
         <div className="lg:col-span-2">
           <h1 className={`text-3xl font-bold mb-2 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
-            {selectedRoom[0]?.name || "Room Details"}
+            {selectedRoom[0]?.type || "Room Details"}
           </h1>
 
           {/* Tab Navigation */}

@@ -61,7 +61,7 @@ function RoomListingPage() {
   }
 
   return (
-    <div className={`min-h-screen py-10 px-4 sm:px-6 lg:px-8 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gradient-to-b from-blue-50 to-gray-100'}`}>
+    <div className={`rounded-2xl min-h-screen py-10 px-4 sm:px-6 lg:px-8 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gradient-to-b from-blue-50 to-gray-100'}`}>
       <div className="max-w-7xl mx-auto">
         <h1 className={`text-5xl font-extrabold text-center mb-12 ${theme === 'dark' ? 'text-indigo-400' : 'text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600'}`}>
           Find Your Perfect Room
