@@ -51,6 +51,34 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
       setIsApplyingCoupon(false);
     }
   };
+  const handleApplyCoupon = () => {
+    if (!coupon) {
+      setError('Please enter a coupon code');
+      return;
+    }
+    fetchCoupon();
+  };
+
+  const getNights = () => {
+    if (!checkInDate || !checkOutDate) return 1;
+    const start = new Date(checkInDate);
+    const end = new Date(checkOutDate);
+    const diffTime = end - start;
+    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return nights > 0 ? nights : 1;
+  };
+
+  const calculateTotal = () => {
+    const nights = getNights();
+    const totalBeforeDiscount = price * nights;
+
+    const couponDiscountPercent = discountValue || 0;
+    const effectiveDiscountPercent = isAdmin ? Math.max(adminDiscount, couponDiscountPercent) : couponDiscountPercent;
+
+    return effectiveDiscountPercent > 0
+      ? (totalBeforeDiscount * (1 - effectiveDiscountPercent / 100)).toFixed(2)
+      : totalBeforeDiscount.toFixed(2);
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -68,10 +96,6 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-
-
-
-
 
     if (localStorage.getItem('token') == '') {
       setError('You must be logged in to make a booking.');
@@ -101,6 +125,11 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
       ? (totalBeforeDiscount * (1 - effectiveDiscountPercent / 100))
       : totalBeforeDiscount;
     const isAdminDiscountApplied = isAdmin && (!discountValue || adminDiscount >= discountValue);
+
+
+
+
+
     const bookingData = {
       roomId,
       checkInDate,
@@ -130,15 +159,6 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
     }
   };
 
-  const getNights = () => {
-    if (!checkInDate || !checkOutDate) return 1;
-    const start = new Date(checkInDate);
-    const end = new Date(checkOutDate);
-    const diffTime = end - start;
-    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return nights > 0 ? nights : 1;
-  };
-
   return (
     <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-5 rounded-xl shadow-lg sticky top-24`}>
       <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Book Your Stay</h2>
@@ -153,8 +173,8 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
               onChange={(e) => setCheckInDate(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
-                  ? 'bg-gray-700 border-gray-600 text-white'
-                  : 'border-gray-300 text-gray-900'
+                ? 'bg-gray-700 border-gray-600 text-white'
+                : 'border-gray-300 text-gray-900'
                 }`}
               required
             />
@@ -168,8 +188,8 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
               onChange={(e) => setCheckOutDate(e.target.value)}
               min={checkInDate || new Date().toISOString().split('T')[0]}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
-                  ? 'bg-gray-700 border-gray-600 text-white'
-                  : 'border-gray-300 text-gray-900'
+                ? 'bg-gray-700 border-gray-600 text-white'
+                : 'border-gray-300 text-gray-900'
                 }`}
               required
             />
@@ -186,8 +206,8 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
             min="1"
             max={capacity}
             className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
-                ? 'bg-gray-700 border-gray-600 text-white'
-                : 'border-gray-300 text-gray-900'
+              ? 'bg-gray-700 border-gray-600 text-white'
+              : 'border-gray-300 text-gray-900'
               }`}
             required
           />
@@ -203,8 +223,8 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
             onChange={(e) => setUserPhone(e.target.value)}
             placeholder="Your contact number"
             className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
-                ? 'bg-gray-700 border-gray-600 text-white'
-                : 'border-gray-300 text-gray-900'
+              ? 'bg-gray-700 border-gray-600 text-white'
+              : 'border-gray-300 text-gray-900'
               }`}
             required
           />
@@ -220,8 +240,8 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
               onChange={(e) => setCoupon(e.target.value)}
               placeholder="Enter coupon code"
               className={`w-full px-3 py-2 border rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark'
-                  ? 'bg-gray-700 border-gray-600 text-white'
-                  : 'border-gray-300 text-gray-900'
+                ? 'bg-gray-700 border-gray-600 text-white'
+                : 'border-gray-300 text-gray-900'
                 }`}
             />
             <button
@@ -248,12 +268,10 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
                 -{(discountValue || 0) + adminDiscount}%
               </span>
             </div>
-          )}
-
-          {nights > 0 && (
+          )}          {getNights() > 0 && (
             <div className="flex justify-between mt-2">
               <span className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Stay Duration</span>
-              <span className={`font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>{nights} {nights === 1 ? 'night' : 'nights'}</span>
+              <span className={`font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>{getNights()} {getNights() === 1 ? 'night' : 'nights'}</span>
             </div>
           )}
 

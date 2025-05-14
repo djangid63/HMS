@@ -3,6 +3,7 @@ const { bookingSuccess } = require('../Utils/emailService')
 
 exports.getBooking = async (req, res) => {
   try {
+
     // const bookings = await bookingModel.find().populate('userId');
 
     const bookings = await bookingModel.aggregate([
@@ -16,9 +17,7 @@ exports.getBooking = async (req, res) => {
       }
     ]);
 
-
     // console.log("booookk", bookings);
-
     res.status(200).json({ status: true, message: "Data found", data: bookings })
   } catch (error) {
     res.status(400).json({ message: error.message });

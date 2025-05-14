@@ -4,16 +4,19 @@ const mongoose = require('mongoose')
 const app = express()
 const cors = require('cors')
 const fileUpload = require('express-fileupload')
+const scheduleTasks = require('./cron/scheduler')
+
 const port = 5000;
 
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-// Add file upload middleware
+
+// file upload middleware
 app.use(fileUpload({
   useTempFiles: true,
   tempFileDir: '/tmp/',
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB Liimit
 }))
 
 const mongoURL = process.env.MONGO_URL
@@ -31,7 +34,7 @@ mongoose.connect(mongoURL)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err))
 
-// Add your routes here
+//  routes here
 app.use('/user', userRouter)
 app.use('/location', locationRouter)
 app.use('/state', stateRouter)
@@ -40,6 +43,12 @@ app.use('/room', roomRouter)
 app.use('/booking', bookingRouter)
 app.use('/coupon', couponRouter)
 
+
+// Scheduler call
+scheduleTasks()
+
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
 })
+
