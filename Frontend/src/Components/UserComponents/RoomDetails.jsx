@@ -42,7 +42,7 @@ const RoomDetail = () => {
     switch (activeTab) {
       case "Overview":
         return selectedRoom[0] ? (
-          <div className="h-[400px]">
+          <div className="h-[500px]">
             <div>
               <h3 className={`text-xl font-semibold mb-3 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>Images</h3>
               {selectedRoom[0].imageUrls && selectedRoom[0].imageUrls.length > 0 ? (
@@ -144,8 +144,8 @@ const RoomDetail = () => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`py-3 px-6 font-medium text-sm transition-colors duration-200 whitespace-nowrap focus:outline-none ${activeTab === tab
-                      ? `border-b-2 border-indigo-600 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`
-                      : `${theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
+                    ? `border-b-2 border-indigo-600 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`
+                    : `${theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
                     }`}
                 >
                   {tab}
@@ -161,8 +161,8 @@ const RoomDetail = () => {
         </div>
 
         {/* Right Column - Booking Form */}
-        <div className="lg:col-span-1">
-          <div className={`rounded-lg shadow-md p-6 ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+        <div className="lg:col-span-1 w-fit">
+          <div className={` rounded-lg shadow-md p-6 ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
             <BookForm price={selectedRoom[0]?.price} roomId={selectedRoom[0]?._id} capacity={selectedRoom[0]?.capacity} user={user} hotelId={selectedRoom[0]?.hotelId} />
           </div>
         </div>

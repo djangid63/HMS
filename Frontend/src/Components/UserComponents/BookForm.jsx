@@ -20,6 +20,7 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
   const role = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
   const isAdmin = role === 'admin';
   const adminDiscount = isAdmin ? 20 : 0;
+
   console.log('user', user);
   const config = {
     headers: {
@@ -73,6 +74,7 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
     const totalBeforeDiscount = price * nights;
 
     const couponDiscountPercent = discountValue || 0;
+
     const effectiveDiscountPercent = isAdmin ? Math.max(adminDiscount, couponDiscountPercent) : couponDiscountPercent;
 
     return effectiveDiscountPercent > 0
@@ -124,9 +126,8 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
     const finalTotal = effectiveDiscountPercent > 0
       ? (totalBeforeDiscount * (1 - effectiveDiscountPercent / 100))
       : totalBeforeDiscount;
+
     const isAdminDiscountApplied = isAdmin && (!discountValue || adminDiscount >= discountValue);
-
-
 
 
 
@@ -160,7 +161,7 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
   };
 
   return (
-    <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-5 rounded-xl shadow-lg sticky top-24`}>
+    <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} w-fit p-5 rounded-xl shadow-lg sticky top-24`}>
       <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Book Your Stay</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className='flex gap-3'>

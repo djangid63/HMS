@@ -122,12 +122,20 @@ function RoomListingPage() {
                       <span className="text-xl font-bold">{room.price}</span>
                       <span className="text-sm text-gray-500 ml-1">/ night</span>
                     </div>
-                    <button
-                      onClick={() => navigate(`/userPage/room-details/${room._id}`)}
-                      className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                    >
-                      View Details
-                    </button>
+                    {room.isAvailable ? (
+                      <button
+                        onClick={() => navigate(`/userPage/room-details/${room._id}`)}
+                        className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                      >
+                        View Details
+                      </button>
+                    ) : (
+                      <button
+                        className="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                      >
+                        Booked
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

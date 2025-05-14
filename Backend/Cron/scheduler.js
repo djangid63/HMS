@@ -56,9 +56,9 @@ const scheduleTasks = () => {
       }
     }
 
-    console.log(`` >>> Bookings >>>>, users`);
-    console.log(>>>>totalbookings>>>>, users.length)
-})
+    console.log(' >>> Bookings >>>>', users);
+    console.log('>>>>totalbookings>>>>', users.length)
+  })
 };
 
 module.exports = scheduleTasks;
