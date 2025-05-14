@@ -52,6 +52,7 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
       setIsApplyingCoupon(false);
     }
   };
+
   const handleApplyCoupon = () => {
     if (!coupon) {
       setError('Please enter a coupon code');
@@ -118,7 +119,8 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
     if (numberOfGuests > capacity) {
       setError(`Number of guests cannot exceed the room capacity of ${capacity}.`);
       return;
-    } const totalBeforeDiscount = price * getNights();
+    }
+    const totalBeforeDiscount = price * getNights();
 
     const couponDiscountPercent = discountValue || 0;
     const effectiveDiscountPercent = isAdmin ? Math.max(adminDiscount, couponDiscountPercent) : couponDiscountPercent;
@@ -128,7 +130,6 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
       : totalBeforeDiscount;
 
     const isAdminDiscountApplied = isAdmin && (!discountValue || adminDiscount >= discountValue);
-
 
 
     const bookingData = {
@@ -144,15 +145,17 @@ const BookForm = ({ price, roomId, capacity, user, hotelId }) => {
     };
 
     try {
-      await axios.post(`${BASE_URL}/booking/add`, bookingData, config);
+      if (user) {
+        await axios.post(`${BASE_URL}/booking/add`, bookingData, config);
 
-      await axios.patch(`${BASE_URL}/room/update/${roomId}`, { isAvailable: false }, config);
+        await axios.patch(`${BASE_URL}/room/update/${roomId}`, { isAvailable: false }, config);
+      }
 
       setSuccess('Booking successful! You will be redirected shortly.');
 
       setTimeout(() => {
         navigate('/userPage/bookings');
-      }, 3000);
+      }, 1000);
 
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create booking. Please try again.');

@@ -22,7 +22,8 @@ const RoomDetail = () => {
     const fetchUser = async () => {
       const response = await axios.get(`${BASE_URL}/user/getAll`)
       const userData = response.data.data.filter((user) => user.email == decoded.email);
-      setUser(userData)
+      // Set the first matching user instead of the array
+      setUser(userData[0])
     }
 
     const fetchRoom = async () => {
