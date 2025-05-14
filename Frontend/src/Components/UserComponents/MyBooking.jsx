@@ -98,7 +98,7 @@ function MyBookings({ user }) {
   };
 
   return (
-    <div className={`max-w-6xl mx-auto p-6 min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={` rounded-2xl max-w-6xl mx-auto p-6 min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <h1 className={`text-4xl font-bold mb-6 text-center ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-800'}`}>My Bookings</h1>
 
       {/* Tabs */}
@@ -106,10 +106,10 @@ function MyBookings({ user }) {
         <div className={`inline-flex rounded-md shadow-sm ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`} role="group">
           <button
             className={`px-5 py-3 text-sm font-medium rounded-l-lg ${activeTab === 'all'
-                ? 'bg-indigo-600 text-white'
-                : theme === 'dark'
-                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              ? 'bg-indigo-600 text-white'
+              : theme === 'dark'
+                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             onClick={() => setActiveTab('all')}
           >
@@ -117,10 +117,10 @@ function MyBookings({ user }) {
           </button>
           <button
             className={`px-5 py-3 text-sm font-medium ${activeTab === 'pending'
-                ? 'bg-indigo-600 text-white'
-                : theme === 'dark'
-                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              ? 'bg-indigo-600 text-white'
+              : theme === 'dark'
+                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             onClick={() => setActiveTab('pending')}
           >
@@ -128,10 +128,10 @@ function MyBookings({ user }) {
           </button>
           <button
             className={`px-5 py-3 text-sm font-medium ${activeTab === 'confirmed'
-                ? 'bg-indigo-600 text-white'
-                : theme === 'dark'
-                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              ? 'bg-indigo-600 text-white'
+              : theme === 'dark'
+                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             onClick={() => setActiveTab('confirmed')}
           >
@@ -139,10 +139,10 @@ function MyBookings({ user }) {
           </button>
           <button
             className={`px-5 py-3 text-sm font-medium rounded-r-lg ${activeTab === 'cancelled'
-                ? 'bg-indigo-600 text-white'
-                : theme === 'dark'
-                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              ? 'bg-indigo-600 text-white'
+              : theme === 'dark'
+                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             onClick={() => setActiveTab('cancelled')}
           >

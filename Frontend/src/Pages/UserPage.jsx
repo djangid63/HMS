@@ -13,8 +13,9 @@ import { useSelector } from 'react-redux'
 
 
 const UserPage = () => {
-  const { theme } = useSelector((state) => state.theme);
-  console.log(theme);
+  const { theme, backgroundImage } = useSelector((state) => state.theme);
+
+  // console.log(theme, backgroundImage);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userSetting, setUserSetting] = useState(false)
   const [user, setUser] = useState()
@@ -48,7 +49,7 @@ const UserPage = () => {
   };
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover' }} className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Navigation Bar */}
       <nav className={`${theme === 'dark' ? 'bg-gray-800 shadow-lg' : 'bg-white shadow-md'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
