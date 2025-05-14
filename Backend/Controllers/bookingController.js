@@ -48,7 +48,6 @@ exports.updateBooking = async (req, res) => {
     const { id } = req.params;
     const { status, isChecking } = req.body;
 
-    // Determine which field to update based on the request body
     let updateFields = {};
     if (typeof status !== 'undefined') {
       updateFields.status = status;
@@ -68,9 +67,10 @@ exports.updateBooking = async (req, res) => {
 
     const email = await bookingSuccess(findBooking.userId.email, findBooking.userId.firstname, findBooking.userId.lastname, findBooking.roomId, findBooking.checkInDate, findBooking.checkOutDate)
 
-    if (!email) {
-      return res.status(500).json({ success: false, message: "Failed to send booking success email" });
-    }
+    // if (!email) {
+    //   return res.status(500).json({ success: false, message: "Failed to send booking success email" });
+    // }
+
     const booking = await bookingModel.findByIdAndUpdate(id, updateFields, { new: true })
     return res.status(200).json({
       success: true,
