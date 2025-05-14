@@ -9,7 +9,6 @@ const scheduleTasks = () => {
     const users = await bookingModel.find({
       status: 'Pending' || 'Approved',
       ischecking: { $ne: 'Confirm' }
-
     })
 
     const mapping = {}

@@ -2,20 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme, setBackgroundImage } from '../../Redux/themeSlice';
 import { FaMoon, FaSun, FaImage } from 'react-icons/fa';
-// Import background images
-import darkImg1 from '../../assets/Images/DarkImg1.jpg';
-import darkImg2 from '../../assets/Images/DarkImg2.jpg';
-import darkImg3 from '../../assets/Images/DarkImg3.jpg';
-import darkImg4 from '../../assets/Images/DarkImg4.jpg';
-import lightImg1 from '../../assets/Images/LightImg1.jpg';
-import lightImg2 from '../../assets/Images/LightImg2.jpg';
-import lightImg3 from '../../assets/Images/LightImg3.jpg';
+
+import darkImg1 from '../../../public/Images/DarkImg1.jpg';
+import darkImg2 from '../../../public/Images/DarkImg2.jpg';
+import darkImg3 from '../../../public/Images/DarkImg3.jpg';
+import darkImg4 from '../../../public/Images/DarkImg4.jpg';
+import lightImg1 from '../../../public/Images/LightImg1.jpg';
+import lightImg2 from '../../../public/Images/LightImg2.jpg';
+import lightImg3 from '../../../public/Images/LightImg3.jpg';
 
 const Settings = () => {
   const dispatch = useDispatch();
   const { theme, backgroundImage } = useSelector((state) => state.theme);
   const [selectedImage, setSelectedImage] = useState(backgroundImage);
-  // Background images from Images folder
+
   const backgroundOptions = [
     { id: 1, name: "None", url: "" },
     { id: 2, name: "Dark Image 1", url: darkImg1 },
@@ -28,29 +28,16 @@ const Settings = () => {
   ];
 
   // Apply background image to body when changed
-  useEffect(() => {
-    const applyBackground = () => {
-      if (selectedImage) {
-        document.body.style.backgroundImage = `url(${selectedImage})`;
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundAttachment = "fixed";
-        document.body.style.backgroundPosition = "center";
-      } else {
-        document.body.style.backgroundImage = "none";
-        document.body.style.backgroundColor = theme === "dark" ? "#111827" : "#f9fafb";
-      }
-    };
-
-    applyBackground();
-  }, [selectedImage, theme]);
 
   const handleBackgroundSelect = (url) => {
-    setSelectedImage(url);
-    dispatch(setBackgroundImage(url));
+    let bgImgPath = url.replace('/public', '')
+
+    setSelectedImage(bgImgPath);
+    dispatch(setBackgroundImage(bgImgPath));
   };
 
   return (
-    <div className={`settings-container p-5 rounded-lg shadow-md ${theme === 'dark' ? 'bg-gray-800 text-gray-100' : 'bg-white'}`}>
+    <div style={{ backgroundImage: `url(${selectedImage})`, backgroundSize: 'cover' }} className={`settings-container p-5 rounded-lg shadow-md ${theme === 'dark' ? 'bg-gray-800 text-gray-100' : 'bg-white'}`}>
       <h2 className={`text-2xl font-bold mb-5 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>Settings</h2>
 
       <div className="theme-section">
