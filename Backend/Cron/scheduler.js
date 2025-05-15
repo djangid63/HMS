@@ -27,10 +27,10 @@ const scheduleTasks = () => {
     }
 
     let filteredUser = []
-    for (let id in mapping) {
-      // Here id means the key
-      if (mapping[id] >= 1) {
-        filteredUser.push(id)
+    for (let key in mapping) {
+      // Here key means the key in the mapping obj
+      if (mapping[key] >= 1) {
+        filteredUser.push(key)
       }
     }
 
