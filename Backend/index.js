@@ -1,8 +1,11 @@
 const env = require('dotenv').config()
+
 const express = require('express')
 const mongoose = require('mongoose')
+
 const app = express()
 const cors = require('cors')
+
 const fileUpload = require('express-fileupload')
 const scheduleTasks = require('./cron/scheduler')
 
@@ -12,11 +15,11 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// file upload middleware
+
 app.use(fileUpload({
   useTempFiles: true,
   tempFileDir: '/tmp/',
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB Liimit
+  limits: { fileSize: 10 * 1024 * 1024 }
 }))
 
 const mongoURL = process.env.MONGO_URL

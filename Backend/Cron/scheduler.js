@@ -18,7 +18,7 @@ const scheduleTasks = () => {
 
       // mapping[id] = (mapping[id] || 0) + 1
 
-      // Same as this
+      // Same as above code
       if (mapping[id] === undefined) {
         mapping[id] = 1;
       } else {
@@ -29,7 +29,7 @@ const scheduleTasks = () => {
     let filteredUser = []
     for (let key in mapping) {
       // Here key means the key in the mapping obj
-      if (mapping[key] >= 1) {
+      if (mapping[key] >= 5) {
         filteredUser.push(key)
       }
     }

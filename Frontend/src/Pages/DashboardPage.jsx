@@ -8,6 +8,7 @@ import CouponPanel from '../Components/DashComponents/CouponPanel'
 import UserPage from './UserPage';
 import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import AdminDashboard from '../Components/DashComponents/AdminDashboard';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('bookingPanel');
@@ -45,6 +46,8 @@ const Dashboard = () => {
     else if (activeTab === 'ViewUI') {
       return <UserPage />
     }
+    else if (activeTab === 'dashboard')
+      return <AdminDashboard />
 
     return <ComponentPlaceholder title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} />;
   };
@@ -65,6 +68,16 @@ const Dashboard = () => {
 
         <nav className="flex-1 p-4">
           <ul className="space-y-2">
+            <li>
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'dashboard' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                  }`}
+              >
+                <FaHotel className="mr-3" />
+                <span>Dashboard</span>
+              </button>
+            </li>
             <li>
               <button
                 onClick={() => setActiveTab('bookingPanel')}

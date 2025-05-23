@@ -29,8 +29,6 @@ exports.SignUpUser = async (req, res) => {
       }
     }
 
-
-
     const signData = new userModel({
       firstname,
       lastname,
@@ -42,9 +40,11 @@ exports.SignUpUser = async (req, res) => {
       otp,
       otpTimer
     })
+
     const userData = new userModel(signData)
     const saveData = await userData.save()
     return res.status(201).json({ success: true, message: "Sign up successfully", data: saveData })
+    
   } catch (error) {
     console.log("User sign up failed:", error);
     return res.status(400).json({
