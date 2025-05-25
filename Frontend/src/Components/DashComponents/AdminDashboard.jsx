@@ -150,7 +150,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Hey Prottoy,</h1>
+          <h1 className="text-2xl font-bold">Hey Admin,</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">Great service leaves a lasting impression.</p>
         </div>
         <div className="flex gap-2">
@@ -313,11 +313,10 @@ const AdminDashboard = () => {
           </div>
 
           <div className="w-full h-20 bg-blue-100 rounded-md mb-4 flex items-center justify-center">
-            {/* This is a simplified capacity graph */}
             <div className="w-full h-6 flex">
-              <div className="bg-blue-700 h-full" style={{ width: "70%" }}></div>
+              <div className="bg-blue-700 h-full" style={{ width: "100%" }}></div>
               <div className="bg-blue-300 h-full" style={{ width: "15%" }}></div>
-              <div className="bg-blue-100 h-full" style={{ width: "15%" }}></div>
+              <div className="bg-blue-100 h-full" style={{ width: "20%" }}></div>
             </div>
           </div>
 
@@ -349,7 +348,7 @@ const AdminDashboard = () => {
               •••
             </button>
           </div>
-
+          {/* 
           <div className="space-y-3">
             <div className="p-3 rounded-md bg-blue-50 text-blue-700">
               <div className="flex justify-between items-start">
@@ -394,7 +393,7 @@ const AdminDashboard = () => {
                 <div className="bg-purple-600 h-2 rounded-full" style={{ width: '75%' }}></div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
