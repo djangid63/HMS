@@ -1,49 +1,148 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Share, FileUp, Plus } from 'lucide-react';
+import axios from 'axios';
+import BASE_URL from '../../Utils/api';
 
 const AdminDashboard = () => {
-  const { theme } = useSelector(state => state.theme); 0.0
-// DUMmy data
-  const dashboardData = {
-    newBookings: 840,
-    checkIns: 231,
-    checkOuts: 124,
-    roomsAvailable: 32,
-    totalRevenue: 123980,
-    bookingByPlatform: [
-      { name: 'Direct Booking', percentage: 61, color: 'bg-blue-500' },
-      { name: 'Booking.com', percentage: 12, color: 'bg-blue-300' },
-      { name: 'Agoda', percentage: 11, color: 'bg-blue-400' },
-      { name: 'Airbnb', percentage: 9, color: 'bg-blue-200' },
-      { name: 'Hotels.com', percentage: 5, color: 'bg-blue-600' },
-      { name: 'Others', percentage: 2, color: 'bg-blue-800' }
-    ],
-    roomStatus: {
-      occupied: 286,
-      reserved: 87,
-      available: 32,
-      notReady: 13
-    },
-    tasks: [
-      { id: 1, date: 'June 19, 2023', status: 'completed', description: 'Prepare Conference Room B (10 AM)' },
-      { id: 2, date: 'June 19, 2023', status: 'in-progress', description: 'Restock 3rd Floor Supplies (Housekeeping)' },
-      { id: 3, date: 'June 20, 2023', status: 'pending', description: 'Inspect and Clean Pool Area (11 AM)' },
-      { id: 4, date: 'June 20, 2023', status: 'pending', description: 'Check-In Assistance During Peak Hours (4 PM - 6 PM)' }
-    ],
-    bookingList: [
-      { id: 'LG-800113', guest: 'John Smith', roomType: 'Room 101', duration: '3 nights', checkIn: 'Jun 19, 2023', checkOut: 'Jun 22, 2023', status: 'checked-in', priority: 'deluxe' },
-      { id: 'LG-800114', guest: 'Alice Johnson', roomType: 'Room 207', duration: '2 nights', checkIn: 'Jun 19, 2023', checkOut: 'Jun 22, 2023', status: 'checked-in', priority: 'standard' },
-      { id: 'LG-800115', guest: 'Mark Davis', roomType: 'Room 303', duration: '5 nights', checkIn: 'Jun 19, 2023', checkOut: 'Jun 22, 2023', status: 'pending', priority: 'suite' },
-      { id: 'LG-800116', guest: 'Emma Watson', roomType: 'Room 105', duration: '4 nights', checkIn: 'Jun 19, 2023', checkOut: 'Jun 22, 2023', status: 'checked-in', priority: 'standard' }
-    ],
-    recentActivities: [
-      { time: '12:00 PM', type: 'room-ready', title: 'Conference Room B Ready (10 AM)' },
-      { time: '11:30 AM', type: 'room-setup', title: 'Room 8 set for 10 AM meeting, with AV and refreshments.' },
-      { time: '11:00 AM', type: 'room-cleaned', title: 'Room 204 cleaned and prepped for new guests.' },
-      { time: '10:30 AM', type: 'maintenance', title: 'Maintenance logged: Toilet issue in Room 109, technician assigned.' },
-      { time: '10:00 AM', type: 'guest-issue', title: 'Argus Copper checked in a guest, room key issued.' }
-    ]
+  const { theme } = useSelector(state => state.theme); const [loading, setLoading] = useState(true);
+
+  // Dashboard data state
+  const [dashboardStats, setDashboardStats] = useState({
+    newBookings: 0,
+    checkIns: 0,
+    checkOuts: 0,
+    roomsAvailable: 0,
+    totalRevenue: 0
+  });
+
+  const [bookingByPlatform, setBookingByPlatform] = useState([
+    { name: 'Direct Booking', percentage: 61, color: 'bg-blue-500' },
+    { name: 'Booking.com', percentage: 12, color: 'bg-blue-300' },
+    { name: 'Agoda', percentage: 11, color: 'bg-blue-400' },
+    { name: 'Airbnb', percentage: 9, color: 'bg-blue-200' },
+    { name: 'Hotels.com', percentage: 5, color: 'bg-blue-600' },
+    { name: 'Others', percentage: 2, color: 'bg-blue-800' }
+  ]);
+
+  const [roomStatus, setRoomStatus] = useState({
+    occupied: 0,
+    reserved: 0,
+    available: 0,
+    notReady: 0
+  });
+
+  const [bookingList, setBookingList] = useState([]);
+  const [recentActivities, setRecentActivities] = useState([]);
+
+  // API authentication configuration
+  const token = localStorage.getItem('token');
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch bookings data
+      const bookingsResponse = await axios.get(`${BASE_URL}/booking/getAll`, config);
+      const bookings = bookingsResponse.data.data || [];
+
+      // Fetch rooms data
+      const roomsResponse = await axios.get(`${BASE_URL}/room/getAll`, config);
+      const rooms = roomsResponse.data || [];
+
+      // Calculate dashboard metrics
+      const pendingBookings = bookings.filter(booking => booking.status === 'Pending').length;
+      const checkedInBookings = bookings.filter(booking => booking.status === 'Approved').length;
+      const cancelledOrCompleted = bookings.filter(booking =>
+        booking.status === 'Rejected' || booking.status === 'Cancel' || booking.status === 'Completed'
+      ).length;
+
+      const availableRooms = rooms.filter(room => room.isAvailable && room.isActive).length;
+
+      // Calculate total revenue (sum of all approved bookings)
+      const totalRevenue = bookings
+        .filter(booking => booking.status === 'Approved' || booking.status === 'Completed')
+        .reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
+
+      // Update dashboard stats
+      setDashboardStats({
+        newBookings: pendingBookings + checkedInBookings + cancelledOrCompleted,
+        checkIns: checkedInBookings,
+        checkOuts: cancelledOrCompleted,
+        roomsAvailable: availableRooms,
+        totalRevenue: totalRevenue
+      });
+
+      // Update room status
+      setRoomStatus({
+        occupied: checkedInBookings,
+        reserved: pendingBookings,
+        available: availableRooms,
+        notReady: rooms.filter(room => !room.isAvailable || !room.isActive).length
+      });
+
+      // Update recent bookings list (only the latest 4)
+      const latestBookings = bookings
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 4)
+        .map(booking => {
+          const checkInDate = new Date(booking.checkInDate);
+          const checkOutDate = new Date(booking.checkOutDate);
+          const diffTime = Math.abs(checkOutDate - checkInDate);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          return {
+            id: booking._id.substring(0, 8),
+            guest: booking.userBooking && booking.userBooking[0] ? booking.userBooking[0].name : 'Guest',
+            roomType: booking.roomType || 'Standard Room',
+            duration: `${diffDays} nights`,
+            checkIn: new Date(booking.checkInDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            checkOut: new Date(booking.checkOutDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            status: booking.status === 'Approved' ? 'checked-in' : booking.status.toLowerCase(),
+            priority: booking.roomType?.toLowerCase().includes('deluxe') ? 'deluxe' :
+              booking.roomType?.toLowerCase().includes('suite') ? 'suite' : 'standard'
+          };
+        });
+
+      setBookingList(latestBookings);
+
+      // Create recent activities based on the latest bookings and room changes
+      const activities = latestBookings.map((booking, index) => {
+        const time = new Date(Date.now() - index * 30 * 60000).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit'
+        });
+
+        let type = 'guest-issue';
+        let title = `${booking.guest} ${booking.status === 'checked-in' ? 'checked in' : 'booked'} a room.`;
+
+        if (index === 1) {
+          type = 'room-cleaned';
+          title = `Room ${booking.roomType} cleaned and prepped for new guests.`;
+        } else if (index === 2) {
+          type = 'room-setup';
+          title = `${booking.roomType} set up for arrival on ${booking.checkIn}.`;
+        }
+
+        return { time, type, title };
+      });
+
+      setRecentActivities(activities);
+
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setLoading(false);
+    }
   };
 
   return (
@@ -74,7 +173,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">New Bookings</p>
-              <h2 className="text-3xl font-bold mt-1">{dashboardData.newBookings}</h2>
+              <h2 className="text-3xl font-bold mt-1">{loading ? '...' : dashboardStats.newBookings}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-600">+8.1% from last week</span>
               </div>
@@ -90,7 +189,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Check-In</p>
-              <h2 className="text-3xl font-bold mt-1">{dashboardData.checkIns}</h2>
+              <h2 className="text-3xl font-bold mt-1">{loading ? '...' : dashboardStats.checkIns}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600">+3.6% from last week</span>
               </div>
@@ -106,7 +205,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Check-Out</p>
-              <h2 className="text-3xl font-bold mt-1">{dashboardData.checkOuts}</h2>
+              <h2 className="text-3xl font-bold mt-1">{loading ? '...' : dashboardStats.checkOuts}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600">-1.06% from last week</span>
               </div>
@@ -122,7 +221,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Room Available</p>
-              <h2 className="text-3xl font-bold mt-1">{dashboardData.roomsAvailable}</h2>
+              <h2 className="text-3xl font-bold mt-1">{loading ? '...' : dashboardStats.roomsAvailable}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600">-2.97% from last week</span>
               </div>
@@ -138,7 +237,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
-              <h2 className="text-3xl font-bold mt-1">${dashboardData.totalRevenue.toLocaleString()}</h2>
+              <h2 className="text-3xl font-bold mt-1">${loading ? '...' : dashboardStats.totalRevenue.toLocaleString()}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600">+5.70% from last week</span>
               </div>
@@ -165,9 +264,9 @@ const AdminDashboard = () => {
               {/* This is a simplified donut chart - in a real app, you'd use a chart library */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <svg viewBox="0 0 36 36" className="w-full h-full">
-                  {dashboardData.bookingByPlatform.map((platform, index) => {
+                  {bookingByPlatform.map((platform, index) => {
                     // Simple calculation to create donut chart segments
-                    const offset = dashboardData.bookingByPlatform
+                    const offset = bookingByPlatform
                       .slice(0, index)
                       .reduce((acc, curr) => acc + curr.percentage, 0);
                     return (
@@ -192,7 +291,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="mt-4 space-y-2">
-            {dashboardData.bookingByPlatform.map((platform) => (
+            {bookingByPlatform.map((platform) => (
               <div key={platform.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={`w-3 h-3 rounded-full ${platform.color}`}></div>
@@ -225,51 +324,76 @@ const AdminDashboard = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className={`p-3 rounded-md ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-50'}`}>
               <p className="text-sm text-gray-500">Occupied</p>
-              <p className="text-2xl font-bold">{dashboardData.roomStatus.occupied}</p>
+              <p className="text-2xl font-bold">{loading ? '...' : roomStatus.occupied}</p>
             </div>
             <div className={`p-3 rounded-md ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-50'}`}>
               <p className="text-sm text-gray-500">Reserved</p>
-              <p className="text-2xl font-bold">{dashboardData.roomStatus.reserved}</p>
+              <p className="text-2xl font-bold">{loading ? '...' : roomStatus.reserved}</p>
             </div>
             <div className={`p-3 rounded-md ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-50'}`}>
               <p className="text-sm text-gray-500">Available</p>
-              <p className="text-2xl font-bold">{dashboardData.roomStatus.available}</p>
+              <p className="text-2xl font-bold">{loading ? '...' : roomStatus.available}</p>
             </div>
             <div className={`p-3 rounded-md ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-50'}`}>
               <p className="text-sm text-gray-500">Not Ready</p>
-              <p className="text-2xl font-bold">{dashboardData.roomStatus.notReady}</p>
+              <p className="text-2xl font-bold">{loading ? '...' : roomStatus.notReady}</p>
             </div>
           </div>
         </div>
 
-        {/* Tasks */}
+        {/* Booking Analytics - Replacing the Tasks section */}
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold">Tasks</h3>
-            <button className="text-gray-100 bg-blue-500 rounded-md p-1">
-              <Plus size={18} />
+            <h3 className="font-semibold">Booking Analytics</h3>
+            <button className="text-gray-500">
+              •••
             </button>
           </div>
 
           <div className="space-y-3">
-            {dashboardData.tasks.map((task) => (
-              <div
-                key={task.id}
-                className={`p-3 rounded-md ${task.status === 'completed' ? 'bg-purple-100 text-purple-700' :
-                    task.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
-                      'bg-gray-100 text-gray-700'
-                  }`}
-              >
-                <div className="flex justify-between items-start">
-                  <p className="text-xs">{task.date}</p>
-                  <span className="text-xs capitalize">{task.status === 'in-progress' ? 'In Progress' : task.status}</span>
-                </div>
-                <p className="text-sm mt-1">{task.description}</p>
-                <div className="flex justify-end mt-2">
-                  <button className="text-gray-500">•••</button>
-                </div>
+            <div className="p-3 rounded-md bg-blue-50 text-blue-700">
+              <div className="flex justify-between items-start">
+                <p className="text-xs">Today</p>
+                <span className="text-xs font-medium">Performance</span>
               </div>
-            ))}
+              <p className="text-sm mt-1 font-medium">Occupancy Rate: {loading ? '...' : `${Math.round((roomStatus.occupied / (roomStatus.occupied + roomStatus.available + roomStatus.notReady)) * 100)}%`}</p>
+              <div className="w-full bg-gray-200 h-2 mt-2 rounded-full">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${loading ? '0' : Math.round((roomStatus.occupied / (roomStatus.occupied + roomStatus.available + roomStatus.notReady)) * 100)}%` }}></div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-md bg-green-50 text-green-700">
+              <div className="flex justify-between items-start">
+                <p className="text-xs">This Month</p>
+                <span className="text-xs font-medium">Revenue Target</span>
+              </div>
+              <p className="text-sm mt-1 font-medium">Target Progress: {loading ? '...' : '65%'}</p>
+              <div className="w-full bg-gray-200 h-2 mt-2 rounded-full">
+                <div className="bg-green-600 h-2 rounded-full" style={{ width: '65%' }}></div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-md bg-amber-50 text-amber-700">
+              <div className="flex justify-between items-start">
+                <p className="text-xs">This Week</p>
+                <span className="text-xs font-medium">Check-ins</span>
+              </div>
+              <p className="text-sm mt-1 font-medium">Expected: {loading ? '...' : dashboardStats.checkIns + Math.round(dashboardStats.checkIns * 0.2)} check-ins</p>
+              <div className="w-full bg-gray-200 h-2 mt-2 rounded-full">
+                <div className="bg-amber-600 h-2 rounded-full" style={{ width: '80%' }}></div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-md bg-purple-50 text-purple-700">
+              <div className="flex justify-between items-start">
+                <p className="text-xs">Forecast</p>
+                <span className="text-xs font-medium">Next Week</span>
+              </div>
+              <p className="text-sm mt-1 font-medium">Projected Revenue: ${loading ? '...' : Math.round(dashboardStats.totalRevenue * 0.15).toLocaleString()}</p>
+              <div className="w-full bg-gray-200 h-2 mt-2 rounded-full">
+                <div className="bg-purple-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -304,36 +428,46 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {dashboardData.bookingList.map((booking) => (
-                <tr
-                  key={booking.id}
-                  className={`border-t ${theme === 'dark' ? 'border-gray-600' : 'border-gray-100'} text-sm`}
-                >
-                  <td className="py-3 px-2 flex items-center gap-1">
-                    <span className="font-medium">{booking.id}</span>
-                    {booking.priority === 'deluxe' && <span className="w-2 h-2 rounded-full bg-yellow-400"></span>}
-                    {booking.priority === 'suite' && <span className="w-2 h-2 rounded-full bg-purple-500"></span>}
-                  </td>
-                  <td className="py-3 px-2">{booking.guest}</td>
-                  <td className="py-3 px-2">{booking.roomType.split(' ')[0]}</td>
-                  <td className="py-3 px-2">{booking.roomType.split(' ')[1]}</td>
-                  <td className="py-3 px-2">{booking.duration}</td>
-                  <td className="py-3 px-2">
-                    {booking.checkIn} - {booking.checkOut}
-                  </td>
-                  <td className="py-3 px-2">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-md ${booking.status === 'checked-in' ? 'bg-green-100 text-green-700' :
+              {loading ? (
+                <tr>
+                  <td colSpan="7" className="py-4 text-center text-gray-500">Loading booking data...</td>
+                </tr>
+              ) : bookingList.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="py-4 text-center text-gray-500">No bookings found</td>
+                </tr>
+              ) : (
+                bookingList.map((booking) => (
+                  <tr
+                    key={booking.id}
+                    className={`border-t ${theme === 'dark' ? 'border-gray-600' : 'border-gray-100'} text-sm`}
+                  >
+                    <td className="py-3 px-2 flex items-center gap-1">
+                      <span className="font-medium">{booking.id}</span>
+                      {booking.priority === 'deluxe' && <span className="w-2 h-2 rounded-full bg-yellow-400"></span>}
+                      {booking.priority === 'suite' && <span className="w-2 h-2 rounded-full bg-purple-500"></span>}
+                    </td>
+                    <td className="py-3 px-2">{booking.guest}</td>
+                    <td className="py-3 px-2">{booking.roomType.split(' ')[0]}</td>
+                    <td className="py-3 px-2">{booking.roomType.split(' ')[1] || 'N/A'}</td>
+                    <td className="py-3 px-2">{booking.duration}</td>
+                    <td className="py-3 px-2">
+                      {booking.checkIn} - {booking.checkOut}
+                    </td>
+                    <td className="py-3 px-2">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-md ${booking.status === 'checked-in' ? 'bg-green-100 text-green-700' :
                           booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                             'bg-gray-100 text-gray-700'
-                        }`}
-                    >
-                      {booking.status === 'checked-in' ? 'Checked-in' :
-                        booking.status === 'pending' ? 'Pending' : booking.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+                          }`}
+                      >
+                        {booking.status === 'checked-in' ? 'Checked-in' :
+                          booking.status === 'pending' ? 'Pending' : booking.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -351,22 +485,28 @@ const AdminDashboard = () => {
         </div>
 
         <div className="space-y-4">
-          {dashboardData.recentActivities.map((activity, index) => (
-            <div key={index} className="flex gap-3 items-start">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${activity.type === 'room-ready' ? 'bg-blue-100 text-blue-600' :
+          {loading ? (
+            <div className="text-center py-4 text-gray-500">Loading activities...</div>
+          ) : recentActivities.length === 0 ? (
+            <div className="text-center py-4 text-gray-500">No recent activities</div>
+          ) : (
+            recentActivities.map((activity, index) => (
+              <div key={index} className="flex gap-3 items-start">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${activity.type === 'room-ready' ? 'bg-blue-100 text-blue-600' :
                   activity.type === 'room-setup' ? 'bg-purple-100 text-purple-600' :
                     activity.type === 'room-cleaned' ? 'bg-blue-100 text-blue-600' :
                       activity.type === 'maintenance' ? 'bg-purple-100 text-purple-600' :
                         'bg-blue-100 text-blue-600'
-                }`}>
-                {activity.type.includes('room') ? 'R' : 'M'}
+                  }`}>
+                  {activity.type.includes('room') ? 'R' : 'M'}
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">{activity.time}</p>
+                  <p className="text-sm">{activity.title}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-gray-500">{activity.time}</p>
-                <p className="text-sm">{activity.title}</p>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

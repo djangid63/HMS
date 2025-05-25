@@ -29,10 +29,6 @@ exports.addBooking = async (req, res) => {
     const { roomId } = req.body;
     const existingBooking = await bookingModel.findOne({ roomId });
 
-    // if (existingBooking) {
-    //   return res.status(409).json({ success: false, message: 'Room Booked already' })
-    // }
-
     req.body.userId = req.user._id
 
     const booking = new bookingModel(req.body);
