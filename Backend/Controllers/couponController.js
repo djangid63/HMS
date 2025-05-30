@@ -33,7 +33,7 @@ exports.addCoupon = async (req, res) => {
 
 exports.updateCoupon = async (req, res) => {
   try {
-    const id = req.params.id; // Use URL parameter instead of body
+    const id = req.params.id; 
     const updateData = await couponModel.findByIdAndUpdate(id, req.body, { new: true })
     return res.status(200).json({ success: true, message: "Coupon updated Successfully", data: updateData })
 
@@ -58,7 +58,7 @@ exports.disableCoupon = async (req, res) => {
 
 exports.deleteCoupon = async (req, res) => {
   try {
-    const id = req.params.id; // Use URL parameter instead of body
+    const id = req.params.id; 
     const deleteData = await couponModel.findByIdAndDelete(id)
     return res.status(201).json({ success: true, message: "Coupon deleted successfully", data: deleteData })
 
