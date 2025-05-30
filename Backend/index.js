@@ -1,4 +1,3 @@
-const path = require("path");
 const env = require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
@@ -34,8 +33,8 @@ const bookingRouter = require('./Routers/bookingRouter')
 const couponRouter = require('./Routers/couponRouter')
 
 mongoose.connect(mongoURL)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err))
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err))
 
 //  routes here
 app.use('/user', userRouter)
@@ -49,11 +48,12 @@ app.use('/coupon', couponRouter)
 
 
 // Serve frontend from 'Frontend/dist'
-// app.use(express.static(path.join(__dirname, "..", "Frontend", "dist")));
+const path = require("path");
+app.use(express.static(path.join(__dirname, "..", "Frontend", "dist")));
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "..", "Frontend", "dist", "index.html"));
-// });
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "Frontend", "dist", "index.html"));
+});
 
 
 
