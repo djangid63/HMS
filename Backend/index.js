@@ -46,17 +46,6 @@ app.use('/booking', bookingRouter)
 app.use('/coupon', couponRouter)
 
 
-
-// Serve frontend from 'Frontend/dist'
-const path = require("path");
-app.use(express.static(path.join(__dirname, "..", "Frontend", "dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "Frontend", "dist", "index.html"));
-});
-
-
-
 // Scheduler call
 scheduleTasks()
 
