@@ -49,11 +49,11 @@ app.use('/coupon', couponRouter)
 
 
 // Serve frontend from 'Frontend/dist'
-app.use(express.static(path.join(__dirname, "..", "Frontend", "dist")));
+// app.use(express.static(path.join(__dirname, "..", "Frontend", "dist")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "Frontend", "dist", "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "..", "Frontend", "dist", "index.html"));
+// });
 
 
 
