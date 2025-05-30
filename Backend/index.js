@@ -1,5 +1,5 @@
+const path = require("path");
 const env = require('dotenv').config()
-
 const express = require('express')
 const mongoose = require('mongoose')
 
@@ -46,8 +46,7 @@ app.use('/room', roomRouter)
 app.use('/booking', bookingRouter)
 app.use('/coupon', couponRouter)
 
-const path = require("path");
-const express = require("express");
+
 
 // Serve frontend from 'Frontend/dist'
 app.use(express.static(path.join(__dirname, "..", "Frontend", "dist")));
