@@ -33,19 +33,19 @@ exports.addCoupon = async (req, res) => {
 
 exports.updateCoupon = async (req, res) => {
   try {
-    const { id } = req.body;
+    const id = req.params.id; // Use URL parameter instead of body
     const updateData = await couponModel.findByIdAndUpdate(id, req.body, { new: true })
     return res.status(200).json({ success: true, message: "Coupon updated Successfully", data: updateData })
 
   } catch (error) {
     console.log("Coupon updation error", error);
-    return res.status(404).json({ success: false, message: `${error}, failed to add coupon` })
+    return res.status(404).json({ success: false, message: `${error}, failed to update coupon` })
   }
 }
 
 exports.disableCoupon = async (req, res) => {
   try {
-    const { id } = req.body;
+    const id = req.params.id; // Use URL parameter instead of body
     const findCoupon = await couponModel.findById(id)
     const deleteData = await couponModel.findByIdAndUpdate(id, { isDisable: !findCoupon.isDisable })
     return res.status(201).json({ success: true, message: "Coupon disabled successful", data: deleteData })

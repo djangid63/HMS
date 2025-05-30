@@ -6,9 +6,9 @@ const couponController = require('../Controllers/couponController')
 
 router.get('/getAll', auth, couponController.getCoupon)
 router.post('/addCoupon', auth, couponController.addCoupon)
-router.patch('/updateCoupon', auth, couponController.updateCoupon)
-router.delete('/deleteCoupon', auth, couponController.deleteCoupon)
-router.delete('/disableCoupon', auth, couponController.disableCoupon)
+router.patch('/updateCoupon/:id', auth, couponController.updateCoupon)
+router.delete('/deleteCoupon/:id', auth, couponController.deleteCoupon)
+router.delete('/disableCoupon/:id', auth, couponController.disableCoupon)
 
 
 module.exports = router
