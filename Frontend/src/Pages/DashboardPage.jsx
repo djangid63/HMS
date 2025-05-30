@@ -206,7 +206,7 @@ const Dashboard = () => {
             <h1 className="text-2xl font-bold text-gray-800">
               {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
             </h1>
-            <p className="text-sm text-gray-500">Welcome back, Admin</p>
+            <p className="text-sm text-gray-500">Welcome back, Devesh</p>
           </div>
 
           <div className="flex items-center space-x-4">
