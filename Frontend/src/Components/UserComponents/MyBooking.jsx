@@ -21,7 +21,9 @@ function MyBookings({ user }) {
     try {
       setLoading(true);
       const response = await axios.get(`${BASE_URL}/booking/getAll`, config);
-      const filteredBooking = response.data.data.filter((bookings) => bookings.userBooking[0].email === user[0].email);
+      console.log(response.data.data);
+      let fullname = `${user[0].firstname} ${user[0].lastname}`;
+      const filteredBooking = response.data.data.filter((bookings) => bookings.userName === fullname);
       setBookings(filteredBooking);
       setError(null);
     } catch (err) {

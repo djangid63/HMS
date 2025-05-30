@@ -5,7 +5,8 @@ import axios from 'axios';
 import BASE_URL from '../../Utils/api';
 
 const AdminDashboard = () => {
-  const { theme } = useSelector(state => state.theme); const [loading, setLoading] = useState(true);
+  const { theme } = useSelector(state => state.theme);
+  const [loading, setLoading] = useState(true);
 
   // Dashboard data state
   const [dashboardStats, setDashboardStats] = useState({
@@ -57,7 +58,8 @@ const AdminDashboard = () => {
 
       // Fetch rooms data
       const roomsResponse = await axios.get(`${BASE_URL}/room/getAll`, config);
-      const rooms = roomsResponse.data || [];
+      const rooms = roomsResponse.data.data || [];
+      
 
       // Calculate dashboard metrics
       const pendingBookings = bookings.filter(booking => booking.status === 'Pending').length;

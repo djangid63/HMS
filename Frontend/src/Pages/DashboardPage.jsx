@@ -148,7 +148,7 @@ const Dashboard = () => {
                 <span>View User Interface</span>
               </button>
             </li>
-            <li>
+            {/* <li>
               <button
                 onClick={() => setActiveTab('staff')}
                 className={`flex items-center w-full py-2 px-4 rounded-lg text-left ${activeTab === 'staff' ? 'bg-blue-600' : 'hover:bg-gray-700'
@@ -187,7 +187,7 @@ const Dashboard = () => {
                 <FaCog className="mr-3" />
                 <span>Settings</span>
               </button>
-            </li>
+            </li> */}
           </ul>
         </nav>
 

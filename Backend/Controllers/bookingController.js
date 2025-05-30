@@ -4,18 +4,18 @@ const { bookingSuccess } = require('../Utils/emailService')
 exports.getBooking = async (req, res) => {
   try {
 
-    // const bookings = await bookingModel.find().populate('userId');
+    const bookings = await bookingModel.find().populate('userId');
 
-    const bookings = await bookingModel.aggregate([
-      {
-        $lookup: {
-          from: 'usersdatas',
-          localField: 'userId',
-          foreignField: '_id',
-          as: 'userBooking'
-        }
-      }
-    ]);
+    // const bookings = await bookingModel.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: 'usersdatas',
+    //       localField: 'userId',
+    //       foreignField: '_id',
+    //       as: 'userBooking'
+    //     }
+    //   }
+    // ]);
 
     // console.log("booookk", bookings);
     res.status(200).json({ status: true, message: "Data found", data: bookings })
