@@ -58,12 +58,12 @@ exports.disableCoupon = async (req, res) => {
 
 exports.deleteCoupon = async (req, res) => {
   try {
-    const { id } = req.body;
+    const id = req.params.id; // Use URL parameter instead of body
     const deleteData = await couponModel.findByIdAndDelete(id)
-    return res.status(201).json({ success: true, message: "Coupon disabled successful", data: deleteData })
+    return res.status(201).json({ success: true, message: "Coupon deleted successfully", data: deleteData })
 
   } catch (error) {
     console.log("Coupon delete error", error);
-    return res.status(404).json({ success: false, message: `${error}, failed to disable coupon` })
+    return res.status(404).json({ success: false, message: `${error}, failed to delete coupon` })
   }
 }
