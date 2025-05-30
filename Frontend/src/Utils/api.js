@@ -1,2 +1,2 @@
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = 'https://hms-pro-h1gy.onrender.com';
 export default BASE_URL;
