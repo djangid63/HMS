@@ -7,7 +7,7 @@ const app = express()
 const cors = require('cors')
 
 const fileUpload = require('express-fileupload')
-const scheduleTasks = require('./cron/scheduler')
+const scheduleTasks = require('./Cron/scheduler')
 
 const port = 5000;
 
