@@ -1,4 +1,5 @@
-const bookingModel = require('../Models/bookingModel')
+const bookingModel = require('../Models/bookingModel');
+const { findById } = require('../Models/userModel');
 const { bookingSuccess } = require('../Utils/emailService')
 
 exports.getBooking = async (req, res) => {
@@ -40,9 +41,15 @@ exports.addBooking = async (req, res) => {
 }
 
 exports.updateBooking = async (req, res) => {
+  console.log(req.body);
   try {
     const { id } = req.params;
     const { status, isChecking } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: "Booking ID is required" });
+    }
+
 
     let updateFields = {};
     if (typeof status !== 'undefined') {
@@ -51,35 +58,24 @@ exports.updateBooking = async (req, res) => {
     if (typeof isChecking !== 'undefined') {
       updateFields.isChecking = isChecking;
     }
-    console.log(status);
 
-    const findBooking = await bookingModel.findById(id).populate('userId');
-    console.log("findbooking controller 38", findBooking);
-
-
-    if (!id) {
-      return res.status(400).json({ success: false, message: "Hotel ID is required" });
+    const findBooking = await bookingModel.findById(id);
+    if (!findBooking) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
     }
 
-    const email = await bookingSuccess(findBooking.userId.email, findBooking.userId.firstname, findBooking.userId.lastname, findBooking.roomId, findBooking.checkInDate, findBooking.checkOutDate)
-
-    // if (!email) {
-    //   return res.status(500).json({ success: false, message: "Failed to send booking success email" });
-    // }
-
-    const booking = await bookingModel.findByIdAndUpdate(id, updateFields, { new: true })
+    const booking = await bookingModel.findByIdAndUpdate(id, updateFields, { new: true }).populate('userId');
     return res.status(200).json({
       success: true,
       message: "Booking status updated successfully",
       data: booking
     });
 
-
   } catch (error) {
-    console.log("Update hotel error:", error);
-    return res.status(500).json({
+    console.log("Update booking error:", error);
+    return res.status(409).json({
       success: false,
-      message: `Failed to update Booking status: ${error.message}`
+      message: `Failed to update booking status: ${error.message}`
     });
   }
 }

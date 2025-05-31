@@ -25,6 +25,7 @@ const BookingPanel = () => {
   }, []);
 
   const handleStatusChange = async (id, newStatus) => {
+    console.log("status booking panel 28", 28);
     try {
       await axios.patch(
         `${BASE_URL}/booking/update/${id}`,
