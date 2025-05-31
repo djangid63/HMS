@@ -16,8 +16,9 @@ const data = {
       label: 'Users by Color',
       data: [300, 500, 100],
       backgroundColor: [
-        'rgba(239, 68, 68, 0.7)',   
-        'rgba(59, 130, 246, 0.7)',  
+        'rgba(239, 68, 68, 0.7)',
+        'rgba(59, 130, 246, 0.7)',
+        'rgba(234, 179, 8, 1)',
       ],
       borderColor: [
         'rgba(239, 68, 68, 1)',
