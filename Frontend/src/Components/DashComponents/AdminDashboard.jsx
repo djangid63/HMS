@@ -1,8 +1,9 @@
+import BASE_URL from '../../Utils/api';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Share, FileUp, Plus } from 'lucide-react';
 import axios from 'axios';
-import BASE_URL from '../../Utils/api';
+import DoughnutChart from '../ChartComponents/doughnutChart';
 
 const AdminDashboard = () => {
   const { theme } = useSelector(state => state.theme);
@@ -18,12 +19,12 @@ const AdminDashboard = () => {
   });
 
   const [bookingByPlatform, setBookingByPlatform] = useState([
-    { name: 'Direct Booking', percentage: 61, color: 'bg-blue-500' },
-    { name: 'Booking.com', percentage: 12, color: 'bg-blue-300' },
-    { name: 'Agoda', percentage: 11, color: 'bg-blue-400' },
-    { name: 'Airbnb', percentage: 9, color: 'bg-blue-200' },
-    { name: 'Hotels.com', percentage: 5, color: 'bg-blue-600' },
-    { name: 'Others', percentage: 2, color: 'bg-blue-800' }
+    // { name: 'Direct Booking', percentage: 61, color: 'bg-blue-500' },
+    // { name: 'Booking.com', percentage: 12, color: 'bg-blue-300' },
+    // { name: 'Agoda', percentage: 11, color: 'bg-blue-400' },
+    // { name: 'Airbnb', percentage: 9, color: 'bg-blue-200' },
+    // { name: 'Hotels.com', percentage: 5, color: 'bg-blue-600' },
+    // { name: 'Others', percentage: 2, color: 'bg-blue-800' }
   ]);
 
   const [roomStatus, setRoomStatus] = useState({
@@ -59,7 +60,7 @@ const AdminDashboard = () => {
       // Fetch rooms data
       const roomsResponse = await axios.get(`${BASE_URL}/room/getAll`, config);
       const rooms = roomsResponse.data.data || [];
-      
+
 
       // Calculate dashboard metrics
       const pendingBookings = bookings.filter(booking => booking.status === 'Pending').length;
@@ -70,7 +71,7 @@ const AdminDashboard = () => {
 
       const availableRooms = rooms.filter(room => room.isAvailable && room.isActive).length;
 
-      // Calculate total revenue (sum of all approved bookings)
+      //  total revenue (sum of all approved bookings)
       const totalRevenue = bookings
         .filter(booking => booking.status === 'Approved' || booking.status === 'Completed')
         .reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
@@ -155,7 +156,7 @@ const AdminDashboard = () => {
           <h1 className="text-2xl font-bold">Hey Admin,</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">Great service leaves a lasting impression.</p>
         </div>
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <button className={`flex items-center gap-1 px-3 py-1.5 rounded-md ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-white hover:bg-gray-100'}`}>
             <Share size={18} /> Share
           </button>
@@ -165,7 +166,7 @@ const AdminDashboard = () => {
           <button className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-600">
             <Plus size={18} /> Custom Widgets
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Stats Cards */}
@@ -350,52 +351,7 @@ const AdminDashboard = () => {
               •••
             </button>
           </div>
-          {/* 
-          <div className="space-y-3">
-            <div className="p-3 rounded-md bg-blue-50 text-blue-700">
-              <div className="flex justify-between items-start">
-                <p className="text-xs">Today</p>
-                <span className="text-xs font-medium">Performance</span>
-              </div>
-              <p className="text-sm mt-1 font-medium">Occupancy Rate: {loading ? '...' : `${Math.round((roomStatus.occupied / (roomStatus.occupied + roomStatus.available + roomStatus.notReady)) * 100)}%`}</p>
-              <div className="w-full bg-gray-200 h-2 mt-2 rounded-full">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${loading ? '0' : Math.round((roomStatus.occupied / (roomStatus.occupied + roomStatus.available + roomStatus.notReady)) * 100)}%` }}></div>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-md bg-green-50 text-green-700">
-              <div className="flex justify-between items-start">
-                <p className="text-xs">This Month</p>
-                <span className="text-xs font-medium">Revenue Target</span>
-              </div>
-              <p className="text-sm mt-1 font-medium">Target Progress: {loading ? '...' : '65%'}</p>
-              <div className="w-full bg-gray-200 h-2 mt-2 rounded-full">
-                <div className="bg-green-600 h-2 rounded-full" style={{ width: '65%' }}></div>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-md bg-amber-50 text-amber-700">
-              <div className="flex justify-between items-start">
-                <p className="text-xs">This Week</p>
-                <span className="text-xs font-medium">Check-ins</span>
-              </div>
-              <p className="text-sm mt-1 font-medium">Expected: {loading ? '...' : dashboardStats.checkIns + Math.round(dashboardStats.checkIns * 0.2)} check-ins</p>
-              <div className="w-full bg-gray-200 h-2 mt-2 rounded-full">
-                <div className="bg-amber-600 h-2 rounded-full" style={{ width: '80%' }}></div>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-md bg-purple-50 text-purple-700">
-              <div className="flex justify-between items-start">
-                <p className="text-xs">Forecast</p>
-                <span className="text-xs font-medium">Next Week</span>
-              </div>
-              <p className="text-sm mt-1 font-medium">Projected Revenue: ${loading ? '...' : Math.round(dashboardStats.totalRevenue * 0.15).toLocaleString()}</p>
-              <div className="w-full bg-gray-200 h-2 mt-2 rounded-full">
-                <div className="bg-purple-600 h-2 rounded-full" style={{ width: '75%' }}></div>
-              </div>
-            </div>
-          </div> */}
+          <DoughnutChart />
         </div>
       </div>
 
