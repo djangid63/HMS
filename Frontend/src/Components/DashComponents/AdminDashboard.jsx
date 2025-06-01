@@ -4,10 +4,12 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import DoughnutChart from '../ChartComponents/doughnutChart';
 import { NavLink } from "react-router";
+import { Search } from 'lucide-react';
 
 const AdminDashboard = ({ userName }) => {
   const { theme } = useSelector(state => state.theme);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('')
 
   // Dashboard data state
   const [dashboardStats, setDashboardStats] = useState({
@@ -49,6 +51,8 @@ const AdminDashboard = ({ userName }) => {
     fetchDashboardData();
   }, []);
 
+  console.log(search);
+
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
@@ -56,6 +60,9 @@ const AdminDashboard = ({ userName }) => {
       // Fetch bookings data
       const bookingsResponse = await axios.get(`${BASE_URL}/booking/getAll`, config);
       const bookings = bookingsResponse.data.data || [];
+
+
+
 
       // Fetch rooms data
       const roomsResponse = await axios.get(`${BASE_URL}/room/getAll`, config);
@@ -95,8 +102,8 @@ const AdminDashboard = ({ userName }) => {
 
       // Update recent bookings list (only the latest 4)
       const latestBookings = bookings
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 4)
+        // .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        // .slice(0, 4)
         .map(booking => {
           const checkInDate = new Date(booking.checkInDate);
           const checkOutDate = new Date(booking.checkOutDate);
@@ -174,13 +181,13 @@ const AdminDashboard = ({ userName }) => {
         {/* New Bookings */}
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
           <div className="flex justify-between items-start">
-            <div>
+            <NavLink to={'/dashboard/bookingPanel'}>
               <p className="text-sm text-gray-500 dark:text-gray-400">New Bookings</p>
               <h2 className="text-3xl font-bold mt-1">{loading ? '...' : dashboardStats.newBookings}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-600">+8.1% from last week</span>
               </div>
-            </div>
+            </NavLink>
             <div className="p-2 rounded-md bg-blue-100">
               <span className="text-blue-600">📅</span>
             </div>
@@ -190,13 +197,13 @@ const AdminDashboard = ({ userName }) => {
         {/* Check-In */}
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
           <div className="flex justify-between items-start">
-            <div>
+            <NavLink to={'/dashboard/bookingPanel'}>
               <p className="text-sm text-gray-500 dark:text-gray-400">Check-In</p>
               <h2 className="text-3xl font-bold mt-1">{loading ? '...' : dashboardStats.checkIns}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600">+3.6% from last week</span>
               </div>
-            </div>
+            </NavLink>
             <div className="p-2 rounded-md bg-green-100">
               <span className="text-green-600">🛎️</span>
             </div>
@@ -206,13 +213,13 @@ const AdminDashboard = ({ userName }) => {
         {/* Check-Out */}
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
           <div className="flex justify-between items-start">
-            <div>
+            <NavLink to={'/dashboard/bookingPanel'}>
               <p className="text-sm text-gray-500 dark:text-gray-400">Check-Out</p>
               <h2 className="text-3xl font-bold mt-1">{loading ? '...' : dashboardStats.checkOuts}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600">-1.06% from last week</span>
               </div>
-            </div>
+            </NavLink>
             <div className="p-2 rounded-md bg-green-100">
               <span className="text-green-600">🚪</span>
             </div>
@@ -222,13 +229,13 @@ const AdminDashboard = ({ userName }) => {
         {/* Room Available */}
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
           <div className="flex justify-between items-start">
-            <div>
+            <NavLink to={'/dashboard/bookingPanel'}>
               <p className="text-sm text-gray-500 dark:text-gray-400">Room Available</p>
               <h2 className="text-3xl font-bold mt-1">{loading ? '...' : dashboardStats.roomsAvailable}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600">-2.97% from last week</span>
               </div>
-            </div>
+            </NavLink>
             <div className="p-2 rounded-md bg-green-100">
               <span className="text-green-600">🏠</span>
             </div>
@@ -253,9 +260,9 @@ const AdminDashboard = ({ userName }) => {
       </div>
 
       {/* Middle Section: Charts, Room Status, Tasks */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" >
         {/* Booking by Platform */}
-        <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
+        <div div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold">Booking by Platform</h3>
             <button className="text-gray-500">
@@ -307,7 +314,7 @@ const AdminDashboard = ({ userName }) => {
         </div>
 
         {/* Room Availability */}
-        <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
+        <div div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold">Room Availability</h3>
             <button className="text-gray-500">
@@ -344,7 +351,7 @@ const AdminDashboard = ({ userName }) => {
         </div>
 
         {/* Booking Analytics - Replacing the Tasks section */}
-        <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
+        <div div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold">Booking Analytics</h3>
             <button className="text-gray-500">
@@ -364,12 +371,14 @@ const AdminDashboard = ({ userName }) => {
           <div className="flex gap-2">
             <input
               type="text"
-              placeholder="Search guest, status, etc"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search bookings..."
               className={`px-3 py-1 text-sm rounded-md ${theme === 'dark' ? 'bg-gray-600 text-white border-gray-700' : 'bg-gray-50 border border-gray-200'}`}
             />
-            <button className={`px-3 py-1 text-sm rounded-md ${theme === 'dark' ? 'bg-blue-600' : 'bg-blue-500'} text-white`}>
+            {/* <button className={`px-3 py-1 text-sm rounded-md ${theme === 'dark' ? 'bg-blue-600' : 'bg-blue-500'} text-white`}>
               All Status ▼
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -396,44 +405,48 @@ const AdminDashboard = ({ userName }) => {
                   <td colSpan="7" className="py-4 text-center text-gray-500">No bookings found</td>
                 </tr>
               ) : (
-                bookingList.map((booking) => (
-                  <tr
-                    key={booking.id}
-                    className={`border-t ${theme === 'dark' ? 'border-gray-600' : 'border-gray-100'} text-sm`}
-                  >
-                    <td className="py-3 px-2 flex items-center gap-1">
-                      <span className="font-medium">{booking.id}</span>
-                      {booking.priority === 'deluxe' && <span className="w-2 h-2 rounded-full bg-yellow-400"></span>}
-                      {booking.priority === 'suite' && <span className="w-2 h-2 rounded-full bg-purple-500"></span>}
-                    </td>
-                    <td className="py-3 px-2">{booking.guest}</td>
-                    <td className="py-3 px-2">{booking.roomType.split(' ')[0]}</td>
-                    <td className="py-3 px-2">{booking.roomType.split(' ')[1] || 'N/A'}</td>
-                    <td className="py-3 px-2">{booking.duration}</td>
-                    <td className="py-3 px-2">
-                      {booking.checkIn} - {booking.checkOut}
-                    </td>
-                    <td className="py-3 px-2">
-                      <span
-                        className={`px-2 py-1 text-xs rounded-md ${booking.status === 'checked-in' ? 'bg-green-100 text-green-700' :
-                          booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-gray-100 text-gray-700'
-                          }`}
-                      >
-                        {booking.status === 'checked-in' ? 'Checked-in' :
-                          booking.status === 'pending' ? 'Pending' : booking.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))
+                bookingList
+                  .filter(booking =>
+                    booking.guest.toLowerCase().includes(search.toLowerCase()) ||
+                    booking.id.toLowerCase().includes(search.toLowerCase()) ||
+                    booking.status.toLowerCase().includes(search.toLowerCase())
+                  )
+                  .map((booking) => (
+                    <tr
+                      key={booking.id}
+                      className={`border-t ${theme === 'dark' ? 'border-gray-600' : 'border-gray-100'} text-sm`}
+                    >
+                      <td className="py-3 px-2 flex items-center gap-1">
+                        <span className="font-medium">{booking.id}</span>
+                        {booking.priority === 'deluxe' && <span className="w-2 h-2 rounded-full bg-yellow-400"></span>}
+                        {booking.priority === 'suite' && <span className="w-2 h-2 rounded-full bg-purple-500"></span>}
+                      </td>
+                      <td className="py-3 px-2">{booking.guest}</td>
+                      <td className="py-3 px-2">{booking.roomType.split(' ')[0]}</td>
+                      <td className="py-3 px-2">{booking.roomType.split(' ')[1] || 'N/A'}</td>
+                      <td className="py-3 px-2">{booking.duration}</td>
+                      <td className="py-3 px-2">
+                        {booking.checkIn} - {booking.checkOut}
+                      </td>
+                      <td className="py-3 px-2">
+                        <span
+                          className={`px-2 py-1 text-xs rounded-md ${booking.status === 'checked-in' ? 'bg-green-100 text-green-700' :
+                            booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-gray-100 text-gray-700'
+                            }`}
+                        >
+                          {booking.status === 'checked-in' ? 'Checked-in' :
+                            booking.status === 'pending' ? 'Pending' : booking.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
               )}
             </tbody>
           </table>
         </div>
       </div>
-
-      {/* Recent Activities */}
-      <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
+      <div div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow`}>
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold">Recent Activities <span className="text-xs text-gray-500">(1,242)</span></h3>
           <div>
@@ -467,8 +480,8 @@ const AdminDashboard = ({ userName }) => {
             ))
           )}
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 
