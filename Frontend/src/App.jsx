@@ -8,8 +8,7 @@ import Dashboard from './Pages/DashboardPage'
 import UserPage from './Pages/UserPage'
 import BookingPanel from './Components/DashComponents/BookingPanel'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './App.css'
-import { Book } from 'lucide-react'
+import RevenuePanel from './Components/DashComponents/RevenuPanel'
 
 const App = () => {
 
@@ -24,6 +23,7 @@ const App = () => {
           <Route path='/dashboard/*' element={<Dashboard />} />
           <Route path='/userPage/*' element={<UserPage />} />
           <Route path='/dashboard/bookingPanel' element={<BookingPanel />} />
+          <Route path='/dashboard/revenuePanel' element={<RevenuePanel />} />
         </Routes>
       </BrowserRouter>
     </div>

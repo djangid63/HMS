@@ -32,14 +32,7 @@ const Dashboard = () => {
   }, [])
 
 
-  // Simple placeholder component that shows when a sidebar option is clicked
-  const ComponentPlaceholder = ({ title }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">{title} Content</h2>
-      <p className="text-gray-600">This is where the {title.toLowerCase()} content will be displayed.</p>
-      <p className="text-gray-600 mt-2">Each option will load its own unique component from the Components folder.</p>
-    </div>
-  );
+
 
   const getContent = () => {
     if (activeTab === 'location') {

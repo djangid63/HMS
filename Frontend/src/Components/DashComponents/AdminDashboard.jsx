@@ -245,13 +245,13 @@ const AdminDashboard = ({ userName }) => {
         {/* Total Revenue */}
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow col-span-1 md:col-span-2 lg:col-span-4`}>
           <div className="flex justify-between items-start">
-            <div>
+            <NavLink to={'/dashboard/revenuePanel'}>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
               <h2 className="text-3xl font-bold mt-1">${loading ? '...' : dashboardStats.totalRevenue.toLocaleString()}</h2>
               <div className="flex items-center mt-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600">+5.70% from last week</span>
               </div>
-            </div>
+            </NavLink>
             <div className="p-2 rounded-md bg-green-100">
               <span className="text-green-600">💰</span>
             </div>
