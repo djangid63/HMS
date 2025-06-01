@@ -1,3 +1,4 @@
+import BASE_URL from '../Utils/api';
 import React, { useEffect, useState } from 'react';
 import Location from '../Components/DashComponents/location';
 import Room from '../Components/DashComponents/Room'
@@ -9,10 +10,26 @@ import UserPage from './UserPage';
 import { FaHotel, FaBed, FaCalendarCheck, FaUsers, FaUserTie, FaBroom, FaChartBar, FaCog, FaSignOutAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import AdminDashboard from '../Components/DashComponents/AdminDashboard';
+import { jwtDecode } from "jwt-decode";
+import axios from 'axios';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('bookingPanel');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const navigate = useNavigate()
+  const [userName, setUserName] = useState('')
+
+
+  const decodedToken = jwtDecode(localStorage.getItem('token'))
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const resp = await axios.get(`${BASE_URL}/user/getAll`)
+      let user = resp.data.data.filter((user) => user.email == decodedToken.email);
+      let userName = `${user[0].firstname} ${user[0].lastname}`
+      setUserName(userName)
+    }
+    fetchUser()
+  }, [])
 
 
   // Simple placeholder component that shows when a sidebar option is clicked
@@ -47,9 +64,9 @@ const Dashboard = () => {
       return <UserPage />
     }
     else if (activeTab === 'dashboard')
-      return <AdminDashboard />
+      return <AdminDashboard userName={userName} />
 
-    return <ComponentPlaceholder title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} />;
+    return <div>Unknown tab selected</div>;
   };
 
   const logOut = () => {
@@ -219,9 +236,9 @@ const Dashboard = () => {
 
             <div className="flex items-center">
               <div className="h-10 w-10 rounded-full bg-blue-500 mr-2 flex items-center justify-center text-white font-bold">
-                A
+                {userName.length > 0 ? userName[0].toUpperCase() : 'A'}
               </div>
-              <span className="font-medium text-gray-700">Admin</span>
+              <span className="font-medium text-gray-700">{userName.length > 0 ? userName : 'Admin'}</span>
             </div>
           </div>
         </div>

@@ -1,11 +1,11 @@
 import BASE_URL from '../../Utils/api';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Share, FileUp, Plus } from 'lucide-react';
 import axios from 'axios';
 import DoughnutChart from '../ChartComponents/doughnutChart';
+import { NavLink } from "react-router";
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ userName }) => {
   const { theme } = useSelector(state => state.theme);
   const [loading, setLoading] = useState(true);
 
@@ -153,7 +153,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Hey Admin,</h1>
+          <h1 className="text-2xl font-bold">Hey, {userName}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">Great service leaves a lasting impression.</p>
         </div>
         {/* <div className="flex gap-2">
@@ -351,7 +351,9 @@ const AdminDashboard = () => {
               •••
             </button>
           </div>
-          <DoughnutChart />
+          <NavLink to={'bookingPanel'}>
+            <DoughnutChart />
+          </NavLink>
         </div>
       </div>
 
